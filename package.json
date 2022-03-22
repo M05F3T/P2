@@ -21,5 +21,9 @@
   "bugs": {
     "url": "https://github.com/M05F3T/P2/issues"
   },
-  "homepage": "https://github.com/M05F3T/P2#readme"
+  "homepage": "https://github.com/M05F3T/P2#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "socket.io": "^4.4.1"
+  }
 }
