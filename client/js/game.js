@@ -19,7 +19,7 @@ socket.on("newPosistion", (data) => {
         //draw green circle
         const radius = 70;
         ctx.beginPath();
-        ctx.arc(data[i].x, data[i].y, 50, 0, 2 * Math.PI);
+        ctx.arc(data[i].x, data[i].y, 40, 0, 2 * Math.PI);
         ctx.fillStyle = data[i].color;
         ctx.fill();
         ctx.lineWidth = 5;
