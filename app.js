@@ -18,12 +18,14 @@ console.log("Server started.. " + PORT);
 let SOCKET_LIST = {};
 let PLAYER_LIST = {};
 
-let Player = (id) => {
+let Player = (id, color, name) => {
     let self = {
         x: 250,
         y: 250,
         id: id,
         number: "" + Math.floor(Math.random() * 10),
+        color: color,
+        name: name,
         pressingRight: false,
         pressingLeft: false,
         pressingUp: false,
@@ -47,20 +49,20 @@ let Player = (id) => {
 
         //move sideways
         if (self.pressingRight && self.pressingUp) {
-            self.y -= self.maxSpd; //up
-            self.x += self.maxSpd; //right
+            self.y -= self.maxSpd * 0.75; //up
+            self.x += self.maxSpd * 0.75; //right
         }
         if (self.pressingRight && self.pressingDown) {
-            self.x += self.maxSpd; // right
-            self.y += self.maxSpd; //down
+            self.x += self.maxSpd * 0.75; // right
+            self.y += self.maxSpd * 0.75; //down
         }
         if (self.pressingDown && self.pressingLeft) {
-            self.x -= self.maxSpd; //left
-            self.y += self.maxSpd; //down
+            self.x -= self.maxSpd * 0.75; //left
+            self.y += self.maxSpd * 0.75; //down
         }
         if (self.pressingLeft && self.pressingUp) {
-            self.x -= self.maxSpd; //left
-            self.y -= self.maxSpd; //up
+            self.x -= self.maxSpd * 0.75; //left
+            self.y -= self.maxSpd * 0.75; //up
         }
 
     }
@@ -81,6 +83,11 @@ io.sockets.on('connection', (socket) => {
     //create new player and add to player list
     let player = Player(socket.id);
     PLAYER_LIST[socket.id] = player;
+
+    socket.on('submit-form', (data) => {
+        player.color = data.color;
+        player.name = data.name;
+    })
 
     socket.on('keyPress', (data) => {
         if (data.inputId === "left") {
@@ -112,6 +119,8 @@ setInterval(() => {
         pack.push({
             x: player.x,
             y: player.y,
+            color: player.color,
+            name: player.name,
             number: player.number
         });
     }
