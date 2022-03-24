@@ -1,6 +1,9 @@
 //initialize connection between server and client
 const socket = io();
 const ctx = document.getElementById("ctx").getContext("2d");
+const form = document.getElementById("name-color-form");
+const formMenu = document.getElementById("form-menu");
+
 
 //set canvas size to window size.
 ctx.canvas.width = window.innerWidth;
@@ -17,21 +20,29 @@ socket.on("newPosistion", (data) => {
         const radius = 70;
         ctx.beginPath();
         ctx.arc(data[i].x, data[i].y, 50, 0, 2 * Math.PI);
-        ctx.fillStyle = 'green';
+        ctx.fillStyle = data[i].color;
         ctx.fill();
         ctx.lineWidth = 5;
-        ctx.strokeStyle = '#003300';
+        ctx.strokeStyle = 'black';
         ctx.stroke();
 
         //draw number untop
         ctx.fillStyle = 'black';
-        ctx.fillText(data[i].number, data[i].x - 10, data[i].y + 10);
+        ctx.fillText(data[i].name, data[i].x - 65, data[i].y + 80);
 
     }
-
-
 });
 
+form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    let name = form.elements['name'].value;
+    let color = form.elements["color"].value; 
+    formMenu.style = "display: none;";
+    socket.emit("submit-form", {
+        name: name,
+        color: color,
+    })
+});
 
 document.onkeydown = (event) => {
     if (event.key === 'd') {
