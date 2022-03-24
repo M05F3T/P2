@@ -27,8 +27,9 @@ socket.on("newPosistion", (data) => {
         ctx.stroke();
 
         //draw number untop
+        ctx.textAlign = "center";
         ctx.fillStyle = 'black';
-        ctx.fillText(data[i].name, data[i].x - 65, data[i].y + 80);
+        ctx.fillText(data[i].name, data[i].x, data[i].y + 80);
 
     }
 });
@@ -36,7 +37,7 @@ socket.on("newPosistion", (data) => {
 form.addEventListener("submit", (e) => {
     e.preventDefault();
     let name = form.elements['name'].value;
-    let color = form.elements["color"].value; 
+    let color = form.elements["color"].value;
     formMenu.style = "display: none;";
     socket.emit("submit-form", {
         name: name,
