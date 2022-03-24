@@ -28,21 +28,41 @@ let Player = (id) => {
         pressingLeft: false,
         pressingUp: false,
         pressingDown: false,
-        maxSpd: 4,
+        maxSpd: 10,
     }
     self.updatePosistion = () => {
-        if (self.pressingRight) {
+        //move oneway
+        if (self.pressingRight && !self.pressingLeft && !self.pressingUp && !self.pressingDown) {
             self.x += self.maxSpd;
         }
-        if (self.pressingLeft) {
+        if (self.pressingLeft && !self.pressingRight && !self.pressingUp && !self.pressingDown) {
             self.x -= self.maxSpd;
         }
-        if (self.pressingUp) {
+        if (self.pressingUp && !self.pressingRight && !self.pressingLeft && !self.pressingDown) {
             self.y -= self.maxSpd;
         }
-        if (self.pressingDown) {
+        if (self.pressingDown && !self.pressingRight && !self.pressingUp && !self.pressingLeft) {
             self.y += self.maxSpd;
         }
+
+        //move sideways
+        if (self.pressingRight && self.pressingUp) {
+            self.y -= self.maxSpd; //up
+            self.x += self.maxSpd; //right
+        }
+        if (self.pressingRight && self.pressingDown) {
+            self.x += self.maxSpd; // right
+            self.y += self.maxSpd; //down
+        }
+        if (self.pressingDown && self.pressingLeft) {
+            self.x -= self.maxSpd; //left
+            self.y += self.maxSpd; //down
+        }
+        if (self.pressingLeft && self.pressingUp) {
+            self.x -= self.maxSpd; //left
+            self.y -= self.maxSpd; //up
+        }
+
     }
 
     return self;
