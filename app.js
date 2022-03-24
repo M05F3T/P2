@@ -82,9 +82,10 @@ io.sockets.on('connection', (socket) => {
 
     //create new player and add to player list
     let player = Player(socket.id);
-    PLAYER_LIST[socket.id] = player;
+
 
     socket.on('submit-form', (data) => {
+        PLAYER_LIST[socket.id] = player;
         player.color = data.color;
         player.name = data.name;
     })
