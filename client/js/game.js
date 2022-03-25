@@ -46,22 +46,22 @@ form.addEventListener("submit", (e) => {
 });
 
 document.onkeydown = (event) => {
-    if (event.key === 'd') {
+    if (event.key === 'd' || event.key === 'D') {
         socket.emit('keyPress', {
             inputId: 'right',
             state: true
         })
-    } else if (event.key === 's') {
+    } else if (event.key === 's' || event.key === 'S') {
         socket.emit('keyPress', {
             inputId: 'down',
             state: true
         })
-    } else if (event.key === 'a') {
+    } else if (event.key === 'a' || event.key === 'A') {
         socket.emit('keyPress', {
             inputId: 'left',
             state: true
         })
-    } else if (event.key === 'w') {
+    } else if (event.key === 'w' || event.key === 'W') {
         socket.emit('keyPress', {
             inputId: 'up',
             state: true
@@ -70,22 +70,22 @@ document.onkeydown = (event) => {
 }
 
 document.onkeyup = (event) => {
-    if (event.key === 'd') {
+    if (event.key === 'd' || event.key === 'D') {
         socket.emit('keyPress', {
             inputId: 'right',
             state: false
         })
-    } else if (event.key === 's') {
+    } else if (event.key === 's' || event.key === 'S') {
         socket.emit('keyPress', {
             inputId: 'down',
             state: false
         })
-    } else if (event.key === 'a') {
+    } else if (event.key === 'a' || event.key === 'A') {
         socket.emit('keyPress', {
             inputId: 'left',
             state: false
         })
-    } else if (event.key === 'w') {
+    } else if (event.key === 'w' || event.key === 'W') {
         socket.emit('keyPress', {
             inputId: 'up',
             state: false
