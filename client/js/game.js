@@ -3,6 +3,7 @@ const socket = io();
 const ctx = document.getElementById("ctx").getContext("2d");
 const form = document.getElementById("name-color-form");
 const formMenu = document.getElementById("form-menu");
+const spawnBtn = document.getElementById("spawn");
 
 
 //set canvas size to window size.
@@ -14,7 +15,13 @@ ctx.font = "30px Arial";
 
 socket.on("newPosistion", (data) => {
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    
+    console.log(data);
+    for (let i = 0; i < data.entities.length; i++) {
+        ctx.beginPath();
+        ctx.rect(data.entities[i].x, data.entities[i].y, data.entities[i].height, data.entities[i].width);
+        ctx.stroke();   
+    }
+
     for (const key in data.players) {
              //draw green circle
         const radius = 70;
@@ -32,25 +39,11 @@ socket.on("newPosistion", (data) => {
         ctx.fillText(data.players[key].name, data.players[key].x, data.players[key].y + 80);
 
     }
+});
 
-    // for (let i = 0; i < data.players.length; i++) {
 
-    //     //draw green circle
-    //     const radius = 70;
-    //     ctx.beginPath();
-    //     ctx.arc(data.players[i].x, data.players[i].y, 40, 0, 2 * Math.PI);
-    //     ctx.fillStyle = data.players[i].color;
-    //     ctx.fill();
-    //     ctx.lineWidth = 5;
-    //     ctx.strokeStyle = 'black';
-    //     ctx.stroke();
-
-    //     //draw number untop
-    //     ctx.textAlign = "center";
-    //     ctx.fillStyle = 'black';
-    //     ctx.fillText(data.players[i].name, data.players[i].x, data.players[i].y + 80);
-
-    // }
+spawnBtn.addEventListener("click", (e) => {
+    socket.emit("spawnElement");
 });
 
 form.addEventListener("submit", (e) => {

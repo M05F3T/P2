@@ -22,16 +22,17 @@ let world = {
     players: {
 
     },
-    entities: {
-
-    }
+    entities: []
 }
 
-let Element = (color) => {
+
+
+let Element = (posX,posY) => {
     let self = {
-        x: 250,
-        y: 250,
-        color: color,
+        x: posX,
+        y: posY,
+        height: 250,
+        width: 250,
     }
 
     return self;
@@ -112,6 +113,11 @@ io.sockets.on('connection', (socket) => {
         player.name = data.name;
     })
 
+    socket.on('spawnElement', () => {
+        let element = Element(Math.floor(Math.random() * 1000),Math.floor(Math.random() * 1000));
+        world.entities.push(element);
+    });
+
     socket.on('keyPress', (data) => {
         if (data.inputId === "left") {
             player.pressingLeft = data.state;
@@ -140,8 +146,6 @@ setInterval(() => {
     for (let i in world.players) {
         let player = world.players[i];
         player.updatePosistion();
-        
-        
     }
     pack.push(world);
     
