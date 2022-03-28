@@ -12,18 +12,18 @@ ctx.canvas.height = window.innerHeight;
 
 ctx.font = "30px Arial";
 
-
-socket.on("newPosistion", (data) => {
-    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    console.log(data);
+function drawElements(data) {
     for (let i = 0; i < data.entities.length; i++) {
         ctx.beginPath();
         ctx.rect(data.entities[i].x, data.entities[i].y, data.entities[i].height, data.entities[i].width);
-        ctx.stroke();   
+        ctx.stroke();
     }
+}
 
+
+function drawPlayers(data) {
     for (const key in data.players) {
-             //draw green circle
+        //draw green circle
         const radius = 70;
         ctx.beginPath();
         ctx.arc(data.players[key].x, data.players[key].y, 40, 0, 2 * Math.PI);
@@ -33,12 +33,15 @@ socket.on("newPosistion", (data) => {
         ctx.strokeStyle = 'black';
         ctx.stroke();
 
-        //draw number untop
-        ctx.textAlign = "center";
-        ctx.fillStyle = 'black';
-        ctx.fillText(data.players[key].name, data.players[key].x, data.players[key].y + 80);
-
     }
+}
+
+socket.on("newPosistion", (data) => {
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+    drawElements(data);
+    drawPlayers(data);
+
 });
 
 
