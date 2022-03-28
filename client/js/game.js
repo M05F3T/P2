@@ -14,13 +14,13 @@ ctx.font = "30px Arial";
 
 socket.on("newPosistion", (data) => {
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    for (let i = 0; i < data.length; i++) {
-
-        //draw green circle
+    
+    for (const key in data.players) {
+             //draw green circle
         const radius = 70;
         ctx.beginPath();
-        ctx.arc(data[i].x, data[i].y, 40, 0, 2 * Math.PI);
-        ctx.fillStyle = data[i].color;
+        ctx.arc(data.players[key].x, data.players[key].y, 40, 0, 2 * Math.PI);
+        ctx.fillStyle = data.players[key].color;
         ctx.fill();
         ctx.lineWidth = 5;
         ctx.strokeStyle = 'black';
@@ -29,9 +29,28 @@ socket.on("newPosistion", (data) => {
         //draw number untop
         ctx.textAlign = "center";
         ctx.fillStyle = 'black';
-        ctx.fillText(data[i].name, data[i].x, data[i].y + 80);
+        ctx.fillText(data.players[key].name, data.players[key].x, data.players[key].y + 80);
 
     }
+
+    // for (let i = 0; i < data.players.length; i++) {
+
+    //     //draw green circle
+    //     const radius = 70;
+    //     ctx.beginPath();
+    //     ctx.arc(data.players[i].x, data.players[i].y, 40, 0, 2 * Math.PI);
+    //     ctx.fillStyle = data.players[i].color;
+    //     ctx.fill();
+    //     ctx.lineWidth = 5;
+    //     ctx.strokeStyle = 'black';
+    //     ctx.stroke();
+
+    //     //draw number untop
+    //     ctx.textAlign = "center";
+    //     ctx.fillStyle = 'black';
+    //     ctx.fillText(data.players[i].name, data.players[i].x, data.players[i].y + 80);
+
+    // }
 });
 
 form.addEventListener("submit", (e) => {

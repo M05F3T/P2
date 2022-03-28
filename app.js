@@ -18,7 +18,26 @@ console.log("Server started.. " + PORT);
 let SOCKET_LIST = {};
 let PLAYER_LIST = {};
 
-let Player = (id, color, name) => {
+let world = {
+    players: {
+
+    },
+    entities: {
+
+    }
+}
+
+let Element = (color) => {
+    let self = {
+        x: 250,
+        y: 250,
+        color: color,
+    }
+
+    return self;
+}
+
+let Player = (id,color,name) => {
     let self = {
         x: 250,
         y: 250,
@@ -82,10 +101,13 @@ io.sockets.on('connection', (socket) => {
 
     //create new player and add to player list
     let player = Player(socket.id);
+    
 
 
     socket.on('submit-form', (data) => {
-        PLAYER_LIST[socket.id] = player;
+        
+        world.players[socket.id] = player;
+        //PLAYER_LIST[socket.id] = player;
         player.color = data.color;
         player.name = data.name;
     })
@@ -106,7 +128,8 @@ io.sockets.on('connection', (socket) => {
     socket.on('disconnect', () => {
         //remove disconnected person
         delete SOCKET_LIST[socket.id];
-        delete PLAYER_LIST[socket.id];
+        //delete PLAYER_LIST[socket.id];
+        delete world.players[socket.id];
         console.log("Player disconnected " + socket.id);
     });
 });
@@ -114,21 +137,18 @@ io.sockets.on('connection', (socket) => {
 setInterval(() => {
     let pack = [];
 
-    for (let i in PLAYER_LIST) {
-        let player = PLAYER_LIST[i];
+    for (let i in world.players) {
+        let player = world.players[i];
         player.updatePosistion();
-        pack.push({
-            x: player.x,
-            y: player.y,
-            color: player.color,
-            name: player.name,
-            number: player.number
-        });
+        
+        
     }
+    pack.push(world);
+    
 
     for (let i in SOCKET_LIST) {
         let socket = SOCKET_LIST[i];
-        socket.emit('newPosistion', pack);
+        socket.emit('newPosistion', world);
     }
 
 
