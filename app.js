@@ -126,11 +126,11 @@ let Player = (id, color, name) => {
                 //console.log(`COLISSION: player: ${self.id} and ${object.id}`)
 
                 self.isColliding = true;
-
+                
                 
                 //pick up element
                 if (self.pickUpKeyPressed === true && self.canPickUp === true && isEmpty(self.connectedEntity)) {
-
+                    
                     self.connectToPlayer(object);
                     setTimeout(() => {
                         self.canPickUp = false;
@@ -138,8 +138,12 @@ let Player = (id, color, name) => {
 
                 }
 
+
             } else {
-                self.isColliding = false;
+                setTimeout(() => {
+                    self.isColliding = false;
+                },200);
+                
             }
         }
     }

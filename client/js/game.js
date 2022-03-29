@@ -34,7 +34,7 @@ function drawElements(data) {
 function drawPickUpToolTip(data) {
     for (const key in data.players) {
         //only draws for the current clients player
-        if (data.players[key].id === myId && data.players[key].isColliding === true && isEmpty(data.players[key].connectedEntity) === true) {
+        if (data.players[key].id === myId && data.players[key].isColliding === true ) {
             ctx.font = "30px Arial";
             ctx.textAlign = "center";
             ctx.fillStyle = "black";
@@ -45,6 +45,7 @@ function drawPickUpToolTip(data) {
 
 function drawPlayers(data) {
     for (const key in data.players) {
+        
         //draw player circle
         ctx.beginPath();
         ctx.arc(data.players[key].x, data.players[key].y, data.players[key].h / 2, 0, 2 * Math.PI);
@@ -70,7 +71,7 @@ function drawPlayers(data) {
     }
 }
 
-function renderCanvas() {
+function renderCanvas(localWorld) {
     //set canvas size to window size.
     ctx.canvas.width = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
@@ -119,6 +120,7 @@ function sendClientData() {
                 state: true
             })
         } else if (event.key === 'e' || event.key === 'E') {
+            
             socket.emit('keyPress', {
                 inputId: 'pickUpKeyPressed',
                 state: true
@@ -165,11 +167,12 @@ function getServerData() {
     });
 
     socket.on("newPosistion", (data) => {
-
+        
         //update local world storage
         localWorld = data;
         //render new update
-        renderCanvas();
+        renderCanvas(localWorld);
+        
     });
 }
 
