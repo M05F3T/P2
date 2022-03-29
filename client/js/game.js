@@ -5,7 +5,7 @@ const ctx = document.getElementById("ctx").getContext("2d");
 const form = document.getElementById("name-color-form");
 const formMenu = document.getElementById("form-menu");
 const spawnBtn = document.getElementById("spawn");
-
+const clearBtn = document.getElementById("delete");
 
 
 let myId;
@@ -87,6 +87,10 @@ function sendClientData() {
 
     spawnBtn.addEventListener("click", (e) => {
         socket.emit("spawnElement");
+    });
+
+    clearBtn.addEventListener("click", (e) => {
+        socket.emit("clear");
     });
 
     form.addEventListener("submit", (e) => {

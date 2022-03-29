@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const server = require('http').Server(app);
-const PORT = 80;
+const PORT = 3000;
 
 // in case user tries to get "Danielsejersen.com/" we send index.html
 app.get('/', function (req, res) {
@@ -184,6 +184,10 @@ io.sockets.on('connection', (socket) => {
         player.name = data.name;
     })
 
+    socket.on('clear', () => {
+        deleteAllEntities();
+    });
+
     socket.on('spawnElement', () => {
         let element = Element(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
         world.entities[element.id] = element;
@@ -250,6 +254,13 @@ setInterval(() => {
 
 
 }, 1000 / 60);;
+
+
+function deleteAllEntities() {
+    for (const key in world.entities) {
+        delete world.entities[key];
+    }
+}
 
 function isEmpty(obj) {
     return Object.keys(obj).length === 0;
