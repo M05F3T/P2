@@ -124,6 +124,8 @@ let Player = (id, color, name) => {
 
                 console.log(`COLISSION: player: ${self.id} and ${object.id}`)
 
+
+
                 //self.color = "red"
 
 
