@@ -42,7 +42,8 @@ function drawPlayers(data) {
         ctx.fillStyle = "black";
         ctx.fillText(data.players[key].name, data.players[key].x, data.players[key].y + 65)
 
-        if(data.players[key].canPickUp === false) {
+        //draw entities on player
+        if(isEmpty(data.players[key].connectedEntity) === false) {
             ctx.beginPath();
             ctx.rect(data.players[key].connectedEntity.x, data.players[key].connectedEntity.y, data.players[key].connectedEntity.h, data.players[key].connectedEntity.w);
             ctx.stroke();
@@ -98,7 +99,7 @@ document.onkeydown = (event) => {
         })
     }else if (event.key === 'e' || event.key === 'E') {
         socket.emit('keyPress', {
-            inputId: 'pickUp',
+            inputId: 'pickUpKeyPressed',
             state: true
         })
     }
@@ -129,8 +130,12 @@ document.onkeyup = (event) => {
         })
     }else if (event.key === 'e' || event.key === 'E') {
         socket.emit('keyPress', {
-            inputId: 'pickUp',
+            inputId: 'pickUpKeyPressed',
             state: false
         })
     }
+}
+
+function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
 }

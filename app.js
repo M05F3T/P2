@@ -54,7 +54,7 @@ let Player = (id, color, name) => {
         color: color,
         name: name,
         canPickUp: true,
-        pickUp: false,
+        pickUpKeyPressed: false,
         connectedEntity: {},
         pressingRight: false,
         pressingLeft: false,
@@ -64,7 +64,7 @@ let Player = (id, color, name) => {
     }
     self.updatePosistion = () => {
         //move oneway
-        
+
 
         if (self.pressingRight && !self.pressingLeft && !self.pressingUp && !self.pressingDown) {
             self.x += self.maxSpd;
@@ -97,10 +97,19 @@ let Player = (id, color, name) => {
             self.y -= self.maxSpd * 0.75; //up
         }
 
+        if (isEmpty(self.connectedEntity) === false && self.pickUpKeyPressed === true && self.canPickUp === false) {
+            self.connectToWorld();
 
-        if(self.connectedEntity != null) {
-            self.connectedEntity.x = self.x;
-            self.connectedEntity.y = self.y;
+            setTimeout(() => {
+                self.canPickUp = true;
+            }, 1000)
+
+
+        }
+
+        if (!(isEmpty(self.connectedEntity))) {
+            self.connectedEntity.x = self.x + 10;
+            self.connectedEntity.y = self.y + 10;
         }
 
     }
@@ -111,23 +120,35 @@ let Player = (id, color, name) => {
                 (self.x - self.w / 2) + self.w > object.x &&
                 (self.y - self.h / 2) < object.y + object.h &&
                 self.h + (self.y - self.h / 2) > object.y) {
+
+
                 console.log(`COLISSION: player: ${self.id} and ${object.id}`)
-                self.color = "red"
-                if (self.pickUp === true && self.canPickUp === true) {
+
+                //self.color = "red"
+
+
+                if (self.pickUpKeyPressed === true && self.canPickUp === true && isEmpty(self.connectedEntity)) {
+
                     self.connectToPlayer(object);
-                    self.canPickUp = false;
-                } 
+                    setTimeout(() => {
+                        self.canPickUp = false;
+                    }, 1000)
+
+                }
+
+
+
+
             } else {
-                self.color = "white"
+                //self.color = "white"
             }
         }
     }
     self.connectToWorld = () => {
-
-        // world.entities[self.connectedEntity.id] = self.connectedEntity;
-        // console.log(self.connectedEntity);
-        // self.connectedEntity = null;
-        // console.log(world.entities);
+        world.entities[self.connectedEntity.id] = self.connectedEntity;
+        console.log(self.connectedEntity);
+        self.connectedEntity = {};
+        console.log(world.entities);
     }
     self.connectToPlayer = (entity) => {
         self.connectedEntity = entity;
@@ -177,8 +198,8 @@ io.sockets.on('connection', (socket) => {
             player.pressingUp = data.state;
         } else if (data.inputId === "down") {
             player.pressingDown = data.state;
-        } else if (data.inputId === "pickUp") {
-            player.pickUp = data.state;
+        } else if (data.inputId === "pickUpKeyPressed") {
+            player.pickUpKeyPressed = data.state;
         }
     });
 
@@ -211,3 +232,7 @@ setInterval(() => {
 
 
 }, 1000 / 60);;
+
+function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+}
