@@ -16,6 +16,7 @@ console.log("Server started.. " + PORT);
 
 
 let SOCKET_LIST = {};
+let ID_COUNTER = 0;
 
 let world = {
     players: {
@@ -24,16 +25,21 @@ let world = {
     entities: []
 }
 
-let Element = (posX, posY) => {
+let Element = (posX, posY,id) => {
     let self = {
         x: posX,
         y: posY,
         h: 250,
         w: 250,
+        id: generateEntityId()
     }
-
     return self;
 }
+
+function generateEntityId() {
+    return ++ID_COUNTER;
+}
+
 
 let Player = (id, color, name) => {
     let self = {
@@ -45,6 +51,8 @@ let Player = (id, color, name) => {
         number: "" + Math.floor(Math.random() * 10),
         color: color,
         name: name,
+        canPickUp: false,
+        connectedEntity: {},
         pressingRight: false,
         pressingLeft: false,
         pressingUp: false,
@@ -88,15 +96,13 @@ let Player = (id, color, name) => {
     self.detect_colision = () => {
         for (let i = 0; i < world.entities.length; i++) {
             let object = world.entities[i];
-
-            
-
             if ((self.x - self.w / 2) < object.x + object.w &&
                 (self.x - self.w / 2) + self.w  > object.x &&
                 (self.y - self.h / 2) < object.y + object.h &&
                 self.h  + (self.y - self.h / 2) > object.y) {
-                console.log(`COLISSION: player: ${self.id} and ${object}`)
+                console.log(`COLISSION: player: ${self.id} and ${object.id}`)
                     self.color ="red"
+                    self.canPickUp = true;
             } else {
                 console.log("No collision....\n");
                 self.color = "white"
@@ -106,6 +112,9 @@ let Player = (id, color, name) => {
 
 
 
+    }
+    self.connectToPlayer = (entity) => {
+        world.entities
     }
     return self;
 }
@@ -135,7 +144,7 @@ io.sockets.on('connection', (socket) => {
 
     socket.on('spawnElement', () => {
         let element = Element(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
-        world.entities.push(element);
+        world.entities[element.id] = element;
     });
 
     socket.on('keyPress', (data) => {
