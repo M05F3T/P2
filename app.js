@@ -33,7 +33,8 @@ let Element = (posX, posY, id) => {
         y: posY,
         h: 150,
         w: 150,
-        id: generateEntityId()
+        id: generateEntityId(),
+        color: "gray"
     }
     return self;
 }
@@ -186,6 +187,10 @@ io.sockets.on('connection', (socket) => {
     socket.on('spawnElement', () => {
         let element = Element(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
         world.entities[element.id] = element;
+    });
+
+    socket.on('newEntityColor', (data) => {
+        world.entities[data.id].color = data.color;
     });
 
     socket.on('keyPress', (data) => {
