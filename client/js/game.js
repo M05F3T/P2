@@ -12,10 +12,15 @@ ctx.canvas.height = window.innerHeight;
 
 ctx.font = "30px Arial";
 
+
+
+
+
+
 function drawElements(data) {
     for (let i = 0; i < data.entities.length; i++) {
         ctx.beginPath();
-        ctx.rect(data.entities[i].x, data.entities[i].y, data.entities[i].height, data.entities[i].width);
+        ctx.rect(data.entities[i].x, data.entities[i].y, data.entities[i].h, data.entities[i].w);
         ctx.stroke();
     }
 }
@@ -24,14 +29,17 @@ function drawElements(data) {
 function drawPlayers(data) {
     for (const key in data.players) {
         //draw green circle
-        const radius = 70;
         ctx.beginPath();
-        ctx.arc(data.players[key].x, data.players[key].y, 40, 0, 2 * Math.PI);
+        ctx.arc(data.players[key].x, data.players[key].y, data.players[key].h / 2, 0, 2 * Math.PI);
         ctx.fillStyle = data.players[key].color;
         ctx.fill();
         ctx.lineWidth = 5;
         ctx.strokeStyle = 'black';
         ctx.stroke();
+
+        ctx.textAlign = "center";
+        ctx.fillStyle = "black";
+        ctx.fillText(data.players[key].name, data.players[key].x, data.players[key].y + 65)
 
     }
 }

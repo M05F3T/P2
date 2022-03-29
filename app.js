@@ -4,7 +4,7 @@ const server = require('http').Server(app);
 const PORT = 3000;
 
 // in case user tries to get "Danielsejersen.com/" we send index.html
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
     res.sendFile(__dirname + '/client/index.html');
 });
 
@@ -16,7 +16,6 @@ console.log("Server started.. " + PORT);
 
 
 let SOCKET_LIST = {};
-let PLAYER_LIST = {};
 
 let world = {
     players: {
@@ -25,23 +24,23 @@ let world = {
     entities: []
 }
 
-
-
-let Element = (posX,posY) => {
+let Element = (posX, posY) => {
     let self = {
         x: posX,
         y: posY,
-        height: 250,
-        width: 250,
+        h: 250,
+        w: 250,
     }
 
     return self;
 }
 
-let Player = (id,color,name) => {
+let Player = (id, color, name) => {
     let self = {
         x: 250,
         y: 250,
+        w: 50,
+        h: 50,
         id: id,
         number: "" + Math.floor(Math.random() * 10),
         color: color,
@@ -86,7 +85,28 @@ let Player = (id,color,name) => {
         }
 
     }
+    self.detect_colision = () => {
+        for (let i = 0; i < world.entities.length; i++) {
+            let object = world.entities[i];
 
+            
+
+            if ((self.x - self.w / 2) < object.x + object.w &&
+                (self.x - self.w / 2) + self.w  > object.x &&
+                (self.y - self.h / 2) < object.y + object.h &&
+                self.h  + (self.y - self.h / 2) > object.y) {
+                console.log(`COLISSION: player: ${self.id} and ${object}`)
+                    self.color ="red"
+            } else {
+                console.log("No collision....\n");
+                self.color = "white"
+            }
+        }
+
+
+
+
+    }
     return self;
 }
 
@@ -102,11 +122,11 @@ io.sockets.on('connection', (socket) => {
 
     //create new player and add to player list
     let player = Player(socket.id);
-    
+
 
 
     socket.on('submit-form', (data) => {
-        
+
         world.players[socket.id] = player;
         //PLAYER_LIST[socket.id] = player;
         player.color = data.color;
@@ -114,7 +134,7 @@ io.sockets.on('connection', (socket) => {
     })
 
     socket.on('spawnElement', () => {
-        let element = Element(Math.floor(Math.random() * 1000),Math.floor(Math.random() * 1000));
+        let element = Element(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
         world.entities.push(element);
     });
 
@@ -141,14 +161,13 @@ io.sockets.on('connection', (socket) => {
 });
 
 setInterval(() => {
-    let pack = [];
 
     for (let i in world.players) {
         let player = world.players[i];
         player.updatePosistion();
+        player.detect_colision();
     }
-    pack.push(world);
-    
+
 
     for (let i in SOCKET_LIST) {
         let socket = SOCKET_LIST[i];
