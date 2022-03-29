@@ -18,11 +18,12 @@ ctx.font = "30px Arial";
 
 
 function drawElements(data) {
-    for (let i = 0; i < data.entities.length; i++) {
+    for (const key in data.entities) {
         ctx.beginPath();
-        ctx.rect(data.entities[i].x, data.entities[i].y, data.entities[i].h, data.entities[i].w);
+        ctx.rect(data.entities[key].x, data.entities[key].y, data.entities[key].h, data.entities[key].w);
         ctx.stroke();
     }
+
 }
 
 
@@ -40,6 +41,12 @@ function drawPlayers(data) {
         ctx.textAlign = "center";
         ctx.fillStyle = "black";
         ctx.fillText(data.players[key].name, data.players[key].x, data.players[key].y + 65)
+
+        if(data.players[key].canPickUp === false) {
+            ctx.beginPath();
+            ctx.rect(data.players[key].connectedEntity.x, data.players[key].connectedEntity.y, data.players[key].connectedEntity.h, data.players[key].connectedEntity.w);
+            ctx.stroke();
+        }
 
     }
 }
@@ -89,8 +96,15 @@ document.onkeydown = (event) => {
             inputId: 'up',
             state: true
         })
+    }else if (event.key === 'e' || event.key === 'E') {
+        socket.emit('keyPress', {
+            inputId: 'pickUp',
+            state: true
+        })
     }
 }
+
+
 
 document.onkeyup = (event) => {
     if (event.key === 'd' || event.key === 'D') {
@@ -111,6 +125,11 @@ document.onkeyup = (event) => {
     } else if (event.key === 'w' || event.key === 'W') {
         socket.emit('keyPress', {
             inputId: 'up',
+            state: false
+        })
+    }else if (event.key === 'e' || event.key === 'E') {
+        socket.emit('keyPress', {
+            inputId: 'pickUp',
             state: false
         })
     }

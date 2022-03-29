@@ -22,15 +22,17 @@ let world = {
     players: {
 
     },
-    entities: []
+    entities: {
+
+    }
 }
 
-let Element = (posX, posY,id) => {
+let Element = (posX, posY, id) => {
     let self = {
         x: posX,
         y: posY,
-        h: 250,
-        w: 250,
+        h: 150,
+        w: 150,
         id: generateEntityId()
     }
     return self;
@@ -51,7 +53,8 @@ let Player = (id, color, name) => {
         number: "" + Math.floor(Math.random() * 10),
         color: color,
         name: name,
-        canPickUp: false,
+        canPickUp: true,
+        pickUp: false,
         connectedEntity: {},
         pressingRight: false,
         pressingLeft: false,
@@ -61,6 +64,8 @@ let Player = (id, color, name) => {
     }
     self.updatePosistion = () => {
         //move oneway
+        
+
         if (self.pressingRight && !self.pressingLeft && !self.pressingUp && !self.pressingDown) {
             self.x += self.maxSpd;
         }
@@ -92,29 +97,45 @@ let Player = (id, color, name) => {
             self.y -= self.maxSpd * 0.75; //up
         }
 
+
+        if(self.connectedEntity != null) {
+            self.connectedEntity.x = self.x;
+            self.connectedEntity.y = self.y;
+        }
+
     }
     self.detect_colision = () => {
-        for (let i = 0; i < world.entities.length; i++) {
-            let object = world.entities[i];
+        for (const key in world.entities) {
+            let object = world.entities[key];
             if ((self.x - self.w / 2) < object.x + object.w &&
-                (self.x - self.w / 2) + self.w  > object.x &&
+                (self.x - self.w / 2) + self.w > object.x &&
                 (self.y - self.h / 2) < object.y + object.h &&
-                self.h  + (self.y - self.h / 2) > object.y) {
+                self.h + (self.y - self.h / 2) > object.y) {
                 console.log(`COLISSION: player: ${self.id} and ${object.id}`)
-                    self.color ="red"
-                    self.canPickUp = true;
+                self.color = "red"
+                if (self.pickUp === true && self.canPickUp === true) {
+                    self.connectToPlayer(object);
+                    self.canPickUp = false;
+                } 
             } else {
-                console.log("No collision....\n");
                 self.color = "white"
             }
         }
+    }
+    self.connectToWorld = () => {
 
-
-
-
+        // world.entities[self.connectedEntity.id] = self.connectedEntity;
+        // console.log(self.connectedEntity);
+        // self.connectedEntity = null;
+        // console.log(world.entities);
     }
     self.connectToPlayer = (entity) => {
-        world.entities
+        self.connectedEntity = entity;
+        console.log(`player: ${self.id} connected an entity: ${self.connectedEntity.id}`);
+        delete world.entities[entity.id];
+        console.log(`World has these entities: ${JSON.stringify(world.entities)}`);
+
+
     }
     return self;
 }
@@ -156,6 +177,8 @@ io.sockets.on('connection', (socket) => {
             player.pressingUp = data.state;
         } else if (data.inputId === "down") {
             player.pressingDown = data.state;
+        } else if (data.inputId === "pickUp") {
+            player.pickUp = data.state;
         }
     });
 
