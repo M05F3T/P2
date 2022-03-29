@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const server = require('http').Server(app);
-const PORT = 3000;
+const PORT = 80;
 
 // in case user tries to get "Danielsejersen.com/" we send index.html
 app.get('/', function (req, res) {
