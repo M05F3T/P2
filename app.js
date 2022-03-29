@@ -192,15 +192,15 @@ io.sockets.on('connection', (socket) => {
     socket.on('newEntityColor', (data) => {
         if (!(isEmpty(world.entities))) {
 
-            world.entities[data.id].color = data.color;
+            
             //THERE IS BUG HERE it tries to change color of picked up object sometimes resolveing in crash
 
-            // try {
-                
-            // }
-            // catch {
-            //     console.log("tried to change color of picked up object");
-            // }
+             try {
+                world.entities[data.id].color = data.color;
+             }
+             catch {
+                 console.log("tried to change color of picked up object");
+             }
                 
             
         }

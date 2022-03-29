@@ -8,10 +8,6 @@ const spawnBtn = document.getElementById("spawn");
 
 
 
-
-
-
-
 let myId;
 let localWorld;
 let hover = false;
