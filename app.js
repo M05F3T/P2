@@ -109,8 +109,8 @@ let Player = (id, color, name) => {
         }
 
         if (!(isEmpty(self.connectedEntity))) {
-            self.connectedEntity.x = self.x + 10;
-            self.connectedEntity.y = self.y + 10;
+            self.connectedEntity.x = (self.x - self.connectedEntity.w / 2);
+            self.connectedEntity.y = (self.y -  self.connectedEntity.h / 2) - 110;
         }
 
     }

@@ -32,7 +32,7 @@ function drawElements(data) {
 function drawPickUpToolTip(data) {
     for (const key in data.players) {
         //only draws for the current clients player
-        if(data.players[key].id === myId && data.players[key].isColliding === true && data.players[key].canPickUp === true) {
+        if(data.players[key].id === myId && data.players[key].isColliding === true && isEmpty(data.players[key].connectedEntity) === true) {
             ctx.textAlign = "center";
             ctx.fillStyle = "black";
             ctx.fillText("Press E to interact", data.players[key].x, data.players[key].y - 35)
@@ -60,7 +60,7 @@ function drawPlayers(data) {
         if(isEmpty(data.players[key].connectedEntity) === false) {
             ctx.beginPath();
             ctx.rect(data.players[key].connectedEntity.x, data.players[key].connectedEntity.y, data.players[key].connectedEntity.h, data.players[key].connectedEntity.w);
-            ctx.stroke();
+            ctx.stroke(); 
         }
 
     }
