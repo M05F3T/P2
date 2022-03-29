@@ -111,7 +111,7 @@ let Player = (id, color, name) => {
 
         if (!(isEmpty(self.connectedEntity))) {
             self.connectedEntity.x = (self.x - self.connectedEntity.w / 2);
-            self.connectedEntity.y = (self.y -  self.connectedEntity.h / 2) - 110;
+            self.connectedEntity.y = (self.y - self.connectedEntity.h / 2) - 110;
         }
 
     }
@@ -127,11 +127,11 @@ let Player = (id, color, name) => {
                 //console.log(`COLISSION: player: ${self.id} and ${object.id}`)
 
                 self.isColliding = true;
-                
-                
+
+
                 //pick up element
                 if (self.pickUpKeyPressed === true && self.canPickUp === true && isEmpty(self.connectedEntity)) {
-                    
+
                     self.connectToPlayer(object);
                     setTimeout(() => {
                         self.canPickUp = false;
@@ -143,8 +143,8 @@ let Player = (id, color, name) => {
             } else {
                 setTimeout(() => {
                     self.isColliding = false;
-                },200);
-                
+                }, 200);
+
             }
         }
     }
@@ -190,7 +190,21 @@ io.sockets.on('connection', (socket) => {
     });
 
     socket.on('newEntityColor', (data) => {
-        world.entities[data.id].color = data.color;
+        if (!(isEmpty(world.entities))) {
+
+            world.entities[data.id].color = data.color;
+            //THERE IS BUG HERE it tries to change color of picked up object sometimes resolveing in crash
+
+            // try {
+                
+            // }
+            // catch {
+            //     console.log("tried to change color of picked up object");
+            // }
+                
+            
+        }
+
     });
 
     socket.on('keyPress', (data) => {
