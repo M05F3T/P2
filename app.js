@@ -103,7 +103,7 @@ let Player = (id, color, name) => {
 
             setTimeout(() => {
                 self.canPickUp = true;
-            }, 1000)
+            }, 500)
 
 
         }
@@ -134,7 +134,7 @@ let Player = (id, color, name) => {
                     self.connectToPlayer(object);
                     setTimeout(() => {
                         self.canPickUp = false;
-                    }, 1000)
+                    }, 500)
 
                 }
 

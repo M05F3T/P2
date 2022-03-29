@@ -1,5 +1,6 @@
 //initialize connection between server and client
 const socket = io();
+const canvas = document.getElementById("ctx");
 const ctx = document.getElementById("ctx").getContext("2d");
 const form = document.getElementById("name-color-form");
 const formMenu = document.getElementById("form-menu");
@@ -14,6 +15,7 @@ ctx.font = "30px Arial";
 
 
 let myId;
+let localWorld;
 
 
 
@@ -32,7 +34,7 @@ function drawElements(data) {
 function drawPickUpToolTip(data) {
     for (const key in data.players) {
         //only draws for the current clients player
-        if(data.players[key].id === myId && data.players[key].isColliding === true && isEmpty(data.players[key].connectedEntity) === true) {
+        if (data.players[key].id === myId && data.players[key].isColliding === true && isEmpty(data.players[key].connectedEntity) === true) {
             ctx.textAlign = "center";
             ctx.fillStyle = "black";
             ctx.fillText("Press E to interact", data.players[key].x, data.players[key].y - 35)
@@ -57,16 +59,34 @@ function drawPlayers(data) {
         ctx.fillText(data.players[key].name, data.players[key].x, data.players[key].y + 65)
 
         //draw entities on player
-        if(isEmpty(data.players[key].connectedEntity) === false) {
+        if (isEmpty(data.players[key].connectedEntity) === false) {
             ctx.beginPath();
             ctx.rect(data.players[key].connectedEntity.x, data.players[key].connectedEntity.y, data.players[key].connectedEntity.h, data.players[key].connectedEntity.w);
-            ctx.stroke(); 
+            ctx.stroke();
         }
 
     }
 }
 
 
+
+
+canvas.onmousemove = function (e) {
+    // Get the current mouse position
+    var r = canvas.getBoundingClientRect(),
+        x = e.clientX - r.left, y = e.clientY - r.top;
+    hover = false;
+    if(!isEmpty(localWorld.entities)) {
+        for (const key in localWorld.entities) {
+            if (x >= localWorld.entities[key].x && x <= localWorld.entities[key].x + localWorld.entities[key].w && y >= localWorld.entities[key].y && y <= localWorld.entities[key].y + localWorld.entities[key].h) {
+                hover = true
+                console.log(`I FOUND ENTITY: ${localWorld.entities[key].id}`);
+            }
+        }
+    }
+    
+
+}
 
 socket.on("sendId", (data) => {
     myId = data;
@@ -76,11 +96,14 @@ socket.on("sendId", (data) => {
 socket.on("newPosistion", (data) => {
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
+    //update local world storage
+    localWorld = data;
+
     drawElements(data);
     drawPlayers(data);
 
-    drawPickUpToolTip(data); 
-    
+    drawPickUpToolTip(data);
+
 
 });
 
@@ -121,7 +144,7 @@ document.onkeydown = (event) => {
             inputId: 'up',
             state: true
         })
-    }else if (event.key === 'e' || event.key === 'E') {
+    } else if (event.key === 'e' || event.key === 'E') {
         socket.emit('keyPress', {
             inputId: 'pickUpKeyPressed',
             state: true
@@ -152,7 +175,7 @@ document.onkeyup = (event) => {
             inputId: 'up',
             state: false
         })
-    }else if (event.key === 'e' || event.key === 'E') {
+    } else if (event.key === 'e' || event.key === 'E') {
         socket.emit('keyPress', {
             inputId: 'pickUpKeyPressed',
             state: false
