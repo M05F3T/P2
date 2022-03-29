@@ -13,6 +13,7 @@ ctx.canvas.height = window.innerHeight;
 ctx.font = "30px Arial";
 
 
+let myId;
 
 
 
@@ -20,10 +21,23 @@ ctx.font = "30px Arial";
 function drawElements(data) {
     for (const key in data.entities) {
         ctx.beginPath();
+        ctx.lineWidth = 1;
         ctx.rect(data.entities[key].x, data.entities[key].y, data.entities[key].h, data.entities[key].w);
         ctx.stroke();
     }
 
+}
+
+
+function drawPickUpToolTip(data) {
+    for (const key in data.players) {
+        //only draws for the current clients player
+        if(data.players[key].id === myId && data.players[key].isColliding === true && data.players[key].canPickUp === true) {
+            ctx.textAlign = "center";
+            ctx.fillStyle = "black";
+            ctx.fillText("Press E to interact", data.players[key].x, data.players[key].y - 35)
+        }
+    }
 }
 
 
@@ -34,7 +48,7 @@ function drawPlayers(data) {
         ctx.arc(data.players[key].x, data.players[key].y, data.players[key].h / 2, 0, 2 * Math.PI);
         ctx.fillStyle = data.players[key].color;
         ctx.fill();
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 1;
         ctx.strokeStyle = 'black';
         ctx.stroke();
 
@@ -52,11 +66,21 @@ function drawPlayers(data) {
     }
 }
 
+
+
+socket.on("sendId", (data) => {
+    myId = data;
+    console.log(`my socket ID is: ${myId}`);
+});
+
 socket.on("newPosistion", (data) => {
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
     drawElements(data);
     drawPlayers(data);
+
+    drawPickUpToolTip(data); 
+    
 
 });
 

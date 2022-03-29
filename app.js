@@ -53,6 +53,7 @@ let Player = (id, color, name) => {
         number: "" + Math.floor(Math.random() * 10),
         color: color,
         name: name,
+        isColliding: false,
         canPickUp: true,
         pickUpKeyPressed: false,
         connectedEntity: {},
@@ -122,13 +123,12 @@ let Player = (id, color, name) => {
                 self.h + (self.y - self.h / 2) > object.y) {
 
 
-                console.log(`COLISSION: player: ${self.id} and ${object.id}`)
+                //console.log(`COLISSION: player: ${self.id} and ${object.id}`)
 
+                self.isColliding = true;
 
-
-                //self.color = "red"
-
-
+                
+                //pick up element
                 if (self.pickUpKeyPressed === true && self.canPickUp === true && isEmpty(self.connectedEntity)) {
 
                     self.connectToPlayer(object);
@@ -138,27 +138,20 @@ let Player = (id, color, name) => {
 
                 }
 
-
-
-
             } else {
-                //self.color = "white"
+                self.isColliding = false;
             }
         }
     }
     self.connectToWorld = () => {
         world.entities[self.connectedEntity.id] = self.connectedEntity;
-        console.log(self.connectedEntity);
+        console.log(`player: ${self.id} placed an entity: ${self.connectedEntity.id}`);
         self.connectedEntity = {};
-        console.log(world.entities);
     }
     self.connectToPlayer = (entity) => {
         self.connectedEntity = entity;
         console.log(`player: ${self.id} connected an entity: ${self.connectedEntity.id}`);
         delete world.entities[entity.id];
-        console.log(`World has these entities: ${JSON.stringify(world.entities)}`);
-
-
     }
     return self;
 }
@@ -176,7 +169,7 @@ io.sockets.on('connection', (socket) => {
     //create new player and add to player list
     let player = Player(socket.id);
 
-
+    socket.emit("sendId", socket.id);
 
     socket.on('submit-form', (data) => {
 
