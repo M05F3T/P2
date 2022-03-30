@@ -220,7 +220,11 @@ function getServerData() {
 
     socket.on("currentWorlds", (data) => {
         insertWorldsInSelect(data);
+        if(worldSelect.value == "") {
+            joinBtn.disabled = true;
+        }
     });
+
 
     socket.on("newPosistion", (data) => {
         console.log("world id: " + data.worldId);
