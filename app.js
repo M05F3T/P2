@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const server = require('http').Server(app);
-const PORT = 80;
+const PORT = 3000;
 
 // in case user tries to get "Danielsejersen.com/" we send index.html
 app.get('/', function (req, res) {
@@ -198,7 +198,6 @@ io.sockets.on('connection', (socket) => {
 
             
             //THERE IS BUG HERE it tries to change color of picked up object sometimes resolveing in crash
-
              try {
                 world.entities[data.id].color = data.color;
              }

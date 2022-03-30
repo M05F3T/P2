@@ -190,7 +190,7 @@ function isEmpty(obj) {
 
 canvas.onmousemove = function (e) {
     // Get the current mouse position
-    var r = canvas.getBoundingClientRect(),
+    let r = canvas.getBoundingClientRect(),
         x = e.clientX - r.left, y = e.clientY - r.top;
 
     hover = false;
@@ -205,7 +205,7 @@ canvas.onmousemove = function (e) {
                 document.body.style.cursor = "pointer";
                 break;
             }else {
-                socket.emit("newEntityColor", { id: localWorld.entities[key].id, color: "gray" });
+                socket.emit("newEntityColor", { id: localWorld.entities[key].id, color: "gray" }); //local change
                 document.body.style.cursor = "default";
             }
         }
