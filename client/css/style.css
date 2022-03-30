@@ -101,3 +101,11 @@ form input {
     margin-top: 10px;
     box-sizing: border-box;
 }
+
+form select {
+    width: 300px;
+    padding: 12px 20px;
+    margin-bottom: 40px;
+    margin-top: 10px;
+    box-sizing: border-box;
+}

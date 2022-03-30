@@ -190,6 +190,10 @@ io.sockets.on('connection', (socket) => {
 
     socket.emit("sendId", socket.id);
 
+    let currentWorlds = listCurrentWorld();
+
+    socket.emit("currentWorlds",  currentWorlds)
+
     socket.on('join', (data) => {
             
         if (data.host === true) {
@@ -263,16 +267,16 @@ io.sockets.on('connection', (socket) => {
         //delete PLAYER_LIST[socket.id];
         
         //delete player from world
-        for (const world in worlds.world) {
-            for (const key in worlds.world[world].players){
-                if (worlds.world[world].players[key].id === socket.id) {
-                    delete worlds.world[world].players[key];
+        for (const world in worlds) {
+            for (const key in worlds[world].players){
+                if (worlds[world].players[key].id === socket.id) {
+                    delete worlds[world].players[key];
                 }
             }
         }
 
         //check if no players is present and delete world if empty maybe???
-
+        deleteEmptyWorlds();
         //delete world.players[socket.id];
         console.log("Player disconnected " + socket.id);
     });
@@ -303,6 +307,24 @@ setInterval(() => {
 
     }, 1000 / 60);
 
+
+function listCurrentWorld() {
+    let list = {};
+
+    for (const world in worlds) {
+        list[worlds[world].worldId] = worlds[world].worldId;
+    }
+
+    return list;
+}
+
+function deleteEmptyWorlds() {
+    for (const world in worlds) {
+        if(isEmpty(worlds[world].players)){
+            delete worlds[world];
+        }
+    }
+}
 
 function deleteAllEntities(id) {
     for (const key in worlds[id].entities) {

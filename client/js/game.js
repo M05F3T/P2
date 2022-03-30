@@ -12,7 +12,7 @@ const formMenu = document.getElementById("form-menu");
 
 const hostBtn = document.getElementById("host");
 const joinBtn = document.getElementById("join");
-const sessionId = document.getElementById("sessionId");
+const worldSelect = document.getElementById("worldSelect");
 const colorInput = document.getElementById("color");
 const nameInput = document.getElementById("name");
 
@@ -28,6 +28,16 @@ sendClientData();
 
 
 
+function insertWorldsInSelect(data) {
+    for(const world in data){
+        let option = document.createElement('option');
+        option.value = data[world];
+        option.innerHTML = "World: " + data[world];
+
+    worldSelect.appendChild(option);
+    }
+    
+}
 
 
 function drawElements(data) {
@@ -109,7 +119,7 @@ function sendClientData() {
         e.preventDefault();
         let name = nameInput.value;
         let color = colorInput.value;
-        let Id = sessionId.value;
+        let Id = worldSelect.value;
         
         //hide form
         formMenu.style = "display: none;";
@@ -206,6 +216,10 @@ function getServerData() {
     socket.on("sendId", (data) => {
         myId = data;
         console.log(`my socket ID is: ${myId}`);
+    });
+
+    socket.on("currentWorlds", (data) => {
+        insertWorldsInSelect(data);
     });
 
     socket.on("newPosistion", (data) => {
