@@ -17,14 +17,23 @@ console.log("Server started.. " + PORT);
 
 let SOCKET_LIST = {};
 let ID_COUNTER = 0;
+let WORLD_ID_COUNTER = 0;
 
-let world = {
-    players: {
+let worlds = {}
 
-    },
-    entities: {
 
+let World = () => {
+    let self = {
+        worldId: generateWorldId(),
+        players: {
+
+        },
+        entities: {
+
+        }
     }
+
+    return self;
 }
 
 let Element = (posX, posY, id) => {
@@ -37,6 +46,10 @@ let Element = (posX, posY, id) => {
         color: "gray"
     }
     return self;
+}
+
+function generateWorldId() {
+    return ++WORLD_ID_COUNTER;
 }
 
 function generateEntityId() {
@@ -54,6 +67,7 @@ let Player = (id, color, name) => {
         number: "" + Math.floor(Math.random() * 10),
         color: color,
         name: name,
+        myWorldId: 0,
         isColliding: false,
         canPickUp: true,
         pickUpKeyPressed: false,
@@ -116,8 +130,8 @@ let Player = (id, color, name) => {
 
     }
     self.detect_colision = () => {
-        for (const key in world.entities) {
-            let object = world.entities[key];
+        for (const key in worlds[self.myWorldId].entities) {
+            let object = worlds[self.myWorldId].entities[key];
             if ((self.x - self.w / 2) < object.x + object.w &&
                 (self.x - self.w / 2) + self.w > object.x &&
                 (self.y - self.h / 2) < object.y + object.h &&
@@ -149,14 +163,14 @@ let Player = (id, color, name) => {
         }
     }
     self.connectToWorld = () => {
-        world.entities[self.connectedEntity.id] = self.connectedEntity;
+        worlds[self.myWorldId].entities[self.connectedEntity.id] = self.connectedEntity;
         console.log(`player: ${self.id} placed an entity: ${self.connectedEntity.id}`);
         self.connectedEntity = {};
     }
     self.connectToPlayer = (entity) => {
         self.connectedEntity = entity;
         console.log(`player: ${self.id} connected an entity: ${self.connectedEntity.id}`);
-        delete world.entities[entity.id];
+        delete worlds[self.myWorldId].entities[entity.id];
     }
     return self;
 }
@@ -176,36 +190,54 @@ io.sockets.on('connection', (socket) => {
 
     socket.emit("sendId", socket.id);
 
-    socket.on('submit-form', (data) => {
+    socket.on('join', (data) => {
+            
+        if (data.host === true) {
+            console.log("host reached");
+            player.color = data.color;
+            player.name = data.name;
 
-        world.players[socket.id] = player;
-        //PLAYER_LIST[socket.id] = player;
-        player.color = data.color;
-        player.name = data.name;
+            let world = World();
+            player.myWorldId = world.worldId;
+            worlds[world.worldId] = world;
+            worlds[world.worldId].players[socket.id] = player;
+        } else if (data.host === false){
+            console.log("join reached");
+            player.color = data.color;
+            player.name = data.name;
+            player.myWorldId = data.sessionId;
+            //check for valid session id
+            worlds[data.sessionId].players[socket.id] = player;
+        }
+
+
+       // world.players[socket.id] = player;
+       // PLAYER_LIST[socket.id] = player;
+
     })
 
-    socket.on('clear', () => {
-        deleteAllEntities();
+    socket.on('clear', (id) => {
+        deleteAllEntities(id);
     });
 
-    socket.on('spawnElement', () => {
+    socket.on('spawnElement', (id) => {
         let element = Element(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
-        world.entities[element.id] = element;
+        worlds[id].entities[element.id] = element;
     });
 
     socket.on('newEntityColor', (data) => {
-        if (!(isEmpty(world.entities))) {
+        if (!(isEmpty(worlds[data.worldId].entities))) {
 
-            
+
             //THERE IS BUG HERE it tries to change color of picked up object sometimes resolveing in crash
-             try {
-                world.entities[data.id].color = data.color;
-             }
-             catch {
-                 console.log("tried to change color of picked up object");
-             }
-                
-            
+            try {
+                worlds[data.worldId].entities[data.id].color = data.color;
+            }
+            catch {
+                console.log("tried to change color of picked up object");
+            }
+
+
         }
 
     });
@@ -229,35 +261,52 @@ io.sockets.on('connection', (socket) => {
         //remove disconnected person
         delete SOCKET_LIST[socket.id];
         //delete PLAYER_LIST[socket.id];
-        delete world.players[socket.id];
+        
+        //delete player from world
+        for (const world in worlds.world) {
+            for (const key in worlds.world[world].players){
+                if (worlds.world[world].players[key].id === socket.id) {
+                    delete worlds.world[world].players[key];
+                }
+            }
+        }
+
+        //check if no players is present and delete world if empty maybe???
+
+        //delete world.players[socket.id];
         console.log("Player disconnected " + socket.id);
     });
 });
 
 setInterval(() => {
 
-    for (let i in world.players) {
-        let player = world.players[i];
-        player.updatePosistion();
-        player.detect_colision();
+    for (const world in worlds) {
+        
+        for (const key in worlds[world].players) {
+
+            worlds[world].players[key].updatePosistion();
+            worlds[world].players[key].detect_colision();
+
+
+            for (let i in SOCKET_LIST) {
+                let socket = SOCKET_LIST[i];
+                if (worlds[world].players[key].id === socket.id) {
+
+                    yourWorld = worlds[world];
+                    socket.emit('newPosistion', yourWorld);
+
+                }
+            }
+
+        }
     }
 
-
-    for (let i in SOCKET_LIST) {
-        let socket = SOCKET_LIST[i];
-        socket.emit('newPosistion', world);
-    }
+    }, 1000 / 60);
 
 
-
-
-
-}, 1000 / 60);;
-
-
-function deleteAllEntities() {
-    for (const key in world.entities) {
-        delete world.entities[key];
+function deleteAllEntities(id) {
+    for (const key in worlds[id].entities) {
+        delete worlds[id].entities[key];
     }
 }
 

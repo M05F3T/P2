@@ -29,7 +29,7 @@ canvas {
 
 #name-color-form {
     width: 300px;
-    height: 300px;
+    height: 500px;
     margin: auto;
     padding: 50px;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
@@ -46,7 +46,7 @@ form label {
     font-weight: bolder;
 }
 
-#submit {
+.button {
     appearance: none;
     background-color: transparent;
     border: 2px solid #1A1A1A;
@@ -59,7 +59,7 @@ form label {
     font-size: 16px;
     font-weight: 600;
     line-height: normal;
-    margin: 0;
+    margin-bottom: 20px;
     min-height: 60px;
     min-width: 0;
     outline: none;
@@ -74,18 +74,18 @@ form label {
     will-change: transform;
 }
 
-#submit:disabled {
+.button:disabled {
     pointer-events: none;
 }
 
-#submit:hover {
+.button:hover {
     color: #fff;
     background-color: #1A1A1A;
     box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
     transform: translateY(-2px);
 }
 
-#submit:active {
+.button:active {
     box-shadow: none;
     transform: translateY(0);
 }

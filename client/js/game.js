@@ -2,10 +2,20 @@
 const socket = io();
 const canvas = document.getElementById("ctx");
 const ctx = document.getElementById("ctx").getContext("2d");
-const form = document.getElementById("name-color-form");
-const formMenu = document.getElementById("form-menu");
+//const form = document.getElementById("name-color-form");
 const spawnBtn = document.getElementById("spawn");
 const clearBtn = document.getElementById("delete");
+const idText = document.getElementById("worldId");
+
+
+const formMenu = document.getElementById("form-menu");
+
+const hostBtn = document.getElementById("host");
+const joinBtn = document.getElementById("join");
+const sessionId = document.getElementById("sessionId");
+const colorInput = document.getElementById("color");
+const nameInput = document.getElementById("name");
+
 
 
 let myId;
@@ -15,6 +25,7 @@ let targetEntityId;
 
 getServerData();
 sendClientData();
+
 
 
 
@@ -75,6 +86,7 @@ function drawPlayers(data) {
 
 function renderCanvas(localWorld) {
     //set canvas size to window size.
+    idText.innerHTML  = "world: " + localWorld.worldId;
     ctx.canvas.width = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -86,23 +98,47 @@ function renderCanvas(localWorld) {
 function sendClientData() {
 
     spawnBtn.addEventListener("click", (e) => {
-        socket.emit("spawnElement");
+        socket.emit("spawnElement", localWorld.worldId);
     });
 
     clearBtn.addEventListener("click", (e) => {
-        socket.emit("clear");
+        socket.emit("clear", localWorld.worldId);
     });
 
-    form.addEventListener("submit", (e) => {
+    joinBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        let name = form.elements['name'].value;
-        let color = form.elements["color"].value;
+        let name = nameInput.value;
+        let color = colorInput.value;
+        let Id = sessionId.value;
+        
+        //hide form
         formMenu.style = "display: none;";
-        socket.emit("submit-form", {
+
+        socket.emit('join', {
             name: name,
             color: color,
-        })
+            sessionId: Id,
+            host: false
+        });
     });
+
+    hostBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        let name = nameInput.value;
+        let color = colorInput.value;
+        
+        //hide form
+        formMenu.style = "display: none;";
+
+
+        socket.emit('join', {
+            name: name,
+            color: color,
+            sessionId: "",
+            host: true
+        });
+    });
+
 
     document.onkeydown = (event) => {
         if (event.key === 'd' || event.key === 'D') {
@@ -173,7 +209,8 @@ function getServerData() {
     });
 
     socket.on("newPosistion", (data) => {
-
+        console.log("world id: " + data.worldId);
+        
         //update local world storage
         localWorld = data;
         //render new update
@@ -201,11 +238,11 @@ canvas.onmousemove = function (e) {
                 hover = true
                 targetEntityId = localWorld.entities[key].id;
                 console.log(`I FOUND ENTITY: ${localWorld.entities[key].id}`);
-                socket.emit("newEntityColor", { id: localWorld.entities[key].id, color: "green" });
+                socket.emit("newEntityColor", {worldId: localWorld.worldId, id: localWorld.entities[key].id, color: "green" });
                 document.body.style.cursor = "pointer";
                 break;
             }else {
-                socket.emit("newEntityColor", { id: localWorld.entities[key].id, color: "gray" }); //local change
+                socket.emit("newEntityColor", {worldId: localWorld.worldId, id: localWorld.entities[key].id, color: "gray" }); //local change
                 document.body.style.cursor = "default";
             }
         }

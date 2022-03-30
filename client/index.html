@@ -5,24 +5,28 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/client/style.css">
+    <link rel="stylesheet" href="/client/css/style.css">
     <title>Pickle</title>
 </head>
 
 <body>
 
-    <div id="form-menu">
+    <div id="form-menu" ">
         <form id="name-color-form">
             <label id="top" for="name">NAME</label><br>
-            <input type="text" id="name" name="name" placeholder="John Doe" value="test" maxlength="20" required><br>
+            <input type="text" id="name" placeholder="John Doe" value="test" maxlength="20" required>
             <label for="color">COLOR</label><br>
-            <input type="text" id="color" value="blue" name="color" placeholder="Blue"><br><br>
-            <input id="submit" type="submit" value="SUBMIT">
+            <input type="text" id="color" value="blue" placeholder="Blue" required>
+            <label for="id">SESSION ID</label>
+            <input type="text" id="sessionId" value="3H6X8D" placeholder="session id">
+            <button id="host" class="button" >HOST</button>
+            <button id="join" class="button" >JOIN</button>
         </form>
     </div>
 
     <button id="spawn">Spawn Element</button>
     <button id="delete">Clear</button>
+    <h1 id="worldId"></h1>
     <canvas id="ctx"></canvas>
     
 
