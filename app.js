@@ -1,3 +1,4 @@
+const { Console } = require('console');
 const express = require('express');
 const app = express();
 const server = require('http').Server(app);
@@ -282,30 +283,37 @@ io.sockets.on('connection', (socket) => {
 });
 
 setInterval(() => {
-    if (isEmpty(worlds) == false) {
+    try{
+        if (isEmpty(worlds) === false) {
 
-        for (const world in worlds) {
-
-            for (const key in worlds[world].players) {
-
-                worlds[world].players[key].updatePosistion();
-                worlds[world].players[key].detect_colision();
-
-
-                for (let i in SOCKET_LIST) {
-                    let socket = SOCKET_LIST[i];
-                    if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
-
-                        yourWorld = worlds[world];
-                        socket.emit('newPosistion', yourWorld);
-
+            for (const world in worlds) {
+    
+                for (const key in worlds[world].players) {
+    
+                    worlds[world].players[key].updatePosistion();
+                    worlds[world].players[key].detect_colision();
+    
+    
+                    for (let i in SOCKET_LIST) {
+                        let socket = SOCKET_LIST[i];
+                        if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
+    
+                            yourWorld = worlds[world];
+                            socket.emit('newPosistion', yourWorld);
+    
+                        }
                     }
+    
                 }
-
             }
+    
         }
-
     }
+    catch{
+        console.log("random accses bug happend :((");
+    }
+
+    
 
 
 }, 1000 / 60);
