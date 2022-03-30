@@ -192,12 +192,11 @@ io.sockets.on('connection', (socket) => {
 
     let currentWorlds = listCurrentWorld();
 
-    socket.emit("currentWorlds",  currentWorlds)
+    socket.emit("currentWorlds", currentWorlds)
 
     socket.on('join', (data) => {
-            
+
         if (data.host === true) {
-            console.log("host reached");
             player.color = data.color;
             player.name = data.name;
 
@@ -205,18 +204,18 @@ io.sockets.on('connection', (socket) => {
             player.myWorldId = world.worldId;
             worlds[world.worldId] = world;
             worlds[world.worldId].players[socket.id] = player;
-        } else if (data.host === false){
-            console.log("join reached");
+            console.log(`player ${player.name} created world ${world.worldId}`);
+        } else if (data.host === false) {
+
             player.color = data.color;
             player.name = data.name;
             player.myWorldId = data.sessionId;
             //check for valid session id
             worlds[data.sessionId].players[socket.id] = player;
+            console.log(`player ${player.name} joined world ${data.sessionId}`);
         }
 
 
-       // world.players[socket.id] = player;
-       // PLAYER_LIST[socket.id] = player;
 
     })
 
@@ -265,10 +264,10 @@ io.sockets.on('connection', (socket) => {
         //remove disconnected person
         delete SOCKET_LIST[socket.id];
         //delete PLAYER_LIST[socket.id];
-        
+
         //delete player from world
         for (const world in worlds) {
-            for (const key in worlds[world].players){
+            for (const key in worlds[world].players) {
                 if (worlds[world].players[key].id === socket.id) {
                     delete worlds[world].players[key];
                 }
@@ -283,29 +282,33 @@ io.sockets.on('connection', (socket) => {
 });
 
 setInterval(() => {
+    if (isEmpty(worlds) == false) {
 
-    for (const world in worlds) {
-        
-        for (const key in worlds[world].players) {
+        for (const world in worlds) {
 
-            worlds[world].players[key].updatePosistion();
-            worlds[world].players[key].detect_colision();
+            for (const key in worlds[world].players) {
+
+                worlds[world].players[key].updatePosistion();
+                worlds[world].players[key].detect_colision();
 
 
-            for (let i in SOCKET_LIST) {
-                let socket = SOCKET_LIST[i];
-                if (worlds[world].players[key].id === socket.id) {
+                for (let i in SOCKET_LIST) {
+                    let socket = SOCKET_LIST[i];
+                    if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
 
-                    yourWorld = worlds[world];
-                    socket.emit('newPosistion', yourWorld);
+                        yourWorld = worlds[world];
+                        socket.emit('newPosistion', yourWorld);
 
+                    }
                 }
-            }
 
+            }
         }
+
     }
 
-    }, 1000 / 60);
+
+}, 1000 / 60);
 
 
 function listCurrentWorld() {
@@ -320,7 +323,7 @@ function listCurrentWorld() {
 
 function deleteEmptyWorlds() {
     for (const world in worlds) {
-        if(isEmpty(worlds[world].players)){
+        if (isEmpty(worlds[world].players)) {
             delete worlds[world];
         }
     }
