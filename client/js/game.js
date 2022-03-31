@@ -79,7 +79,7 @@ function drawLineLength(x1, y1, x2, y2, maxLen) {
         vx *= mag;
         vy *= mag;
     } else if (mag < maxLen) {
-        mag = mag / maxLen;
+        maxLen = maxLen / mag;
         vx *= maxLen;
         vy *= maxLen;
     }
