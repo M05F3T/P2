@@ -65,7 +65,6 @@ let Player = (id, color, name) => {
         w: 50,
         h: 50,
         id: id,
-        number: "" + Math.floor(Math.random() * 10),
         color: color,
         name: name,
         myWorldId: 0,

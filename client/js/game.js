@@ -26,7 +26,8 @@ let targetEntityId;
 getServerData();
 sendClientData();
 
-
+let mouseX;
+let mouseY;
 
 function insertWorldsInSelect(data) {
     for(const world in data){
@@ -64,6 +65,32 @@ function drawPickUpToolTip(data) {
     }
 }
 
+function drawLineLength(x1, y1, x2, y2, maxLen) {
+    var vx = x2 - x1; // get dist between start and end of line
+    var vy = y2 - y1; // for x and y
+
+    // use pythagoras to get line total length
+    var mag = Math.sqrt(vx * vx + vy * vy);
+    if (mag > maxLen) {
+        // is the line longer than needed?
+
+        // calculate how much to scale the line to get the correct distance
+        mag = maxLen / mag;
+        vx *= mag;
+        vy *= mag;
+    } else if (mag < maxLen) {
+        mag = mag / maxLen;
+        vx *= maxLen;
+        vy *= maxLen;
+    }
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x1 + vx, y1 + vy);
+    ctx.stroke();
+}
+
 function drawPlayers(data) {
     for (const key in data.players) {
 
@@ -75,6 +102,16 @@ function drawPlayers(data) {
         ctx.lineWidth = 1;
         ctx.strokeStyle = 'black';
         ctx.stroke();
+
+        
+
+        drawLineLength(
+            data.players[key].x,
+            data.players[key].y,
+            mouseX,
+            mouseY,
+            data.players[key].h / 2
+        );
 
         //draw name
         ctx.font = "30px Arial";
@@ -247,6 +284,9 @@ canvas.onmousemove = function (e) {
     // Get the current mouse position
     let r = canvas.getBoundingClientRect(),
         x = e.clientX - r.left, y = e.clientY - r.top;
+
+    mouseX = x;
+    mouseY = y;
 
     hover = false;
     targetEntityId = "";
