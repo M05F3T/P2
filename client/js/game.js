@@ -4,6 +4,7 @@ const canvas = document.getElementById("ctx");
 const ctx = document.getElementById("ctx").getContext("2d");
 //const form = document.getElementById("name-color-form");
 const spawnBtn = document.getElementById("spawn");
+const spawnListBtn = document.getElementById("create-list");
 const clearBtn = document.getElementById("delete");
 const idText = document.getElementById("worldId");
 
@@ -144,6 +145,10 @@ function renderCanvas(localWorld) {
 }
 
 function sendClientData() {
+
+    spawnListBtn.addEventListener("click", (e) => {
+        socket.emit("spawnList", localWorld.worldID);
+    });
 
     spawnBtn.addEventListener("click", (e) => {
         socket.emit("spawnElement", localWorld.worldId);

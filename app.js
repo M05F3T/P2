@@ -26,23 +26,32 @@ let worlds = {}
 let World = () => {
     let self = {
         worldId: generateWorldId(),
-        players: {
+        players: {},
+        lists: {},
+        entities: {},
+    };
+    return self;
+}
 
-        },
-        entities: {
-
-        }
-    }
+let List = (posX, posY) => {
+    let self = {
+        x: posX,
+        y: posY,
+        h: 300,
+        w: 100,
+        id: generateEntityId(),
+        color: "gray"
+    };   
 
     return self;
 }
 
-let Element = (posX, posY, id) => {
+let Element = (posX, posY) => {
     let self = {
         x: posX,
         y: posY,
-        h: 150,
-        w: 150,
+        h: 75,
+        w: 75,
         id: generateEntityId(),
         color: "gray"
     }
@@ -64,8 +73,11 @@ let Player = (id, color, name) => {
         y: 250,
         w: 50,
         h: 50,
+        mousePos: {
+            x: 0,
+            y:0,
+        },
         id: id,
-        mousePos: { x: 0, y: 0 },
         color: color,
         name: name,
         myWorldId: 0,
@@ -228,6 +240,14 @@ io.sockets.on('connection', (socket) => {
         worlds[id].entities[element.id] = element;
     });
 
+    socket.on('spawnList', (id) => {
+        let element = List(
+            Math.floor(Math.random() * 1000),
+            160);
+        worlds[id].lists[element.id] = element;
+    });
+
+
     socket.on('newEntityColor', (data) => {
         if (isEmpty(worlds[data.worldId].entities) === false && isEmpty(worlds[data.worldId]) === false) {
 
@@ -243,11 +263,6 @@ io.sockets.on('connection', (socket) => {
 
         }
 
-    });
-
-    socket.on("playerMousePos", (data) => {
-        worlds[data.worldID].players[data.playerId].mousePos.x = data.x;
-        worlds[data.worldID].players[data.playerId].mousePos.y = data.y;
     });
 
     socket.on('keyPress', (data) => {
@@ -287,39 +302,35 @@ io.sockets.on('connection', (socket) => {
 });
 
 setInterval(() => {
-    try {
+    try{
         if (isEmpty(worlds) === false) {
 
             for (const world in worlds) {
-
+    
                 for (const key in worlds[world].players) {
-
+    
                     worlds[world].players[key].updatePosistion();
                     worlds[world].players[key].detect_colision();
-
-
+    
+    
                     for (let i in SOCKET_LIST) {
                         let socket = SOCKET_LIST[i];
                         if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
-
+    
                             yourWorld = worlds[world];
                             socket.emit('newPosistion', yourWorld);
-
+    
                         }
                     }
-
+    
                 }
             }
-
+    
         }
     }
-    catch {
+    catch{
         console.log("random accses bug happend :((");
     }
-
-
-
-
 }, 1000 / 60);
 
 
