@@ -35,10 +35,10 @@ const oauth = new OAuth(requestURL, accessURL, devKey, devSecret, "1.0A", loginC
 //});
 
 const login = function (request, response) {
-  oauth.getOAuthRequestToken(function (error, token, tokenSecret, results) {
-    oauth_secrets[token] = tokenSecret;
-    response.redirect(`${authorizeURL}?oauth_token=${token}&name=${appName}&scope=${scope}&expiration=${expiration}`);
-  });
+    oauth.getOAuthRequestToken(function (error, token, tokenSecret, results) {
+        oauth_secrets[token] = tokenSecret;
+        response.redirect(`${authorizeURL}?oauth_token=${token}&name=${appName}&scope=${scope}&expiration=${expiration}`);
+    });
 };
 
 let token, tokenSecret, accToken, accTokenSecret;
@@ -51,16 +51,24 @@ let token, tokenSecret, accToken, accTokenSecret;
 
 // Callback gets the access token and the access tokensecret
 const callback = function (req, res) {
-  //Gets information, from the returned URL
-  const query = url.parse(req.url, true).query;
-  const token = query.oauth_token;
-  const tokenSecret = oauth_secrets[token];
-  const verifier = query.oauth_verifier;
-  oauth.getOAuthAccessToken(token, tokenSecret, verifier, function (error, accessToken, accessTokenSecret, results) {
-    accToken = accessToken;
-    accTokenSecret = accessTokenSecret;
+    //Gets information, from the returned URL
+    const query = url.parse(req.url, true).query;
+    const token = query.oauth_token;
+    const tokenSecret = oauth_secrets[token];
+    const verifier = query.oauth_verifier;
+    oauth.getOAuthAccessToken(token, tokenSecret, verifier, function (error, accessToken, accessTokenSecret, results) {
+        accToken = accessToken;
+        accTokenSecret = accessTokenSecret;
 
-    // Example to show the information about token and tokensecret
-    res.send(`<h1>Oh, hello there!</h1><a>This is what you want to know ${accToken} and ${accTokenSecret}</a>`);
-  });
+        // Example to show the information about token and tokensecret
+        res.send(`<h1>Oh, hello there!</h1><a>This is what you want to know ${accToken} and ${accTokenSecret}</a>`);
+    });
+};
+
+// Function used for creating a new board in Trello
+const createBoard = function () {
+    oauth.getProtectedResource(`https://api.trello.com/1/boards/?name=Brainstorm${Date()}`, "POST", accessToken, accessTokenSecret, function (error, data, response) {
+        //Now we can respond with data to show that we have access to your Trello account via OAuth
+        res.send(data);
+    });
 };

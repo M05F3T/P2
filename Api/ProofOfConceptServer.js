@@ -12,8 +12,8 @@ var app = express();
 app.use(express.static("public"));
 
 var server = app.listen(3000, function () {
-  console.log("Server up and running...");
-  console.log("Listening on port %s", server.address().port);
+    console.log("Server up and running...");
+    console.log("Listening on port %s", server.address().port);
 });
 
 /*
@@ -41,46 +41,56 @@ const oauth_secrets = {};
 const oauth = new OAuth(requestURL, accessURL, key, secret, "1.0A", loginCallback, "HMAC-SHA1");
 
 const login = function (request, response) {
-  oauth.getOAuthRequestToken(function (error, token, tokenSecret, results) {
-    oauth_secrets[token] = tokenSecret;
-    response.redirect(`${authorizeURL}?oauth_token=${token}&name=${appName}&scope=${scope}&expiration=${expiration}`);
-  });
+    oauth.getOAuthRequestToken(function (error, token, tokenSecret, results) {
+        oauth_secrets[token] = tokenSecret;
+        response.redirect(`${authorizeURL}?oauth_token=${token}&name=${appName}&scope=${scope}&expiration=${expiration}`);
+    });
 };
 
 let token, tokenSecret, accToken, accTokenSecret;
 
 var callback = function (req, res) {
-  const query = url.parse(req.url, true).query;
-  const token = query.oauth_token;
-  const tokenSecret = oauth_secrets[token];
-  const verifier = query.oauth_verifier;
-  oauth.getOAuthAccessToken(token, tokenSecret, verifier, function (error, accessToken, accessTokenSecret, results) {
-    // In a real app, the accessToken and accessTokenSecret should be stored
-    accToken = accessToken;
-    accTokenSecret = accessTokenSecret;
-    res.send(`<h1>Oh, hello there!</h1><a>This is what you want to know ${accToken} and ${accTokenSecret}</a>`);
-    //oauth.getProtectedResource("https://api.trello.com/1/lists?name=TestTilPeter&idBoard=6242db36eddba180596279b4", "POST", accessToken, accessTokenSecret, function (error, data, response) {
-    // Now we can respond with data to show that we have access to your Trello account via OAuth
-    //res.send(data);
-    //});
-  });
+    const query = url.parse(req.url, true).query;
+    const token = query.oauth_token;
+    const tokenSecret = oauth_secrets[token];
+    const verifier = query.oauth_verifier;
+    oauth.getOAuthAccessToken(token, tokenSecret, verifier, function (error, accessToken, accessTokenSecret, results) {
+        // In a real app, the accessToken and accessTokenSecret should be stored
+        accToken = accessToken;
+        accTokenSecret = accessTokenSecret;
+        //res.send(`<h1>Oh, hello there!</h1><a>This is what you want to know ${accToken} and ${accTokenSecret}</a>`);
+
+        const day = new Date();
+
+        oauth.getProtectedResource(`https://api.trello.com/1/boards/?name=Brainstorm${day.getMonth()}/${day.getDate()} - ${day.getHours()}:${day.getMinutes()}`, "POST", accToken, accTokenSecret, function (error, data, response) {
+            //Now we can respond with data to show that we have access to your Trello account via OAuth
+            temp = JSON.parse(data);
+            res.send(`<h1>Oh, hello there${temp.id}!</h1>`);
+        });
+
+        // This is useless and unnessesary -- "POST" is USEFUL
+        //oauth.getProtectedResource("https://api.trello.com/1/lists?name=TestTilPeter&idBoard=6242db36eddba180596279b4", "POST", accessToken, accessTokenSecret, function (error, data, response) {
+        // Now we can respond with data to show that we have access to your Trello account via OAuth
+        //res.send(data);
+        //});
+    });
 };
 
 /*
 /     Routes
 */
 app.get("/", function (request, response) {
-  console.log(`GET '/'  ${Date()}`);
-  response.send("<h1>Oh, hello there!</h1><a href='./login'>Login with OAuth!</a>");
-  console.log(oauth_secrets);
+    console.log(`GET '/'  ${Date()}`);
+    response.send("<h1>Oh, hello there!</h1><a href='./login'>Login with OAuth!</a>");
+    console.log(oauth_secrets);
 });
 
 app.get("/login", function (request, response) {
-  console.log(`GET '/login'  ${Date()}`);
-  login(request, response);
+    console.log(`GET '/login'  ${Date()}`);
+    login(request, response);
 });
 
 app.get("/callback", function (request, response) {
-  console.log(`GET '/callback'`);
-  callback(request, response);
+    console.log(`GET '/callback'`);
+    callback(request, response);
 });
