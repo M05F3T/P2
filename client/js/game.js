@@ -30,14 +30,14 @@ let mouseX;
 let mouseY;
 
 function insertWorldsInSelect(data) {
-    for(const world in data){
+    for (const world in data) {
         let option = document.createElement('option');
         option.value = data[world];
         option.innerHTML = "World: " + data[world];
 
-    worldSelect.appendChild(option);
+        worldSelect.appendChild(option);
     }
-    
+
 }
 
 
@@ -103,13 +103,13 @@ function drawPlayers(data) {
         ctx.strokeStyle = 'black';
         ctx.stroke();
 
-        
+
 
         drawLineLength(
             data.players[key].x,
             data.players[key].y,
-            mouseX,
-            mouseY,
+            data.players[key].mousePos.x,
+            data.players[key].mousePos.y,
             data.players[key].h / 2
         );
 
@@ -134,7 +134,7 @@ function drawPlayers(data) {
 
 function renderCanvas(localWorld) {
     //set canvas size to window size.
-    idText.innerHTML  = "world: " + localWorld.worldId;
+    idText.innerHTML = "world: " + localWorld.worldId;
     ctx.canvas.width = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -158,7 +158,7 @@ function sendClientData() {
         let name = nameInput.value;
         let color = colorInput.value;
         let Id = worldSelect.value;
-        
+
         //hide form
         formMenu.style = "display: none;";
 
@@ -174,7 +174,7 @@ function sendClientData() {
         e.preventDefault();
         let name = nameInput.value;
         let color = colorInput.value;
-        
+
         //hide form
         formMenu.style = "display: none;";
 
@@ -258,7 +258,7 @@ function getServerData() {
 
     socket.on("currentWorlds", (data) => {
         insertWorldsInSelect(data);
-        if(worldSelect.value == "") {
+        if (worldSelect.value == "") {
             joinBtn.disabled = true;
         }
     });
@@ -266,7 +266,7 @@ function getServerData() {
 
     socket.on("newPosistion", (data) => {
         console.log("world id: " + data.worldId);
-        
+
         //update local world storage
         localWorld = data;
         //render new update
@@ -286,8 +286,7 @@ canvas.onmousemove = function (e) {
     let r = canvas.getBoundingClientRect(),
         x = e.clientX - r.left, y = e.clientY - r.top;
 
-    mouseX = x;
-    mouseY = y;
+    socket.emit("playerMousePos", { x: x, y: y, playerId: myId, worldID: localWorld.worldId });
 
     hover = false;
     targetEntityId = "";
@@ -297,11 +296,13 @@ canvas.onmousemove = function (e) {
                 hover = true
                 targetEntityId = localWorld.entities[key].id;
                 console.log(`I FOUND ENTITY: ${localWorld.entities[key].id}`);
-                socket.emit("newEntityColor", {worldId: localWorld.worldId, id: localWorld.entities[key].id, color: "green" });
+
+                socket.emit("newEntityColor", { worldId: localWorld.worldId, id: localWorld.entities[key].id, color: "green" });
                 document.body.style.cursor = "pointer";
                 break;
-            }else {
-                socket.emit("newEntityColor", {worldId: localWorld.worldId, id: localWorld.entities[key].id, color: "gray" }); //local change
+            } else {
+                socket.emit("newEntityColor", { worldId: localWorld.worldId, id: localWorld.entities[key].id, color: "gray" }); //local change
+
                 document.body.style.cursor = "default";
             }
         }

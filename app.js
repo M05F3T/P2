@@ -65,6 +65,7 @@ let Player = (id, color, name) => {
         w: 50,
         h: 50,
         id: id,
+        mousePos: { x: 0, y: 0 },
         color: color,
         name: name,
         myWorldId: 0,
@@ -244,6 +245,11 @@ io.sockets.on('connection', (socket) => {
 
     });
 
+    socket.on("playerMousePos", (data) => {
+        worlds[data.worldID].players[data.playerId].mousePos.x = data.x;
+        worlds[data.worldID].players[data.playerId].mousePos.y = data.y;
+    });
+
     socket.on('keyPress', (data) => {
         if (data.inputId === "left") {
             player.pressingLeft = data.state;
@@ -281,37 +287,37 @@ io.sockets.on('connection', (socket) => {
 });
 
 setInterval(() => {
-    try{
+    try {
         if (isEmpty(worlds) === false) {
 
             for (const world in worlds) {
-    
+
                 for (const key in worlds[world].players) {
-    
+
                     worlds[world].players[key].updatePosistion();
                     worlds[world].players[key].detect_colision();
-    
-    
+
+
                     for (let i in SOCKET_LIST) {
                         let socket = SOCKET_LIST[i];
                         if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
-    
+
                             yourWorld = worlds[world];
                             socket.emit('newPosistion', yourWorld);
-    
+
                         }
                     }
-    
+
                 }
             }
-    
+
         }
     }
-    catch{
+    catch {
         console.log("random accses bug happend :((");
     }
 
-    
+
 
 
 }, 1000 / 60);
