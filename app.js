@@ -4,12 +4,12 @@ const app = express();
 const server = require('http').Server(app);
 const PORT = 3000;
 
-// in case user tries to get "Danielsejersen.com/" we send index.html
+// in case user tries to get "http://www.hostwebsite.com/" we send index.html
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/client/index.html');
 });
 
-//User can accses all files in /client (ex: Danielsejersen.com/client/img.jpg)
+//User can accses all files in /client (ex: http://www.hostwebsite.com/client/img.jpg)
 app.use('/client', express.static(__dirname + '/client'));
 
 server.listen(PORT);
@@ -177,7 +177,6 @@ let Player = (id, color, name) => {
 }
 
 
-
 const io = require('socket.io')(server, {});
 
 io.sockets.on('connection', (socket) => {
@@ -230,7 +229,7 @@ io.sockets.on('connection', (socket) => {
     });
 
     socket.on('newEntityColor', (data) => {
-        if (!(isEmpty(worlds[data.worldId].entities))) {
+        if (isEmpty(worlds[data.worldId].entities) === false && isEmpty(worlds[data.worldId]) === false) {
 
 
             //THERE IS BUG HERE it tries to change color of picked up object sometimes resolveing in crash
@@ -275,9 +274,9 @@ io.sockets.on('connection', (socket) => {
             }
         }
 
-        //check if no players is present and delete world if empty maybe???
+        //check if no players is present and delete world if empty
         deleteEmptyWorlds();
-        //delete world.players[socket.id];
+
         console.log("Player disconnected " + socket.id);
     });
 });

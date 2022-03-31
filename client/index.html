@@ -10,24 +10,27 @@
 </head>
 
 <body>
+    <!--Connect view-->
 
     <div id="form-menu" ">
         <form id="name-color-form">
-            <label id="top" for="name">NAME</label><br>
             
+            <label id="top" for="name">NAME</label><br> 
             <input type="text" id="name" placeholder="John Doe" value="test" maxlength="20" required>
             
-           
-            <!--<input type="text" id="color" value="blue" placeholder="Blue" required>-->
             <label for="id">World</label>
             <select name="worlds" id="worldSelect"></select>
+            
             <label for="color">COLOR</label>
-            <input type="color" id="color" value="">
-            <!--<input type="text" id="sessionId" value="3H6X8D" placeholder="session id">-->
+            <input type="color" id="color" value="rgb(245,0,0)">
+            
             <button id="host" class="button" >HOST</button>
             <button id="join" class="button" >JOIN</button>
+        
         </form>
     </div>
+
+    <!--Game view-->
 
     <button id="spawn" >Spawn Element</button>
     <button id="delete" >Clear</button>
