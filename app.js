@@ -37,8 +37,8 @@ let List = (posX, posY) => {
     let self = {
         x: posX,
         y: posY,
-        h: 300,
-        w: 100,
+        h: 200,
+        w: 300,
         id: generateEntityId(),
         color: "gray"
     };   
@@ -243,7 +243,7 @@ io.sockets.on('connection', (socket) => {
     socket.on('spawnList', (id) => {
         let element = List(
             Math.floor(Math.random() * 1000),
-            160);
+            70);
         worlds[id].lists[element.id] = element;
     });
 

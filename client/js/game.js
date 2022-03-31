@@ -51,7 +51,22 @@ function drawElements(data) {
         ctx.fill();
         ctx.stroke();
     }
+}
 
+function drawLists (data) {
+    for (const key in data.lists) {
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.fillStyle = data.lists[key].color;
+        ctx.rect(
+            data.lists[key].x,
+            data.lists[key].y,
+            data.lists[key].h,
+            data.lists[key].w
+        );
+        ctx.fill();
+        ctx.stroke();
+    }
 }
 
 function drawPickUpToolTip(data) {
@@ -139,6 +154,7 @@ function renderCanvas(localWorld) {
     ctx.canvas.width = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    drawLists(localWorld);
     drawElements(localWorld);
     drawPlayers(localWorld);
     drawPickUpToolTip(localWorld);
@@ -147,7 +163,7 @@ function renderCanvas(localWorld) {
 function sendClientData() {
 
     spawnListBtn.addEventListener("click", (e) => {
-        socket.emit("spawnList", localWorld.worldID);
+        socket.emit("spawnList", localWorld.worldId);
     });
 
     spawnBtn.addEventListener("click", (e) => {
