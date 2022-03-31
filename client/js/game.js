@@ -56,7 +56,7 @@ function drawElements(data) {
 function drawPickUpToolTip(data) {
     for (const key in data.players) {
         //only draws for the current clients player
-        if (data.players[key].id === myId && data.players[key].isColliding === true) {
+        if (data.players[key].id === myId && data.players[key].isColliding === true && isEmpty(data.players[key].connectedEntity) === true) {
             ctx.font = "30px Arial";
             ctx.textAlign = "center";
             ctx.fillStyle = "black";
@@ -122,6 +122,7 @@ function drawPlayers(data) {
         //draw picked up entity
         if (isEmpty(data.players[key].connectedEntity) === false) {
             ctx.beginPath();
+            ctx.strokeStyle = data.players[key].color;
             ctx.fillStyle = data.players[key].connectedEntity.color;
             ctx.rect(data.players[key].connectedEntity.x, data.players[key].connectedEntity.y, data.players[key].connectedEntity.h, data.players[key].connectedEntity.w);
             ctx.fill();
