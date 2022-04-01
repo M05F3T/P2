@@ -60,9 +60,10 @@ var callback = function (req, res) {
         accTokenSecret = accessTokenSecret;
         //res.send(`<h1>Oh, hello there!</h1><a>This is what you want to know ${accToken} and ${accTokenSecret}</a>`);
 
-        const day = new Date();
+        let today = new Date();
+        let date = today.getDate() + "/" + (today.getMonth()+1) + "/" + today.getFullYear();
 
-        oauth.getProtectedResource(`https://api.trello.com/1/boards/?name=Brainstorm${day.getMonth()}/${day.getDate()} - ${day.getHours()}:${day.getMinutes()}`, "POST", accToken, accTokenSecret, function (error, data, response) {
+        oauth.getProtectedResource(`https://api.trello.com/1/boards/?name=Brainstorm ${date}`, "POST", accToken, accTokenSecret, function (error, data, response) {
             //Now we can respond with data to show that we have access to your Trello account via OAuth
             temp = JSON.parse(data);
             res.send(`<h1>Oh, hello there${temp.id}!</h1>`);
