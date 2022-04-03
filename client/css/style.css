@@ -32,22 +32,13 @@ canvas {
     padding: 50px;
 }
 
-
  #spawn,#delete,#worldId {
     
-    
+    margin-bottom: 50px;
     
 }
 
-#spawn {
-    padding: 20px 50px;
-    right: 100px;
-}
 
-#delete {
-    padding: 20px 50px;
-    right: 350px;
-}
 
 
 
