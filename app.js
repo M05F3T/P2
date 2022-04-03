@@ -162,8 +162,6 @@ let World = () => {
 runServer();
 
 
-
-
 function runServer() {
 
     createDefaultWorlds();
@@ -174,10 +172,6 @@ function runServer() {
 
     startGameLoop();
 }
-
-
-
-
 
 function startExpress(filePath, directoryPath) {
     // in case user tries to get "http://www.hostwebsite.com/" we send index.html
@@ -201,76 +195,32 @@ function startClientUpdates() {
         let player = initializeConnection(socket);
 
         socket.on('join', (data) => {
-
             if (data.host === true) {
                 hostServer(data, player, socket);
             } else if (data.host === false) {
                 joinServer(data, player, socket);
             }
-
-
-
-        })
+        });
 
         socket.on('clear', (id) => {
             deleteAllEntities(id, socket);
         });
 
         socket.on('spawnElement', (id) => {
-            if (doesWorldExist(id, socket)) {
-                let element = Entity(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
-                worlds[id].entities[element.id] = element;
-            } else {
-                socket.emit("error", "This world is closed please refresh and select a new world");
-
-            }
+            spawnElement(id, socket);
         });
 
-        
-
         socket.on("playerMousePos", (data) => {
-            if (doesWorldExist(data.worldID, socket)) {
-                worlds[data.worldID].players[data.playerId].mousePos.x = data.x;
-                worlds[data.worldID].players[data.playerId].mousePos.y = data.y;
-            }
-
+            updateMousePos(data, socket);
         });
 
         socket.on('keyPress', (data) => {
-            if (doesWorldExist(data.worldId)) {
-                if (data.inputId === "left") {
-                    player.pressingLeft = data.state;
-                } else if (data.inputId === "right") {
-                    player.pressingRight = data.state;
-                } else if (data.inputId === "up") {
-                    player.pressingUp = data.state;
-                } else if (data.inputId === "down") {
-                    player.pressingDown = data.state;
-                } else if (data.inputId === "pickUpKeyPressed") {
-                    player.pickUpKeyPressed = data.state;
-                }
-            } else {
-                socket.emit("error", "This world is closed please refresh and select a new world");
-            }
-
-
+            updateKeyState(data, socket, player);
         });
 
-
         socket.on('disconnect', () => {
-            //remove disconnected person
-            delete SOCKET_LIST[socket.id];
-            //delete PLAYER_LIST[socket.id];
 
-            //delete player from world
-            for (const world in worlds) {
-                for (const key in worlds[world].players) {
-                    if (worlds[world].players[key].id === socket.id) {
-                        delete worlds[world].players[key];
-                    }
-                }
-            }
-
+            removePlayer(socket);
             //check if no players is present and delete world if empty
             deleteEmptyWorlds();
 
@@ -316,23 +266,23 @@ function hostServer(data, player, socket) {
 }
 
 function joinServer(data, player, socket) {
-    player.color = data.color;
-    player.name = data.name;
-    player.myWorldId = data.sessionId;
+    if (doesWorldExist(data.sessionId)) {
+        player.color = data.color;
+        player.name = data.name;
+        player.myWorldId = data.sessionId;
 
-    //check for valid session id HERE
+        //check for valid session id HERE
 
-    //add player to world
-    worlds[data.sessionId].players[socket.id] = player;
+        //add player to world
+        worlds[data.sessionId].players[socket.id] = player;
 
-    //sendInitWorld(socket, worlds[data.sessionId]);
+        console.log(`player: ${player.name} => joined world: ${data.sessionId}`);
+    }else {
+        socket.emit("error", "This world is closed please refresh and select a new world");
+    }
 
-    //sendServerData(data.sessionId,"playerJoined",player);
-
-    console.log(`player: ${player.name} => joined world: ${data.sessionId}`);
 
 }
-
 
 function startGameLoop() {
     setInterval(() => {
@@ -401,6 +351,54 @@ function deleteAllEntities(id, socket) {
 
 }
 
+function spawnElement(id, socket) {
+    if (doesWorldExist(id, socket)) {
+        let element = Entity(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
+        worlds[id].entities[element.id] = element;
+    } else {
+        socket.emit("error", "This world is closed please refresh and select a new world");
+    }
+}
+
+function updateMousePos(data, socket) {
+    if (doesWorldExist(data.worldID, socket)) {
+        worlds[data.worldID].players[data.playerId].mousePos.x = data.x;
+        worlds[data.worldID].players[data.playerId].mousePos.y = data.y;
+    }
+}
+
+function updateKeyState(data, socket, player) {
+    if (doesWorldExist(data.worldId)) {
+        if (data.inputId === "left") {
+            player.pressingLeft = data.state;
+        } else if (data.inputId === "right") {
+            player.pressingRight = data.state;
+        } else if (data.inputId === "up") {
+            player.pressingUp = data.state;
+        } else if (data.inputId === "down") {
+            player.pressingDown = data.state;
+        } else if (data.inputId === "pickUpKeyPressed") {
+            player.pickUpKeyPressed = data.state;
+        }
+    } else {
+        socket.emit("error", "This world is closed please refresh and select a new world");
+    }
+}
+
+function removePlayer(socket) {
+    //remove disconnected person
+    delete SOCKET_LIST[socket.id];
+    //delete PLAYER_LIST[socket.id];
+
+    //delete player from world
+    for (const world in worlds) {
+        for (const key in worlds[world].players) {
+            if (worlds[world].players[key].id === socket.id) {
+                delete worlds[world].players[key];
+            }
+        }
+    }
+}
 
 function isEmpty(obj) {
     return Object.keys(obj).length === 0;
