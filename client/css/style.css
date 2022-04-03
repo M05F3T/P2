@@ -12,13 +12,29 @@ body {
     text-align: center;
 }
 
-canvas {
-    display: block;
-    /* background-color: #000000; */
+.gameWindow {
+    display: flex;
+    justify-content: space-between;
+    
 }
 
-#spawn,#delete,#worldId {
-    position: absolute;
+canvas {
+    background-color: #ffffff;
+}
+
+.ui {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    width: 350px;
+
+    padding: 50px;
+}
+
+
+ #spawn,#delete,#worldId {
+    
     
     
 }
@@ -158,4 +174,4 @@ form select {
     margin-bottom: 40px;
     margin-top: 10px;
     box-sizing: border-box;
-}
+} 

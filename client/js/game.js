@@ -146,9 +146,9 @@ function renderCanvas() {
 }
 
 function resetCanvas() {
-    ctx.canvas.width = window.innerWidth;
+    ctx.canvas.width = window.innerWidth - 350;
     ctx.canvas.height = window.innerHeight;
-    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    ctx.clearRect(0, 0, window.innerWidth - 350, window.innerHeight);
 }
 
 function sendClientData() {
