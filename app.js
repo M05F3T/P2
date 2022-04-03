@@ -6,7 +6,7 @@ const server = require('http').Server(app);
 
 //Global variables
 const PORT = 4200;
-const defaultWorldsActive = true;
+const defaultWorldsActive = false; //default worlds with no active players wont be deleted.   
 const servThisFile = '/client/index.html'
 const allowAccessTo = '/client'
 
@@ -148,6 +148,7 @@ let Entity = (posX, posY, id) => {
 let World = () => {
     let self = {
         worldId: idGenerator(),
+        name: "This is the world name",
         players: {
 
         },
@@ -277,7 +278,7 @@ function joinServer(data, player, socket) {
         worlds[data.sessionId].players[socket.id] = player;
 
         console.log(`player: ${player.name} => joined world: ${data.sessionId}`);
-    }else {
+    } else {
         socket.emit("error", "This world is closed please refresh and select a new world");
     }
 
@@ -301,7 +302,8 @@ function startGameLoop() {
                         if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
 
                             yourWorld = worlds[world];
-                            socket.emit('newPosistion', yourWorld);
+                            socket.emit('worldUpdate', yourWorld);
+
 
                         }
                     }
@@ -323,7 +325,7 @@ function createDefaultWorlds() {
 }
 
 function listCurrentWorld() {
-    let list = {};
+    let list = { };
 
     for (const world in worlds) {
         list[worlds[world].worldId] = worlds[world].worldId;
@@ -334,7 +336,7 @@ function listCurrentWorld() {
 
 function deleteEmptyWorlds() {
     for (const world in worlds) {
-        if (isEmpty(worlds[world].players)) {
+        if (isEmpty(worlds[world].players) && worlds[world].name !== "Default World") {
             delete worlds[world];
         }
     }
@@ -413,5 +415,19 @@ function doesWorldExist(worldId, socket) {
             return false;
         }
     }
+
+    /*
+    The for loop has bad time complexity maybe one of these methods work better?
+
+    how to check if object exists in javascript
+    if (typeof maybeObject != "undefined") {
+        alert("GOT THERE");
+    }
+    check if field exists in object javascript
+    if ('field' in obj) {
+
+    }
+
+    */
 
 }

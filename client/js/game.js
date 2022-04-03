@@ -1,8 +1,8 @@
 //initialize connection between server and client
 const socket = io();
+
 const canvas = document.getElementById("ctx");
 const ctx = document.getElementById("ctx").getContext("2d");
-//const form = document.getElementById("name-color-form");
 const spawnBtn = document.getElementById("spawn");
 const clearBtn = document.getElementById("delete");
 const idText = document.getElementById("worldId");
@@ -23,6 +23,7 @@ let localWorld;
 let hover = false;
 let targetEntityId;
 
+
 getServerData();
 sendClientData();
 
@@ -39,7 +40,6 @@ function insertWorldsInSelect(data) {
     }
 
 }
-
 
 function drawElements(data) {
     for (const key in data.entities) {
@@ -132,15 +132,23 @@ function drawPlayers(data) {
     }
 }
 
-function renderCanvas(localWorld) {
+function renderCanvas() {
+    
     //set canvas size to window size.
     idText.innerHTML = "world: " + localWorld.worldId;
-    ctx.canvas.width = window.innerWidth;
-    ctx.canvas.height = window.innerHeight;
-    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+    resetCanvas();
+
+
     drawElements(localWorld);
     drawPlayers(localWorld);
     drawPickUpToolTip(localWorld);
+}
+
+function resetCanvas() {
+    ctx.canvas.width = window.innerWidth;
+    ctx.canvas.height = window.innerHeight;
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 }
 
 function sendClientData() {
@@ -274,12 +282,12 @@ function getServerData() {
     });
 
 
-    socket.on("newPosistion", (data) => {
-
+    socket.on("worldUpdate", (data) => {
+        
         //update local world storage
         localWorld = data;
         //render new update
-        renderCanvas(localWorld);
+        renderCanvas();
 
     });
 
@@ -287,7 +295,6 @@ function getServerData() {
         alert(message);
     });
 }
-
 
 //----helper functions---
 function isEmpty(obj) {
@@ -319,3 +326,4 @@ canvas.onmousemove = function (e) {
         }
     }
 }
+
