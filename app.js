@@ -171,6 +171,8 @@ function runServer() {
     startExpress(servThisFile, allowAccessTo);
 
     startClientUpdates();
+
+    startGameLoop();
 }
 
 
@@ -224,24 +226,7 @@ function startClientUpdates() {
             }
         });
 
-        socket.on('newEntityColor', (data) => {
-            if (doesWorldExist(data.worldId, socket) && isEmpty(worlds[data.worldId].entities) === false && isEmpty(worlds[data.worldId]) === false) {
-
-                //THERE IS BUG HERE it tries to change color of picked up object sometimes resolveing in crash
-                try {
-                    worlds[data.worldId].entities[data.id].color = data.color;
-                }
-                catch {
-                    console.log("tried to change color of picked up object");
-                }
-
-
-            } else {
-                socket.emit("error", "This world is closed please refresh and select a new world");
-
-            }
-
-        });
+        
 
         socket.on("playerMousePos", (data) => {
             if (doesWorldExist(data.worldID, socket)) {
@@ -349,54 +334,35 @@ function joinServer(data, player, socket) {
 }
 
 
+function startGameLoop() {
+    setInterval(() => {
+        if (isEmpty(worlds) === false) {
+
+            for (const world in worlds) {
+
+                for (const key in worlds[world].players) {
+
+                    worlds[world].players[key].updatePosistion();
+                    worlds[world].players[key].detect_colision();
 
 
+                    for (let i in SOCKET_LIST) {
+                        let socket = SOCKET_LIST[i];
+                        if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
 
+                            yourWorld = worlds[world];
+                            socket.emit('newPosistion', yourWorld);
 
-
-
-
-
-
-
-
-
-
-setInterval(() => {
-    // try {
-    if (isEmpty(worlds) === false) {
-
-        for (const world in worlds) {
-
-            for (const key in worlds[world].players) {
-
-                worlds[world].players[key].updatePosistion();
-                worlds[world].players[key].detect_colision();
-
-
-                for (let i in SOCKET_LIST) {
-                    let socket = SOCKET_LIST[i];
-                    if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
-
-                        yourWorld = worlds[world];
-                        socket.emit('newPosistion', yourWorld);
-
+                        }
                     }
-                }
 
+                }
             }
+
         }
 
-    }
-    // }
-    // catch {
-    //     console.log("random accses bug happend :((");
-    // }
-
-
-
-
-}, 1000 / 60);
+    }, 1000 / 60);
+}
 
 function createDefaultWorlds() {
     if (defaultWorldsActive) {

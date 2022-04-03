@@ -310,11 +310,9 @@ canvas.onmousemove = function (e) {
                 targetEntityId = localWorld.entities[key].id;
                 console.log(`I FOUND ENTITY: ${localWorld.entities[key].id}`);
 
-                socket.emit("newEntityColor", { worldId: localWorld.worldId, id: localWorld.entities[key].id, color: "green" });
                 document.body.style.cursor = "pointer";
                 break;
             } else {
-                socket.emit("newEntityColor", { worldId: localWorld.worldId, id: localWorld.entities[key].id, color: "gray" }); //local change
 
                 document.body.style.cursor = "default";
             }
