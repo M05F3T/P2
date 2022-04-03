@@ -1,61 +1,19 @@
 const express = require('express');
+const idGenerator = require("uuid/v4")
 const app = express();
 const server = require('http').Server(app);
-const PORT = 3000;
-
-// in case user tries to get "http://www.hostwebsite.com/" we send index.html
-app.get('/', function (req, res) {
-    res.sendFile(__dirname + '/client/index.html');
-});
-
-//User can accses all files in /client (ex: http://www.hostwebsite.com/client/img.jpg)
-app.use('/client', express.static(__dirname + '/client'));
-
-server.listen(PORT);
-console.log("Server started.. " + PORT);
 
 
-let SOCKET_LIST = {};
-let ID_COUNTER = 0;
-let WORLD_ID_COUNTER = 0;
+//Global variables
+const PORT = 4200;
+const defaultWorldsActive = true;
+const servThisFile = '/client/index.html'
+const allowAccessTo = '/client'
 
-let worlds = {}
+let SOCKET_LIST = {}; //keeps tracks of connected clients
+let worlds = {} //holds data on all current worlds
 
-
-let World = () => {
-    let self = {
-        worldId: generateWorldId(),
-        players: {
-
-        },
-        entities: {
-
-        }
-    }
-
-    return self;
-}
-
-let Element = (posX, posY, id) => {
-    let self = {
-        x: posX,
-        y: posY,
-        h: 150,
-        w: 150,
-        id: generateEntityId(),
-        color: "gray"
-    }
-    return self;
-}
-
-function generateWorldId() {
-    return ++WORLD_ID_COUNTER;
-}
-
-function generateEntityId() {
-    return ++ID_COUNTER;
-}
-
+//Object constructors
 
 let Player = (id, color, name) => {
     let self = {
@@ -175,17 +133,172 @@ let Player = (id, color, name) => {
     return self;
 }
 
+let Entity = (posX, posY, id) => {
+    let self = {
+        x: posX,
+        y: posY,
+        h: 150,
+        w: 150,
+        id: idGenerator(),
+        color: "gray"
+    }
+    return self;
+}
 
-const io = require('socket.io')(server, {});
+let World = () => {
+    let self = {
+        worldId: idGenerator(),
+        players: {
 
-io.sockets.on('connection', (socket) => {
+        },
+        entities: {
+
+        }
+    }
+
+    return self;
+}
+
+runServer();
+
+
+
+
+function runServer() {
+
+    createDefaultWorlds();
+
+    startExpress(servThisFile, allowAccessTo);
+
+    startClientUpdates();
+}
+
+
+
+
+
+function startExpress(filePath, directoryPath) {
+    // in case user tries to get "http://www.hostwebsite.com/" we send index.html
+    app.get('/', function (req, res) {
+        res.sendFile(__dirname + filePath);
+    });
+
+    //User can accses all files in /client (ex: http://www.hostwebsite.com/client/img.jpg)
+    app.use('/client', express.static(__dirname + directoryPath));
+
+    server.listen(PORT);
+    console.log("Server started.. " + PORT);
+
+}
+
+function startClientUpdates() {
+    const io = require('socket.io')(server, {});
+
+    io.sockets.on('connection', (socket) => {
+
+        let player = initializeConnection(socket);
+
+        socket.on('join', (data) => {
+
+            if (data.host === true) {
+                hostServer(data, player, socket);
+            } else if (data.host === false) {
+                joinServer(data, player, socket);
+            }
+
+
+
+        })
+
+        socket.on('clear', (id) => {
+            deleteAllEntities(id, socket);
+        });
+
+        socket.on('spawnElement', (id) => {
+            if (doesWorldExist(id, socket)) {
+                let element = Entity(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
+                worlds[id].entities[element.id] = element;
+            } else {
+                socket.emit("error", "This world is closed please refresh and select a new world");
+
+            }
+        });
+
+        socket.on('newEntityColor', (data) => {
+            if (doesWorldExist(data.worldId, socket) && isEmpty(worlds[data.worldId].entities) === false && isEmpty(worlds[data.worldId]) === false) {
+
+                //THERE IS BUG HERE it tries to change color of picked up object sometimes resolveing in crash
+                try {
+                    worlds[data.worldId].entities[data.id].color = data.color;
+                }
+                catch {
+                    console.log("tried to change color of picked up object");
+                }
+
+
+            } else {
+                socket.emit("error", "This world is closed please refresh and select a new world");
+
+            }
+
+        });
+
+        socket.on("playerMousePos", (data) => {
+            if (doesWorldExist(data.worldID, socket)) {
+                worlds[data.worldID].players[data.playerId].mousePos.x = data.x;
+                worlds[data.worldID].players[data.playerId].mousePos.y = data.y;
+            }
+
+        });
+
+        socket.on('keyPress', (data) => {
+            if (doesWorldExist(data.worldId)) {
+                if (data.inputId === "left") {
+                    player.pressingLeft = data.state;
+                } else if (data.inputId === "right") {
+                    player.pressingRight = data.state;
+                } else if (data.inputId === "up") {
+                    player.pressingUp = data.state;
+                } else if (data.inputId === "down") {
+                    player.pressingDown = data.state;
+                } else if (data.inputId === "pickUpKeyPressed") {
+                    player.pickUpKeyPressed = data.state;
+                }
+            } else {
+                socket.emit("error", "This world is closed please refresh and select a new world");
+            }
+
+
+        });
+
+
+        socket.on('disconnect', () => {
+            //remove disconnected person
+            delete SOCKET_LIST[socket.id];
+            //delete PLAYER_LIST[socket.id];
+
+            //delete player from world
+            for (const world in worlds) {
+                for (const key in worlds[world].players) {
+                    if (worlds[world].players[key].id === socket.id) {
+                        delete worlds[world].players[key];
+                    }
+                }
+            }
+
+            //check if no players is present and delete world if empty
+            deleteEmptyWorlds();
+
+            console.log("Player disconnected " + socket.id);
+        });
+    });
+}
+
+function initializeConnection(socket) {
     console.log("Player connected " + socket.id);
 
     //add connection to socket list
     SOCKET_LIST[socket.id] = socket;
-
-    //create new player and add to player list
-    let player = Player(socket.id);
 
     socket.emit("sendId", socket.id);
 
@@ -193,134 +306,105 @@ io.sockets.on('connection', (socket) => {
 
     socket.emit("currentWorlds", currentWorlds)
 
-    socket.on('join', (data) => {
+    return Player(socket.id);
+}
 
-        if (data.host === true) {
-            player.color = data.color;
-            player.name = data.name;
+function hostServer(data, player, socket) {
 
-            let world = World();
-            player.myWorldId = world.worldId;
-            worlds[world.worldId] = world;
-            worlds[world.worldId].players[socket.id] = player;
-            console.log(`player ${player.name} created world ${world.worldId}`);
-        } else if (data.host === false) {
+    let world = World();
 
-            player.color = data.color;
-            player.name = data.name;
-            player.myWorldId = data.sessionId;
-            //check for valid session id
-            worlds[data.sessionId].players[socket.id] = player;
-            console.log(`player ${player.name} joined world ${data.sessionId}`);
-        }
+    player.color = data.color;
+    player.name = data.name;
+    player.myWorldId = world.worldId;
+
+    //add world to worlds object
+    worlds[world.worldId] = world;
+
+    //add player to world
+    worlds[world.worldId].players[socket.id] = player;
+
+    //sendInitWorld(socket, worlds[world.worldId]);
 
 
 
-    })
+    console.log(`player: ${player.name} => created world: ${world.worldId}`);
+}
 
-    socket.on('clear', (id) => {
-        deleteAllEntities(id);
-    });
+function joinServer(data, player, socket) {
+    player.color = data.color;
+    player.name = data.name;
+    player.myWorldId = data.sessionId;
 
-    socket.on('spawnElement', (id) => {
-        let element = Element(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
-        worlds[id].entities[element.id] = element;
-    });
+    //check for valid session id HERE
 
-    socket.on('newEntityColor', (data) => {
-        if (isEmpty(worlds[data.worldId].entities) === false && isEmpty(worlds[data.worldId]) === false) {
+    //add player to world
+    worlds[data.sessionId].players[socket.id] = player;
 
+    //sendInitWorld(socket, worlds[data.sessionId]);
 
-            //THERE IS BUG HERE it tries to change color of picked up object sometimes resolveing in crash
-            try {
-                worlds[data.worldId].entities[data.id].color = data.color;
-            }
-            catch {
-                console.log("tried to change color of picked up object");
-            }
+    //sendServerData(data.sessionId,"playerJoined",player);
+
+    console.log(`player: ${player.name} => joined world: ${data.sessionId}`);
+
+}
 
 
-        }
-
-    });
-
-    socket.on("playerMousePos", (data) => {
-        worlds[data.worldID].players[data.playerId].mousePos.x = data.x;
-        worlds[data.worldID].players[data.playerId].mousePos.y = data.y;
-    });
-
-    socket.on('keyPress', (data) => {
-        if (data.inputId === "left") {
-            player.pressingLeft = data.state;
-        } else if (data.inputId === "right") {
-            player.pressingRight = data.state;
-        } else if (data.inputId === "up") {
-            player.pressingUp = data.state;
-        } else if (data.inputId === "down") {
-            player.pressingDown = data.state;
-        } else if (data.inputId === "pickUpKeyPressed") {
-            player.pickUpKeyPressed = data.state;
-        }
-    });
 
 
-    socket.on('disconnect', () => {
-        //remove disconnected person
-        delete SOCKET_LIST[socket.id];
-        //delete PLAYER_LIST[socket.id];
 
-        //delete player from world
-        for (const world in worlds) {
-            for (const key in worlds[world].players) {
-                if (worlds[world].players[key].id === socket.id) {
-                    delete worlds[world].players[key];
-                }
-            }
-        }
 
-        //check if no players is present and delete world if empty
-        deleteEmptyWorlds();
 
-        console.log("Player disconnected " + socket.id);
-    });
-});
+
+
+
+
+
+
+
 
 setInterval(() => {
-    try {
-        if (isEmpty(worlds) === false) {
+    // try {
+    if (isEmpty(worlds) === false) {
 
-            for (const world in worlds) {
+        for (const world in worlds) {
 
-                for (const key in worlds[world].players) {
+            for (const key in worlds[world].players) {
 
-                    worlds[world].players[key].updatePosistion();
-                    worlds[world].players[key].detect_colision();
+                worlds[world].players[key].updatePosistion();
+                worlds[world].players[key].detect_colision();
 
 
-                    for (let i in SOCKET_LIST) {
-                        let socket = SOCKET_LIST[i];
-                        if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
+                for (let i in SOCKET_LIST) {
+                    let socket = SOCKET_LIST[i];
+                    if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
 
-                            yourWorld = worlds[world];
-                            socket.emit('newPosistion', yourWorld);
+                        yourWorld = worlds[world];
+                        socket.emit('newPosistion', yourWorld);
 
-                        }
                     }
-
                 }
-            }
 
+            }
         }
+
     }
-    catch {
-        console.log("random accses bug happend :((");
-    }
+    // }
+    // catch {
+    //     console.log("random accses bug happend :((");
+    // }
 
 
 
 
 }, 1000 / 60);
 
+function createDefaultWorlds() {
+    if (defaultWorldsActive) {
+        let defaultWorld = World();
+        defaultWorld.name = "Default World";
+        worlds[defaultWorld.worldId] = defaultWorld;
+    }
+}
 
 function listCurrentWorld() {
     let list = {};
@@ -340,12 +424,30 @@ function deleteEmptyWorlds() {
     }
 }
 
-function deleteAllEntities(id) {
-    for (const key in worlds[id].entities) {
-        delete worlds[id].entities[key];
+function deleteAllEntities(id, socket) {
+    if (doesWorldExist(id, socket)) {
+        for (const key in worlds[id].entities) {
+            delete worlds[id].entities[key];
+        }
+    } else {
+        socket.emit("error", "This world is closed please refresh and select a new world");
     }
+
 }
+
 
 function isEmpty(obj) {
     return Object.keys(obj).length === 0;
+}
+
+function doesWorldExist(worldId, socket) {
+    for (const world in worlds) {
+        if (worldId === worlds[world].worldId) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
 }

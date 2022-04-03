@@ -110,7 +110,7 @@ function drawPlayers(data) {
             data.players[key].y,
             data.players[key].mousePos.x,
             data.players[key].mousePos.y,
-            data.players[key].h / 2
+            data.players[key].h
         );
 
         //draw name
@@ -192,28 +192,33 @@ function sendClientData() {
         if (event.key === 'd' || event.key === 'D') {
             socket.emit('keyPress', {
                 inputId: 'right',
-                state: true
+                state: true,
+                worldId: localWorld.worldId
             })
         } else if (event.key === 's' || event.key === 'S') {
             socket.emit('keyPress', {
                 inputId: 'down',
-                state: true
+                state: true,
+                worldId: localWorld.worldId
             })
         } else if (event.key === 'a' || event.key === 'A') {
             socket.emit('keyPress', {
                 inputId: 'left',
-                state: true
+                state: true,
+                worldId: localWorld.worldId
             })
         } else if (event.key === 'w' || event.key === 'W') {
             socket.emit('keyPress', {
                 inputId: 'up',
-                state: true
+                state: true,
+                worldId: localWorld.worldId
             })
         } else if (event.key === 'e' || event.key === 'E') {
 
             socket.emit('keyPress', {
                 inputId: 'pickUpKeyPressed',
-                state: true
+                state: true,
+                worldId: localWorld.worldId
             })
         }
     }
@@ -222,27 +227,32 @@ function sendClientData() {
         if (event.key === 'd' || event.key === 'D') {
             socket.emit('keyPress', {
                 inputId: 'right',
-                state: false
+                state: false,
+                worldId: localWorld.worldId
             })
         } else if (event.key === 's' || event.key === 'S') {
             socket.emit('keyPress', {
                 inputId: 'down',
-                state: false
+                state: false,
+                worldId: localWorld.worldId
             })
         } else if (event.key === 'a' || event.key === 'A') {
             socket.emit('keyPress', {
                 inputId: 'left',
-                state: false
+                state: false,
+                worldId: localWorld.worldId
             })
         } else if (event.key === 'w' || event.key === 'W') {
             socket.emit('keyPress', {
                 inputId: 'up',
-                state: false
+                state: false,
+                worldId: localWorld.worldId
             })
         } else if (event.key === 'e' || event.key === 'E') {
             socket.emit('keyPress', {
                 inputId: 'pickUpKeyPressed',
-                state: false
+                state: false,
+                worldId: localWorld.worldId
             })
         }
     }
@@ -265,13 +275,16 @@ function getServerData() {
 
 
     socket.on("newPosistion", (data) => {
-        console.log("world id: " + data.worldId);
 
         //update local world storage
         localWorld = data;
         //render new update
         renderCanvas(localWorld);
 
+    });
+
+    socket.on("error", (message) => {
+        alert(message);
     });
 }
 
