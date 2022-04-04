@@ -74,6 +74,7 @@ let callback = function (req, res) {
             boardId = boardId.id;
             console.log(boardId);
             console.log(stringify(error) + "her");
+            response.send("<h1>Well, hello there</a>");
         });
     });
 };
