@@ -1,5 +1,5 @@
 const express = require('express');
-const idGenerator = require("uuid/v4")
+const { v4: idGenerator } = require("uuid");
 const app = express();
 const server = require('http').Server(app);
 
