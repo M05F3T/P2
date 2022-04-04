@@ -1,6 +1,7 @@
 var express = require("express");
 
 var http = require("http");
+const { stringify } = require("querystring");
 var OAuth = require("oauth").OAuth;
 var url = require("url");
 
@@ -49,7 +50,7 @@ const login = function (request, response) {
 
 let token, tokenSecret, accToken, accTokenSecret;
 
-var callback = function (req, res) {
+let callback = function (req, res) {
     const query = url.parse(req.url, true).query;
     const token = query.oauth_token;
     const tokenSecret = oauth_secrets[token];
@@ -59,23 +60,43 @@ var callback = function (req, res) {
         accToken = accessToken;
         accTokenSecret = accessTokenSecret;
         //res.send(`<h1>Oh, hello there!</h1><a>This is what you want to know ${accToken} and ${accTokenSecret}</a>`);
-
-        let today = new Date();
-        let date = today.getDate() + "/" + (today.getMonth()+1) + "/" + today.getFullYear();
-
-        oauth.getProtectedResource(`https://api.trello.com/1/boards/?name=Brainstorm ${date}`, "POST", accToken, accTokenSecret, function (error, data, response) {
-            //Now we can respond with data to show that we have access to your Trello account via OAuth
-            temp = JSON.parse(data);
-            res.send(`<h1>Oh, hello there${temp.id}!</h1>`);
-        });
-
         // This is useless and unnessesary -- "POST" is USEFUL
         //oauth.getProtectedResource("https://api.trello.com/1/lists?name=TestTilPeter&idBoard=6242db36eddba180596279b4", "POST", accessToken, accessTokenSecret, function (error, data, response) {
         // Now we can respond with data to show that we have access to your Trello account via OAuth
         //res.send(data);
         //});
+        let boardId;
+        let today = new Date();
+        let date = today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear();
+        oauth.getProtectedResource(`https://api.trello.com/1/boards/?name=Brainstorm ${date}`, "POST", accToken, accTokenSecret, function (error, data, response) {
+            //Now we can respond with data to show that we have access to your Trello account via OAuth
+            boardId = JSON.parse(data);
+            boardId = boardId.id;
+            console.log(boardId);
+            console.log(stringify(error) + "her");
+        });
     });
 };
+
+function createBoard (accToken, accTokenSecret) {
+    //Get current data
+    let boardId;
+    let today = new Date();
+    let date = today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear();
+    oauth.getProtectedResource(`https://api.trello.com/1/boards/?name=Brainstorm ${date}`, "POST", accToken, accTokenSecret, function (error, data, response) {
+        //Now we can respond with data to show that we have access to your Trello account via OAuth
+        boardId = JSON.parse(data);
+        boardId = boardId.id;
+    });
+};
+
+function createCard (accessToken, accessTokenSecret, idList, name, desc){
+    let cardId;
+    oauth.getProtectedResource(`https://api.trello.com/1/cards?idList=${idList}&name=${name}&desc=${desc}`, "POST", accToken, accTokenSecret, function (error, data, response){
+        cardId = JSON.parse(data);
+        cardId = cardId.id;
+    });
+}
 
 /*
 /     Routes
