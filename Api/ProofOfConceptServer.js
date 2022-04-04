@@ -74,7 +74,7 @@ let callback = function (req, res) {
             boardId = boardId.id;
             console.log(boardId);
             console.log(stringify(error) + "her");
-            response.send("<h1>Well, hello there</a>");
+            
         });
     });
 };
@@ -115,5 +115,6 @@ app.get("/login", function (request, response) {
 
 app.get("/callback", function (request, response) {
     console.log(`GET '/callback'`);
+    response.send("<h1>Well, hello there! General Kenobi</a>");
     callback(request, response);
 });
