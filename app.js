@@ -261,9 +261,9 @@ function hostServer(data, player, socket) {
     //add player to world
     worlds[world.worldId].players[socket.id] = player;
 
-    //sendInitWorld(socket, worlds[world.worldId]);
 
-
+    //Send world id to client
+    socket.emit("worldId", world.worldId);
 
     console.log(`player: ${player.name} => created world: ${world.worldId}`);
 }
@@ -278,6 +278,9 @@ function joinServer(data, player, socket) {
 
         //add player to world
         worlds[data.sessionId].players[socket.id] = player;
+
+        //Send world id to client
+        socket.emit("worldId", data.sessionId);
 
         console.log(`player: ${player.name} => joined world: ${data.sessionId}`);
     } else {

@@ -135,8 +135,7 @@ function drawPlayers(data) {
 
 function renderCanvas() {
     
-    //set canvas size to window size.
-    idText.innerHTML = "#" + localWorld.worldId;
+    
 
     resetCanvas();
 
@@ -147,8 +146,11 @@ function renderCanvas() {
 }
 
 function resetCanvas() {
+    //set canvas size to window size.
     ctx.canvas.width = window.innerWidth - 350;
     ctx.canvas.height = window.innerHeight;
+
+    //clear canvas berfore new frame
     ctx.clearRect(0, 0, window.innerWidth - 350, window.innerHeight);
 }
 
@@ -273,6 +275,10 @@ function getServerData() {
     socket.on("sendId", (data) => {
         myId = data;
         console.log(`my socket ID is: ${myId}`);
+    });
+
+    socket.on("worldId",(worldId) => {
+        idText.innerHTML = "#" + worldId;
     });
 
     socket.on("currentWorlds", (data) => {
