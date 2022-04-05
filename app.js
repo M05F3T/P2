@@ -158,7 +158,7 @@ let World = () => {
         },
         entities: {
 
-        }
+        },
     }
 
     return self;
@@ -263,6 +263,10 @@ function hostServer(data, player, socket) {
     //add player to world
     worlds[world.worldId].players[socket.id] = player;
 
+    //update world before updateing playerjoined
+    sendServerData("worldUpdate",worlds[world.worldId]);
+    
+    sendServerData("newPlayerJoined",{name: data.name,color: data.color});
 
     //Send world id to client
     socket.emit("worldId", world.worldId);
@@ -281,6 +285,12 @@ function joinServer(data, player, socket) {
 
         //add player to world
         worlds[data.sessionId].players[socket.id] = player;
+
+        //update world before updateing playerjoined
+        sendServerData("worldUpdate",worlds[data.sessionId]);
+
+        sendServerData("newPlayerJoined");
+        
 
         //Send world id to client
         socket.emit("worldId", data.sessionId);
@@ -450,5 +460,26 @@ function doesWorldExist(worldId, socket) {
     }
 
     */
+
+}
+
+function sendServerData(emit, obj){
+
+        for (const world in worlds) {
+
+            for (const key in worlds[world].players) {
+
+                for (let i in SOCKET_LIST) {
+                    let socket = SOCKET_LIST[i];
+                    if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
+
+                        socket.emit(emit,obj);
+
+
+                    }
+                }
+
+            }
+        }
 
 }

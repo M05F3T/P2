@@ -66,7 +66,7 @@ function drawPickUpToolTip(data) {
     }
 }
 
-function drawLineLength(x1, y1, x2, y2, maxLen,color) {
+function drawLineLength(x1, y1, x2, y2, maxLen, color) {
     let vx = x2 - x1; // get dist between start and end of line
     let vy = y2 - y1; // for x and y
 
@@ -135,8 +135,8 @@ function drawPlayers(data) {
 }
 
 function renderCanvas() {
-    
-    
+
+
 
     resetCanvas();
 
@@ -278,7 +278,7 @@ function getServerData() {
         console.log(`my socket ID is: ${myId}`);
     });
 
-    socket.on("worldId",(worldId) => {
+    socket.on("worldId", (worldId) => {
         idText.innerHTML = "#" + worldId;
     });
 
@@ -289,9 +289,14 @@ function getServerData() {
         }
     });
 
+    socket.on("newPlayerJoined", () => {
+
+        insertPlayersHtmlElement();
+
+    });
 
     socket.on("worldUpdate", (data) => {
-        
+
         //update local world storage
         localWorld = data;
         //render new update
@@ -353,6 +358,48 @@ function navigationListeners() {
 //----helper functions---
 function isEmpty(obj) {
     return Object.keys(obj).length === 0;
+}
+
+function insertPlayersHtmlElement() {
+    const scrollBox = document.getElementById("playerScrollBox");
+
+    //clear scrollBox
+    scrollBox.innerHTML = "";
+
+    for (const player in localWorld.players) {
+        //create container div
+        let new_row = document.createElement('div');
+        new_row.className = "player-element";
+
+        //insert paragraph with name in div
+        let paragraph = document.createElement('p');
+        paragraph.innerHTML = localWorld.players[player].name;
+
+
+
+        let colorDiv = document.createElement('div');
+        colorDiv.className = "circle";
+        colorDiv.style.backgroundColor = localWorld.players[player].color;
+
+        new_row.appendChild(paragraph);
+        new_row.appendChild(colorDiv);
+
+        //f.eks new_row should now look like this.
+
+        // <div class="player-element">
+        //     <p>Nicolai Bergulff</p>
+        //     <div class="circle" style="background-color: #5677a1;"></div>
+        // </div>
+
+        //insert the new row
+        scrollBox.appendChild(new_row)
+    }
+
+
+
+
+
+
 }
 
 canvas.onmousemove = function (e) {
