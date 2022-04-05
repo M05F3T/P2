@@ -27,6 +27,7 @@ canvas {
     display: flex;
     flex-direction: column;
     background-color: #ffffff;
+    border-width: 1px;
     border-left: 2px;
     border-color: black;
     border-style: groove;
@@ -50,7 +51,7 @@ canvas {
     border-width: 1px;
     border-bottom: 2px;
     border-color: black;
-    border-style: groove;
+    border-style:groove;
     background-color: white;
     transition: background-color 0.3s;
     transition: color 0.2s;
