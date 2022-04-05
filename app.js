@@ -1,7 +1,9 @@
 const express = require('express');
 const { v4: idGenerator } = require("uuid");
+var { nanoid } = require("nanoid");
 const app = express();
 const server = require('http').Server(app);
+
 
 
 //Global variables
@@ -147,7 +149,7 @@ let Entity = (posX, posY, id) => {
 
 let World = () => {
     let self = {
-        worldId: idGenerator(),
+        worldId: nanoid(6),
         name: "This is the world name",
         players: {
 

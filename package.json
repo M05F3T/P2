@@ -25,6 +25,7 @@
   "homepage": "https://github.com/M05F3T/P2#readme",
   "dependencies": {
     "express": "^4.17.3",
+    "nanoid": "^3.3.2",
     "nodemon": "^2.0.15",
     "socket.io": "^4.4.1",
     "uuidv4": "^6.2.13"
