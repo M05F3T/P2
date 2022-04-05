@@ -135,7 +135,7 @@ function drawPlayers(data) {
 function renderCanvas() {
     
     //set canvas size to window size.
-    idText.innerHTML = "world: " + localWorld.worldId;
+    idText.innerHTML = "#" + localWorld.worldId;
 
     resetCanvas();
 
