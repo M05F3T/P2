@@ -1,6 +1,7 @@
 const express = require('express');
 const { v4: idGenerator } = require("uuid");
 var { nanoid } = require("nanoid");
+var tinycolor = require("tinycolor2");
 const app = express();
 const server = require('http').Server(app);
 
@@ -26,6 +27,7 @@ let Player = (id, color, name) => {
         id: id,
         mousePos: { x: 0, y: 0 },
         color: color,
+        viewIndicatorColor: "#000000", //black by default
         name: name,
         myWorldId: 0,
         isColliding: false,
@@ -254,7 +256,7 @@ function hostServer(data, player, socket) {
     player.color = data.color;
     player.name = data.name;
     player.myWorldId = world.worldId;
-
+    player.viewIndicatorColor = determineIndicatorColor(data.color);
     //add world to worlds object
     worlds[world.worldId] = world;
 
@@ -273,6 +275,7 @@ function joinServer(data, player, socket) {
         player.color = data.color;
         player.name = data.name;
         player.myWorldId = data.sessionId;
+        player.viewIndicatorColor = determineIndicatorColor(data.color);
 
         //check for valid session id HERE
 
@@ -405,6 +408,19 @@ function removePlayer(socket) {
             }
         }
     }
+}
+
+function determineIndicatorColor(colorHex) {
+    var color1 = tinycolor(colorHex);
+
+    if(color1.getBrightness() > 128){ //get brightness returns value between 0 - 255 with 0 being darkest
+        return "#000" //return black
+    }
+    else {
+        return "#fff"   //return white
+    }
+     
+
 }
 
 function isEmpty(obj) {

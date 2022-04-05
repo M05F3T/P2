@@ -66,7 +66,7 @@ function drawPickUpToolTip(data) {
     }
 }
 
-function drawLineLength(x1, y1, x2, y2, maxLen) {
+function drawLineLength(x1, y1, x2, y2, maxLen,color) {
     let vx = x2 - x1; // get dist between start and end of line
     let vy = y2 - y1; // for x and y
 
@@ -84,7 +84,7 @@ function drawLineLength(x1, y1, x2, y2, maxLen) {
         vx *= maxLen;
         vy *= maxLen;
     }
-    ctx.strokeStyle = "red";
+    ctx.strokeStyle = color;
     ctx.lineWidth = 5;
     ctx.beginPath();
     ctx.moveTo(x1, y1);
@@ -111,7 +111,8 @@ function drawPlayers(data) {
             data.players[key].y,
             data.players[key].mousePos.x,
             data.players[key].mousePos.y,
-            data.players[key].h / 2
+            data.players[key].h / 2,
+            data.players[key].viewIndicatorColor
         );
 
         //draw name
