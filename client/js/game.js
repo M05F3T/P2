@@ -26,6 +26,7 @@ let targetEntityId;
 
 getServerData();
 sendClientData();
+navigationListeners();
 
 let mouseX;
 let mouseY;
@@ -66,11 +67,11 @@ function drawPickUpToolTip(data) {
 }
 
 function drawLineLength(x1, y1, x2, y2, maxLen) {
-    var vx = x2 - x1; // get dist between start and end of line
-    var vy = y2 - y1; // for x and y
+    let vx = x2 - x1; // get dist between start and end of line
+    let vy = y2 - y1; // for x and y
 
     // use pythagoras to get line total length
-    var mag = Math.sqrt(vx * vx + vy * vy);
+    let mag = Math.sqrt(vx * vx + vy * vy);
     if (mag > maxLen) {
         // is the line longer than needed?
 
@@ -110,7 +111,7 @@ function drawPlayers(data) {
             data.players[key].y,
             data.players[key].mousePos.x,
             data.players[key].mousePos.y,
-            data.players[key].h
+            data.players[key].h / 2
         );
 
         //draw name
@@ -296,6 +297,52 @@ function getServerData() {
     });
 }
 
+function navigationListeners() {
+    const homeContent = document.getElementById("home-content");
+    const listsContent = document.getElementById("lists-content");
+    const ideasContent = document.getElementById("ideas-content");
+    const timerContent = document.getElementById("timer-content");
+
+    const homeButton = document.getElementById("home-button")
+    const listsButton = document.getElementById("lists-button")
+    const ideasButton = document.getElementById("ideas-button")
+    const timerButton = document.getElementById("timer-button")
+    const backButton = document.getElementById("back-button")
+
+    homeButton.addEventListener("click", (e) => {
+        homeContent.style.display = "block";
+        listsContent.style.display = "none";
+        ideasContent.style.display = "none";
+        timerContent.style.display = "none";
+    });
+
+    listsButton.addEventListener("click", (e) => {
+        homeContent.style.display = "none";
+        listsContent.style.display = "block";
+        ideasContent.style.display = "none";
+        timerContent.style.display = "none";
+    });
+
+    ideasButton.addEventListener("click", (e) => {
+        homeContent.style.display = "none";
+        listsContent.style.display = "none";
+        ideasContent.style.display = "block";
+        timerContent.style.display = "none";
+    });
+
+    timerButton.addEventListener("click", (e) => {
+        homeContent.style.display = "none";
+        listsContent.style.display = "none";
+        ideasContent.style.display = "none";
+        timerContent.style.display = "block";
+    });
+
+    backButton.addEventListener("click", (e) => {
+        alert("u went back in time!!!!");
+    });
+
+
+}
 //----helper functions---
 function isEmpty(obj) {
     return Object.keys(obj).length === 0;

@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/client/css/font-awesome-4.7.0/css/font-awesome.min.css">
-    
+
     <link rel="stylesheet" href="/client/css/style.css">
     <title>Pickle</title>
 </head>
@@ -17,17 +17,17 @@
     <div id="form-menu">
         <form id="name-color-form">
 
-        <label id="top" for="name">NAME</label><br>
-        <input type="text" id="name" placeholder="John Doe" value="test" maxlength="20" required>
+            <label id="top" for="name">NAME</label><br>
+            <input type="text" id="name" placeholder="John Doe" value="test" maxlength="20" required>
 
-        <label for="id">World</label>
-        <select name="worlds" id="worldSelect"></select>
+            <label for="id">World</label>
+            <select name="worlds" id="worldSelect"></select>
 
-        <label for="color">COLOR</label>
-        <input type="color" id="color" value="#3464eb">
+            <label for="color">COLOR</label>
+            <input type="color" id="color" value="#3464eb">
 
-        <button id="host" class="button">HOST</button>
-        <button id="join" class="button">JOIN</button>
+            <button id="host" class="button">HOST</button>
+            <button id="join" class="button">JOIN</button>
 
         </form>
     </div>
@@ -42,65 +42,91 @@
 
         <div class="ui">
             <nav class="nav">
-                <button class="nav-element" >HOME</button>
-                <button class="nav-element" >LISTS</button>
-                <button class="nav-element" >IDEAS</button>
-                <Button class="nav-element" >TIMER</Button>
-                <div class="nav-element back-icon"><i class="fa fa-arrow-left " aria-hidden="true"></i></div>
+                <button id="home-button" class="nav-element">HOME</button>
+                <button id="lists-button" class="nav-element">LISTS</button>
+                <button id="ideas-button" class="nav-element">IDEAS</button>
+                <Button id="timer-button" class="nav-element">TIMER</Button>
+                <div id="back-button" class="nav-element back-icon"><i class="fa fa-arrow-left " aria-hidden="true"></i></div>
             </nav>
             <div id="content">
-                <div class="home" >
+                <div id="home-content" style="display: block;">
                     <h1 class="title">BRAINSTORM TITLE</h1>
                     <h1 id="worldId" class="title"></h1>
                     <hr>
                     <h1 class="title">PLAYERS</h1>
                     <div class="scroll-box" style="overflow: scroll ; height: 250px;  overflow-x:hidden;">
-                        
-                    <div class="player-element">
-                        <p>Daniel Sejersen</p>
-                        <div class="circle" style="background-color: #3a7bd5;"></div>
+
+                        <div class="player-element">
+                            <p>Daniel Sejersen</p>
+                            <div class="circle" style="background-color: #3a7bd5;"></div>
+                        </div>
+
+                        <div class="player-element">
+                            <p>Andreas Würtz</p>
+                            <div class="circle" style="background-color: #91ff00;"></div>
+                        </div>
+
+                        <div class="player-element">
+                            <p>Gustas Jucaitis</p>
+                            <div class="circle" style="background-color: #ff0000;"></div>
+                        </div>
+
+                        <div class="player-element">
+                            <p>Peter Ellefsen</p>
+                            <div class="circle" style="background-color: #0400ff;"></div>
+                        </div>
+
+                        <div class="player-element">
+                            <p>Jonas Schoop</p>
+                            <div class="circle" style="background-color: #3d9622;"></div>
+                        </div>
+
+                        <div class="player-element">
+                            <p>Nicolai Bergulff</p>
+                            <div class="circle" style="background-color: #5677a1;"></div>
+                        </div>
+
                     </div>
 
-                    <div class="player-element">
-                        <p>Andreas Würtz</p>
-                        <div class="circle" style="background-color: #91ff00;"></div>
-                    </div>
-
-                    <div class="player-element">
-                        <p>Gustas Jucaitis</p>
-                        <div class="circle" style="background-color: #ff0000;"></div>
-                    </div>
-
-                    <div class="player-element">
-                        <p>Peter Ellefsen</p>
-                        <div class="circle" style="background-color: #0400ff;"></div>
-                    </div>
-                    
-                    <div class="player-element">
-                        <p>Jonas Schoop</p>
-                        <div class="circle" style="background-color: #3d9622;"></div>
-                    </div>
-
-                    <div class="player-element">
-                        <p>Nicolai Bergulff</p>
-                        <div class="circle" style="background-color: #5677a1;"></div>
-                    </div>
-
-                    </div>
-                    
-                    <button id="spawn" class="button create-idea">Create Idea</button>
-                    
-                </div>
-                <div class="lists" style="display: none;">
+                    <button id="spawn" class="button create-idea">CREATE IDEA</button>
 
                 </div>
-                <div class="ideas" style="display: none;">
+                <div id="lists-content" style="display: none;">
+                    <select id="listSelector">
+                        <option>Idea list 1</option>
+                    </select>
+
+                    <h1 id="worldId" class="title">SELECTED LIST</h1>
+                    <hr>
+                    <h1 class="title">IDEAS</h1>
+                    <div class="scroll-box" style="overflow: scroll ; height: 250px;  overflow-x:hidden;">
+
+                    </div>
+
+                    <button id="spawn" class="button create-idea">CREATE LIST</button>
+
+
+                </div>
+                <div id="ideas-content" style="display: none;">
+                    <h1 class="title">IDEAS</h1>
+                    <div class="scroll-box" style="overflow: scroll ; height: 250px;  overflow-x:hidden;">
+
+                    </div>
                     <button id="delete" class="button">Clear</button>
                 </div>
-                <div class="timer" style="display: none;">
-
+                <div id="timer-content" style="display: none;">
+                    <button id="" class="button">START TIMER</button>
+                    <button id="" class="button">PAUSE TIMER</button>
+                    <button id="" class="button">RESET TIMER</button>
+                    <select id="">
+                        <option>10 MIN</option>
+                        <option>15 MIN</option>
+                        <option>20 MIN</option>
+                        <option>30 MIN</option>
+                    </select>
+                    <button id="" class="button">SET TIMER</button>
                 </div>
-                
+
             </div>
 
 

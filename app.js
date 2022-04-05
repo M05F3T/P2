@@ -5,7 +5,7 @@ const server = require('http').Server(app);
 
 
 //Global variables
-const PORT = 4200;
+const PORT = 3000;
 const defaultWorldsActive = false; //default worlds with no active players wont be deleted.   
 const servThisFile = '/client/index.html'
 const allowAccessTo = '/client'
