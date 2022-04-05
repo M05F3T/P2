@@ -250,7 +250,6 @@ function initializeConnection(socket) {
 }
 
 function hostServer(data, player, socket) {
-
     let world = World();
 
     player.color = data.color;
@@ -388,6 +387,9 @@ function updateMousePos(data, socket) {
 }
 
 function updateKeyState(data, socket, player) {
+    console.log(worlds);
+    console.log(data.worldId);
+
     if (doesWorldExist(data.worldId)) {
         if (data.inputId === "left") {
             player.pressingLeft = data.state;
@@ -442,10 +444,8 @@ function doesWorldExist(worldId, socket) {
         if (worldId === worlds[world].worldId) {
             return true;
         }
-        else {
-            return false;
-        }
     }
+    return false;
 
     /*
     The for loop has bad time complexity maybe one of these methods work better?
