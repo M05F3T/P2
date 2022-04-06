@@ -319,7 +319,6 @@ function getServerData() {
 function createIdea() {
     canUseKeyboard = false
     
-
     const createIdeaCancelButton = document.getElementById("create-idea-cancel-button");
     const ideaName = document.getElementById("idea-name");
     const ideaDescription = document.getElementById("idea-description");
@@ -329,9 +328,15 @@ function createIdea() {
 
     createIdeaContent.style.display = "flex";
 
+    createIdeaCancelButton.addEventListener("click", () => {
+        createIdeaContent.style.display = "none";
+        canUseKeyboard = true;
+    });
+
     createIdeaButton.addEventListener("click", () => {
         if(ideaName.value === "") {
             alert("You have to specify a title");
+            createIdea();
         } else{
             console.log("i fired!");
             dataObj = {
