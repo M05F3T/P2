@@ -3,9 +3,9 @@ const socket = io();
 
 const canvas = document.getElementById("ctx");
 const ctx = document.getElementById("ctx").getContext("2d");
-const spawnBtn = document.getElementById("spawn");
-const clearBtn = document.getElementById("delete");
+
 const idText = document.getElementById("worldId");
+const clearBtn = document.getElementById("delete");
 
 
 const formMenu = document.getElementById("form-menu");
@@ -22,11 +22,13 @@ let myId;
 let localWorld;
 let hover = false;
 let targetEntityId;
+let canUseKeyboard = true;
 
 
 getServerData();
 sendClientData();
 navigationListeners();
+popUpListeners();
 
 let mouseX;
 let mouseY;
@@ -157,9 +159,7 @@ function resetCanvas() {
 
 function sendClientData() {
 
-    spawnBtn.addEventListener("click", (e) => {
-        socket.emit("spawnElement", localWorld.worldId);
-    });
+
 
     clearBtn.addEventListener("click", (e) => {
         socket.emit("clear", localWorld.worldId);
@@ -201,72 +201,78 @@ function sendClientData() {
 
 
     document.onkeydown = (event) => {
-        if (event.key === 'd' || event.key === 'D') {
-            socket.emit('keyPress', {
-                inputId: 'right',
-                state: true,
-                worldId: localWorld.worldId
-            })
-        } else if (event.key === 's' || event.key === 'S') {
-            socket.emit('keyPress', {
-                inputId: 'down',
-                state: true,
-                worldId: localWorld.worldId
-            })
-        } else if (event.key === 'a' || event.key === 'A') {
-            socket.emit('keyPress', {
-                inputId: 'left',
-                state: true,
-                worldId: localWorld.worldId
-            })
-        } else if (event.key === 'w' || event.key === 'W') {
-            socket.emit('keyPress', {
-                inputId: 'up',
-                state: true,
-                worldId: localWorld.worldId
-            })
-        } else if (event.key === 'e' || event.key === 'E') {
+        if (canUseKeyboard === true) {
+            if (event.key === 'd' || event.key === 'D') {
+                socket.emit('keyPress', {
+                    inputId: 'right',
+                    state: true,
+                    worldId: localWorld.worldId
+                })
+            } else if (event.key === 's' || event.key === 'S') {
+                socket.emit('keyPress', {
+                    inputId: 'down',
+                    state: true,
+                    worldId: localWorld.worldId
+                })
+            } else if (event.key === 'a' || event.key === 'A') {
+                socket.emit('keyPress', {
+                    inputId: 'left',
+                    state: true,
+                    worldId: localWorld.worldId
+                })
+            } else if (event.key === 'w' || event.key === 'W') {
+                socket.emit('keyPress', {
+                    inputId: 'up',
+                    state: true,
+                    worldId: localWorld.worldId
+                })
+            } else if (event.key === 'e' || event.key === 'E') {
 
-            socket.emit('keyPress', {
-                inputId: 'pickUpKeyPressed',
-                state: true,
-                worldId: localWorld.worldId
-            })
+                socket.emit('keyPress', {
+                    inputId: 'pickUpKeyPressed',
+                    state: true,
+                    worldId: localWorld.worldId
+                })
+            }
         }
+
     }
 
     document.onkeyup = (event) => {
-        if (event.key === 'd' || event.key === 'D') {
-            socket.emit('keyPress', {
-                inputId: 'right',
-                state: false,
-                worldId: localWorld.worldId
-            })
-        } else if (event.key === 's' || event.key === 'S') {
-            socket.emit('keyPress', {
-                inputId: 'down',
-                state: false,
-                worldId: localWorld.worldId
-            })
-        } else if (event.key === 'a' || event.key === 'A') {
-            socket.emit('keyPress', {
-                inputId: 'left',
-                state: false,
-                worldId: localWorld.worldId
-            })
-        } else if (event.key === 'w' || event.key === 'W') {
-            socket.emit('keyPress', {
-                inputId: 'up',
-                state: false,
-                worldId: localWorld.worldId
-            })
-        } else if (event.key === 'e' || event.key === 'E') {
-            socket.emit('keyPress', {
-                inputId: 'pickUpKeyPressed',
-                state: false,
-                worldId: localWorld.worldId
-            })
+        if (canUseKeyboard === true) {
+            if (event.key === 'd' || event.key === 'D') {
+                socket.emit('keyPress', {
+                    inputId: 'right',
+                    state: false,
+                    worldId: localWorld.worldId
+                })
+            } else if (event.key === 's' || event.key === 'S') {
+                socket.emit('keyPress', {
+                    inputId: 'down',
+                    state: false,
+                    worldId: localWorld.worldId
+                })
+            } else if (event.key === 'a' || event.key === 'A') {
+                socket.emit('keyPress', {
+                    inputId: 'left',
+                    state: false,
+                    worldId: localWorld.worldId
+                })
+            } else if (event.key === 'w' || event.key === 'W') {
+                socket.emit('keyPress', {
+                    inputId: 'up',
+                    state: false,
+                    worldId: localWorld.worldId
+                })
+            } else if (event.key === 'e' || event.key === 'E') {
+                socket.emit('keyPress', {
+                    inputId: 'pickUpKeyPressed',
+                    state: false,
+                    worldId: localWorld.worldId
+                })
+            }
         }
+
     }
 
 }
@@ -307,6 +313,51 @@ function getServerData() {
     socket.on("error", (message) => {
         alert(message);
     });
+}
+
+
+function createIdea() {
+    canUseKeyboard = false
+    
+
+    const createIdeaCancelButton = document.getElementById("create-idea-cancel-button");
+    const ideaName = document.getElementById("idea-name");
+    const ideaDescription = document.getElementById("idea-description");
+    const createIdeaButton = document.getElementById("create-idea-button")
+
+    const createIdeaContent = document.getElementById("create-idea");
+
+    createIdeaContent.style.display = "flex";
+
+    createIdeaButton.addEventListener("click", () => {
+        if(ideaName.value === "") {
+            alert("You have to specify a title");
+        } else{
+            console.log("i fired!");
+            dataObj = {
+                ideaName: ideaName.value,
+                ideaDescription: ideaDescription.value,
+                worldId: localWorld.worldId
+            }
+
+            socket.emit("spawnElement", dataObj);
+
+            createIdeaContent.style.display = "none";
+            canUseKeyboard = true;
+        }
+    },{once : true});
+
+
+}
+
+function popUpListeners() {
+    const spawnBtn = document.getElementById("spawn");
+
+
+    spawnBtn.addEventListener("mouseup", (e) => {
+        createIdea();
+    });
+
 }
 
 function navigationListeners() {
