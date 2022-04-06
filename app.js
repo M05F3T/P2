@@ -265,7 +265,9 @@ function hostServer(data, player, socket) {
     //update world before updateing playerjoined
     sendServerData("worldUpdate",worlds[world.worldId]);
     
-    sendServerData("newPlayerJoined",{name: data.name,color: data.color});
+    sendWorldUpdate("newPlayerJoined",{},world.worldId);
+
+    
 
     //Send world id to client
     socket.emit("worldId", world.worldId);
@@ -286,9 +288,9 @@ function joinServer(data, player, socket) {
         worlds[data.sessionId].players[socket.id] = player;
 
         //update world before updateing playerjoined
-        sendServerData("worldUpdate",worlds[data.sessionId]);
+        sendWorldUpdate("worldUpdate",worlds[data.sessionId],data.sessionId);
 
-        sendServerData("newPlayerJoined");
+        sendWorldUpdate("newPlayerJoined",{},data.sessionId);
         
 
         //Send world id to client
@@ -387,9 +389,6 @@ function updateMousePos(data, socket) {
 }
 
 function updateKeyState(data, socket, player) {
-    console.log(worlds);
-    console.log(data.worldId);
-
     if (doesWorldExist(data.worldId)) {
         if (data.inputId === "left") {
             player.pressingLeft = data.state;
@@ -460,6 +459,24 @@ function doesWorldExist(worldId, socket) {
     }
 
     */
+
+}
+
+function sendWorldUpdate(emit, obj,worldId) {
+
+    for (const key in worlds[worldId].players) {
+
+        for (let i in SOCKET_LIST) {
+            let socket = SOCKET_LIST[i];
+            if (isEmpty(worlds[worldId].players) === false && worlds[worldId].players[key].id === socket.id) {
+
+                socket.emit(emit,obj);
+
+
+            }
+        }
+
+    }
 
 }
 
