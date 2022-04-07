@@ -144,6 +144,8 @@ let Entity = (posX, posY, id) => {
         h: 150,
         w: 150,
         id: idGenerator(),
+        title: "",
+        description: "",
         color: "gray"
     }
     return self;
@@ -211,8 +213,8 @@ function startClientUpdates() {
             deleteAllEntities(id, socket);
         });
 
-        socket.on('spawnElement', (id) => {
-            spawnElement(id, socket);
+        socket.on('spawnElement', (dataObj) => {
+            spawnElement(dataObj.worldId, socket,dataObj.ideaName,dataObj.ideaDescription);
         });
 
         socket.on("playerMousePos", (data) => {
@@ -225,14 +227,35 @@ function startClientUpdates() {
 
         socket.on('disconnect', () => {
 
+            //let worldId = findPlayerWorld(socket.id);
+
             removePlayer(socket);
             //check if no players is present and delete world if empty
             deleteEmptyWorlds();
+
+            //sendWorldUpdate("worldUpdate",{},worldId);
 
             console.log("Player disconnected " + socket.id);
         });
     });
 }
+
+function findPlayerWorld(id) {
+
+    for(const world in worlds) {
+
+        for(const player in worlds[world]) {
+
+            if(worlds[world].players[player].id === id) {
+
+                return worlds[world].worldId;
+
+            }
+        }
+    }
+
+}
+
 
 function initializeConnection(socket) {
     console.log("Player connected " + socket.id);
@@ -372,10 +395,16 @@ function deleteAllEntities(id, socket) {
 
 }
 
-function spawnElement(id, socket) {
+function spawnElement(id, socket, title, description) {
     if (doesWorldExist(id, socket)) {
         let element = Entity(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
+
+        element.title = title;
+        element.description = description;
+
         worlds[id].entities[element.id] = element;
+
+        console.log(element);
     } else {
         socket.emit("error", "This world is closed please refresh and select a new world");
     }
