@@ -227,14 +227,35 @@ function startClientUpdates() {
 
         socket.on('disconnect', () => {
 
+            //let worldId = findPlayerWorld(socket.id);
+
             removePlayer(socket);
             //check if no players is present and delete world if empty
             deleteEmptyWorlds();
+
+            //sendWorldUpdate("worldUpdate",{},worldId);
 
             console.log("Player disconnected " + socket.id);
         });
     });
 }
+
+function findPlayerWorld(id) {
+
+    for(const world in worlds) {
+
+        for(const player in worlds[world]) {
+
+            if(worlds[world].players[player].id === id) {
+
+                return worlds[world].worldId;
+
+            }
+        }
+    }
+
+}
+
 
 function initializeConnection(socket) {
     console.log("Player connected " + socket.id);
