@@ -317,6 +317,9 @@ function getServerData() {
 
 
 function createIdea() {
+    const spawnBtn = document.getElementById("spawn-card");
+
+    spawnBtn.disabled = true;
     canUseKeyboard = false
     
     const createIdeaCancelButton = document.getElementById("create-idea-cancel-button");
@@ -331,6 +334,8 @@ function createIdea() {
     createIdeaCancelButton.addEventListener("click", () => {
         createIdeaContent.style.display = "none";
         canUseKeyboard = true;
+        spawnBtn.disabled = false;
+
     });
 
     createIdeaButton.addEventListener("click", () => {
@@ -349,19 +354,78 @@ function createIdea() {
 
             createIdeaContent.style.display = "none";
             canUseKeyboard = true;
+
+            spawnBtn.disabled = false;
+
         }
     },{once : true});
 
 
 }
 
+function createList() {
+    const spawnList = document.getElementById("spawn-list");
+
+    spawnList.disabled = true;
+
+
+    canUseKeyboard = false
+    
+    const createListCancelButton = document.getElementById("create-list-cancel-button");
+    const listName = document.getElementById("list-name");
+    const createListButton = document.getElementById("create-list-button")
+
+    const ListContent = document.getElementById("create-list");
+
+    ListContent.style.display = "flex";
+
+    createListCancelButton.addEventListener("click", () => {
+        ListContent.style.display = "none";
+        canUseKeyboard = true;
+        spawnList.disabled = false;
+    });
+
+    createListButton.addEventListener("click", () => {
+        if(listName.value === "") {
+            alert("You have to specify a title");
+            createList();
+        }else {
+
+            alert("you've created a list!");
+
+            //socket.emit create list here
+
+
+            //close form
+            ListContent.style.display = "none";
+            canUseKeyboard = true;
+
+            spawnList.disabled = false;
+
+        }
+
+
+        
+
+        
+    },{once : true});
+
+}
+
+
 function popUpListeners() {
-    const spawnBtn = document.getElementById("spawn");
+    const spawnBtn = document.getElementById("spawn-card");
+    const spawnList = document.getElementById("spawn-list");
 
 
     spawnBtn.addEventListener("mouseup", (e) => {
         createIdea();
     });
+
+    spawnList.addEventListener("mouseup", (e) => {
+        createList();
+    });
+
 
 }
 
