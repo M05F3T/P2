@@ -54,8 +54,18 @@ function drawElements(data) {
         ctx.rect(data.entities[key].x, data.entities[key].y,  data.entities[key].w,data.entities[key].h);
         ctx.fill();
         ctx.stroke();
-    }
 
+        drawCardText(data.entities[key].title, data.entities[key].x + (data.entities[key].w / 2),data.entities[key].y + (data.entities[key].h / 2));
+    }
+}
+
+
+function drawCardText(title,x,y) {
+        ctx.font = "20px Arial";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "black";
+        ctx.textBaseline = "middle";
+        ctx.fillText(title, x, y);
 }
 
 function drawLists(data) {
@@ -162,6 +172,8 @@ function drawPlayers(data) {
             ctx.rect(data.players[key].connectedEntity.x, data.players[key].connectedEntity.y,  data.players[key].connectedEntity.w,data.players[key].connectedEntity.h);
             ctx.fill();
             ctx.stroke();
+
+            drawCardText(data.players[key].connectedEntity.title,data.players[key].connectedEntity.x + (data.players[key].connectedEntity.w / 2), data.players[key].connectedEntity.y + (data.players[key].connectedEntity.h / 2));
         }
 
     }
