@@ -156,6 +156,7 @@ let World = () => {
         worldId: nanoid(6),
         name: "This is the world name",
         listCount: 0,
+        maxListCount: 5,
         players: {
 
         },
@@ -239,14 +240,20 @@ function startClientUpdates() {
             socket.emit("updateLists", worlds[dataObj.worldId]);
         });
 
-        /*
-        OLD
-        socket.on("removeSelectedList", (id, listId) => {
+        socket.on("removeSelectedList", (id, listTitle) => {
+            console.log("trying to remove list with title:" + listTitle);
+            console.log(listTitle);
+            let listId;
+            for (const key in worlds[id].lists) {
+                if (worlds[id].lists[key].title === listTitle) {
+                    listId = worlds[id].lists[key].id;
+                }
+            }
             delete worlds[id].lists[listId];
             console.log("Removed list with id: " + listId);
+            --worlds[id].listCount;
             socket.emit("updateLists", worlds[id]);
         });
-        */
 
         socket.on("playerMousePos", (data) => {
             updateMousePos(data, socket);
@@ -442,17 +449,25 @@ function spawnElement(id, socket, title, description) {
 }
 
 function spawnList(id, socket, title) {
-    if (doesWorldExist(id, socket)) {
-        let list = List(worlds[id].listCount * 300 + 50, 70, title);
-        worlds[id].lists[list.id] = list;
-        console.log("Spawned list: " + list);
-        worlds[id].listCount++;
+    if (worlds[id].listCount <= worlds[id].maxListCount) {
+        if (doesWorldExist(id, socket)) {
+            let list = List(worlds[id].listCount * 300 + 50, 70, title);
+            worlds[id].lists[list.id] = list;
+            console.log("Spawned list with title: " + list.title);
+            worlds[id].listCount++;
+        } else {
+            socket.emit(
+                "error",
+                "This world is closed please refresh and select a new world"
+            );
+        }
     } else {
         socket.emit(
             "error",
-            "This world is closed please refresh and select a new world"
+            "Reached max of 5 lists"
         );
     }
+        
 }
 
 function updateMousePos(data, socket) {
@@ -497,15 +512,12 @@ function removePlayer(socket) {
 
 function determineIndicatorColor(colorHex) {
     var color1 = tinycolor(colorHex);
-
     if(color1.getBrightness() > 128){ //get brightness returns value between 0 - 255 with 0 being darkest
         return "#000" //return black
     }
     else {
         return "#fff"   //return white
     }
-     
-
 }
 
 function isEmpty(obj) {

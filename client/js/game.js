@@ -15,7 +15,8 @@ const joinBtn = document.getElementById("join");
 const worldSelect = document.getElementById("worldSelect");
 const colorInput = document.getElementById("color");
 const nameInput = document.getElementById("name");
-
+    
+const listSelector = document.getElementById("listSelector");
 
 
 let myId;
@@ -29,6 +30,7 @@ getServerData();
 sendClientData();
 navigationListeners();
 popUpListeners();
+deleteListeners();
 
 let mouseX;
 let mouseY;
@@ -441,8 +443,6 @@ function createList() {
 }
 
 function updateListSelector(data) {
-    const listSelector = document.getElementById("listSelector");
-
     var child = listSelector.lastElementChild;
     while (child) {
         listSelector.removeChild(child);
@@ -454,6 +454,18 @@ function updateListSelector(data) {
     }
 }
 
+function deleteListeners() {
+    const deleteListButton = document.getElementById("delete-list");
+
+    deleteListButton.addEventListener("click", (e) => {
+        deleteList();
+    });
+}
+
+function deleteList() {
+    console.log(localWorld.worldId);
+    socket.emit("removeSelectedList", localWorld.worldId, listSelector.value);
+}
 
 function popUpListeners() {
     const spawnBtn = document.getElementById("spawn-card");
@@ -467,8 +479,6 @@ function popUpListeners() {
     spawnList.addEventListener("mouseup", (e) => {
         createList();
     });
-
-
 }
 
 function navigationListeners() {
