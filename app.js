@@ -156,7 +156,7 @@ let World = () => {
         worldId: nanoid(6),
         name: "This is the world name",
         listCount: 0,
-        maxListCount: 5,
+        maxListCount: 5 - 1,
         players: {
 
         },
@@ -452,7 +452,7 @@ function spawnElement(id, socket, title, description,w) {
 function spawnList(id, socket, title) {
     if (worlds[id].listCount <= worlds[id].maxListCount) {
         if (doesWorldExist(id, socket)) {
-            let list = List(worlds[id].listCount * 300 + 50, 70, title);
+            let list = List(50, 70, title);
             worlds[id].lists[list.id] = list;
             console.log("Spawned list with title: " + list.title);
             worlds[id].listCount++;
