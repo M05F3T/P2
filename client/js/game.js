@@ -51,7 +51,7 @@ function drawElements(data) {
         ctx.beginPath();
         ctx.lineWidth = 1;
         ctx.fillStyle = data.entities[key].color;
-        ctx.rect(data.entities[key].x, data.entities[key].y, data.entities[key].h, data.entities[key].w);
+        ctx.rect(data.entities[key].x, data.entities[key].y,  data.entities[key].w,data.entities[key].h);
         ctx.fill();
         ctx.stroke();
     }
@@ -159,7 +159,7 @@ function drawPlayers(data) {
             ctx.beginPath();
             ctx.strokeStyle = data.players[key].color;
             ctx.fillStyle = data.players[key].connectedEntity.color;
-            ctx.rect(data.players[key].connectedEntity.x, data.players[key].connectedEntity.y, data.players[key].connectedEntity.h, data.players[key].connectedEntity.w);
+            ctx.rect(data.players[key].connectedEntity.x, data.players[key].connectedEntity.y,  data.players[key].connectedEntity.w,data.players[key].connectedEntity.h);
             ctx.fill();
             ctx.stroke();
         }
@@ -373,6 +373,8 @@ function createIdea() {
     });
 
     createIdeaButton.addEventListener("click", () => {
+        let w = ctx.measureText(ideaName.value).width + 10;
+        
         if(ideaName.value === "") {
             alert("You have to specify a title");
             createIdea();
@@ -381,7 +383,8 @@ function createIdea() {
             dataObj = {
                 ideaName: ideaName.value,
                 ideaDescription: ideaDescription.value,
-                worldId: localWorld.worldId
+                worldId: localWorld.worldId,
+                width: w
             }
 
             socket.emit("spawnElement", dataObj);

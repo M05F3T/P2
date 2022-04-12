@@ -141,8 +141,8 @@ let Entity = (posX, posY, id) => {
     let self = {
         x: posX,
         y: posY,
-        h: 150,
-        w: 150,
+        h: 65,
+        w: 0,
         id: idGenerator(),
         title: "",
         description: "",
@@ -232,7 +232,7 @@ function startClientUpdates() {
         });
 
         socket.on('spawnElement', (dataObj) => {
-            spawnElement(dataObj.worldId, socket,dataObj.ideaName,dataObj.ideaDescription);
+            spawnElement(dataObj.worldId, socket,dataObj.ideaName,dataObj.ideaDescription,dataObj.width);
         });
 
         socket.on("spawnList", (dataObj) => {
@@ -433,12 +433,13 @@ function deleteAllEntities(id, socket) {
 
 }
 
-function spawnElement(id, socket, title, description) {
+function spawnElement(id, socket, title, description,w) {
     if (doesWorldExist(id, socket)) {
         let element = Entity(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
 
         element.title = title;
         element.description = description;
+        element.w = w;
 
         worlds[id].entities[element.id] = element;
 
