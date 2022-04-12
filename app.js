@@ -236,13 +236,17 @@ function startClientUpdates() {
 
         socket.on("spawnList", (dataObj) => {
             spawnList(dataObj.worldId, socket, dataObj.listName);
+            socket.emit("updateLists", worlds[dataObj.worldId]);
         });
 
+        /*
+        OLD
         socket.on("removeSelectedList", (id, listId) => {
             delete worlds[id].lists[listId];
             console.log("Removed list with id: " + listId);
             socket.emit("updateLists", worlds[id]);
         });
+        */
 
         socket.on("playerMousePos", (data) => {
             updateMousePos(data, socket);
@@ -440,9 +444,8 @@ function spawnElement(id, socket, title, description) {
 function spawnList(id, socket, title) {
     if (doesWorldExist(id, socket)) {
         let list = List(worlds[id].listCount * 300 + 50, 70, title);
-        console.log(list);
         worlds[id].lists[list.id] = list;
-        console.log(list);
+        console.log("Spawned list: " + list);
         worlds[id].listCount++;
     } else {
         socket.emit(

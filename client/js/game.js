@@ -336,8 +336,11 @@ function getServerData() {
         localWorld = data;
         //render new update
         renderCanvas();
-
     });
+
+    socket.on("updateLists", (data) => {
+        updateListSelector(data);
+    })
 
     socket.on("error", (message) => {
         alert(message);
@@ -433,15 +436,22 @@ function createList() {
             canUseKeyboard = true;
 
             spawnList.disabled = false;
-
         }
-
-
-        
-
-        
     },{once : true});
+}
 
+function updateListSelector(data) {
+    const listSelector = document.getElementById("listSelector");
+
+    var child = listSelector.lastElementChild;
+    while (child) {
+        listSelector.removeChild(child);
+        child = listSelector.lastElementChild;
+    }
+    for (const key in data.lists) {
+        let option = new Option(data.lists[key].title, data.lists[key].title);
+        listSelector.appendChild(option);
+    }
 }
 
 
