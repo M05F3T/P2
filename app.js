@@ -155,16 +155,33 @@ let World = () => {
     let self = {
         worldId: nanoid(6),
         name: "This is the world name",
+        listCount: 0,
         players: {
 
         },
         entities: {
 
         },
+        lists: {
+
+        },
     }
 
     return self;
 }
+
+let List = (posX, posY, title) => {
+    let self = {
+        x: posX,
+        y: posY,
+        h: 200,
+        w: 300,
+        id: idGenerator(),
+        color: "gray",
+        title: title,
+    };
+    return self;
+};
 
 runServer();
 
@@ -215,6 +232,16 @@ function startClientUpdates() {
 
         socket.on('spawnElement', (dataObj) => {
             spawnElement(dataObj.worldId, socket,dataObj.ideaName,dataObj.ideaDescription);
+        });
+
+        socket.on("spawnList", (dataObj) => {
+            spawnList(dataObj.worldId, socket, dataObj.listName);
+        });
+
+        socket.on("removeSelectedList", (id, listId) => {
+            delete worlds[id].lists[listId];
+            console.log("Removed list with id: " + listId);
+            socket.emit("updateLists", worlds[id]);
         });
 
         socket.on("playerMousePos", (data) => {
@@ -407,6 +434,21 @@ function spawnElement(id, socket, title, description) {
         console.log(element);
     } else {
         socket.emit("error", "This world is closed please refresh and select a new world");
+    }
+}
+
+function spawnList(id, socket, title) {
+    if (doesWorldExist(id, socket)) {
+        let list = List(worlds[id].listCount * 300 + 50, 70, title);
+        console.log(list);
+        worlds[id].lists[list.id] = list;
+        console.log(list);
+        worlds[id].listCount++;
+    } else {
+        socket.emit(
+            "error",
+            "This world is closed please refresh and select a new world"
+        );
     }
 }
 

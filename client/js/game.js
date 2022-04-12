@@ -56,6 +56,35 @@ function drawElements(data) {
 
 }
 
+function drawLists(data) {
+    let i = 0;
+    for (const key in data.lists) {
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.fillStyle = data.lists[key].color;
+        ctx.rect(
+            data.lists[key].x,
+            data.lists[key].y,
+            data.lists[key].h,
+            data.lists[key].w
+        );
+        ctx.fill();
+        ctx.stroke();
+        
+        //draw list name
+        ctx.font = "30px Arial";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "black";
+        ctx.fillText(
+            data.lists[key].title,
+            data.lists[key].x + 100,
+            data.lists[key].y + 25
+        );
+        
+        i++;
+    }
+}
+
 function drawPickUpToolTip(data) {
     for (const key in data.players) {
         //only draws for the current clients player
@@ -142,7 +171,7 @@ function renderCanvas() {
 
     resetCanvas();
 
-
+    drawLists(localWorld);
     drawElements(localWorld);
     drawPlayers(localWorld);
     drawPickUpToolTip(localWorld);
@@ -390,11 +419,14 @@ function createList() {
             alert("You have to specify a title");
             createList();
         }else {
-
-            alert("you've created a list!");
+            //alert("you've created a list!");
+            dataObj = {
+                listName: listName.value,
+                worldId: localWorld.worldId,
+            };
 
             //socket.emit create list here
-
+            socket.emit("spawnList", dataObj);
 
             //close form
             ListContent.style.display = "none";
