@@ -70,30 +70,45 @@ function drawCardText(title,x,y) {
 
 function drawLists(data) {
     let i = localWorld.listCount - 1;
-
+    
     for (const key in data.lists) {
         ctx.beginPath();
         ctx.lineWidth = 1;
         ctx.fillStyle = data.lists[key].color;
-        console.log(i);
         ctx.rect(
-            data.lists[key].x + (i * 300),
+            data.lists[key].x,
             data.lists[key].y,
             data.lists[key].h,
             data.lists[key].w
         );
         ctx.fill();
         ctx.stroke();
-        
+
         //draw list name
         ctx.font = "30px Arial";
         ctx.textAlign = "center";
         ctx.fillStyle = "black";
         ctx.fillText(
             data.lists[key].title,
-            data.lists[key].x + 100 + (i * 300),
+            data.lists[key].x + 100 + i * 300,
             data.lists[key].y + 25
         );
+
+        //draw ideas
+        let containedIdeasCount = 0;
+        for (const object in data.lists[key].containedIdeas) {
+            console.log(object);
+            ctx.font = "15px Arial";
+            ctx.textAlign = "center";
+            ctx.fillStyle = "black";
+            ctx.fillText(
+                data.lists[key].containedIdeas[object].title,
+                data.lists[key].x + 100,
+                data.lists[key].y + 45 + containedIdeasCount * 20
+            );
+            ++containedIdeasCount;
+        }
+
         i--;
     }
 }

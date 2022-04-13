@@ -171,15 +171,40 @@ let World = () => {
     return self;
 }
 
-let List = (posX, posY, title) => {
+let List = (posX, posY, title, myWorldId) => {
     let self = {
         x: posX,
         y: posY,
         h: 200,
         w: 300,
         id: idGenerator(),
+        myWorldId: myWorldId,
         color: "gray",
         title: title,
+        containedIdeas: {}
+    };
+    self.detect_colision = () => {
+        for (const key in worlds[self.myWorldId].entities) {
+            let object = worlds[self.myWorldId].entities[key];
+            if (
+                self.x  < object.x + object.w &&
+                self.x + self.w  > object.x &&
+                self.y < object.y + object.h &&
+                self.h + self.y > object.y
+            ) {
+                console.log(`COLISSION: list: ${self.title} and ${object.id}`)
+                self.connectToList(object);
+            } else {
+                console.log("ingen collision")
+            }
+        }
+    };
+    self.connectToList = (idea) => {
+        self.containedIdeas[idea.id] = idea;
+        console.log(
+            `list: ${self.id} connected an idea: ${self.containedIdeas[idea.id]}`
+        );
+        delete worlds[self.myWorldId].entities[idea.id];
     };
     return self;
 };
@@ -371,11 +396,14 @@ function startGameLoop() {
 
             for (const world in worlds) {
 
+                for (const key in worlds[world].lists) {
+                    worlds[world].lists[key].detect_colision();
+                }
+
                 for (const key in worlds[world].players) {
 
                     worlds[world].players[key].updatePosistion();
                     worlds[world].players[key].detect_colision();
-
 
                     for (let i in SOCKET_LIST) {
                         let socket = SOCKET_LIST[i];
@@ -452,7 +480,7 @@ function spawnElement(id, socket, title, description,w) {
 function spawnList(id, socket, title) {
     if (worlds[id].listCount <= worlds[id].maxListCount) {
         if (doesWorldExist(id, socket)) {
-            let list = List(50, 70, title);
+            let list = List(50 + worlds[id].listCount * 300, 70, title, id);
             worlds[id].lists[list.id] = list;
             console.log("Spawned list with title: " + list.title);
             worlds[id].listCount++;
