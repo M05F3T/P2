@@ -175,8 +175,8 @@ let List = (posX, posY, title, myWorldId) => {
     let self = {
         x: posX,
         y: posY,
-        h: 200,
-        w: 300,
+        w: 200,
+        h: 300,
         id: idGenerator(),
         myWorldId: myWorldId,
         color: "gray",
@@ -208,6 +208,14 @@ let List = (posX, posY, title, myWorldId) => {
     };
     return self;
 };
+
+/*  Collision squares conditional
+    self.x  < object.x + object.w &&
+    self.x + self.w  > object.x &&
+    self.y < object.y + object.h &&
+    self.h + self.y > object.y
+*/
+
 
 runServer();
 

@@ -78,8 +78,8 @@ function drawLists(data) {
         ctx.rect(
             data.lists[key].x,
             data.lists[key].y,
-            data.lists[key].h,
-            data.lists[key].w
+            data.lists[key].w,
+            data.lists[key].h
         );
         ctx.fill();
         ctx.stroke();
@@ -90,7 +90,7 @@ function drawLists(data) {
         ctx.fillStyle = "black";
         ctx.fillText(
             data.lists[key].title,
-            data.lists[key].x + 100 + i * 300,
+            data.lists[key].x + 100,
             data.lists[key].y + 25
         );
 
@@ -453,7 +453,7 @@ function createList() {
     createListButton.addEventListener("click", () => {
         if(listName.value === "") {
             alert("You have to specify a title");
-            createList();
+            //createList();
         }else {
             //alert("you've created a list!");
             dataObj = {
