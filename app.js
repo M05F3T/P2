@@ -282,8 +282,16 @@ function startClientUpdates() {
                     listId = worlds[id].lists[key].id;
                 }
             }
+            let tempListCount = 0;
+            
             delete worlds[id].lists[listId];
             console.log("Removed list with id: " + listId);
+
+            for (const key in worlds[id].lists) {
+                worlds[id].lists[key].x = 50 + tempListCount * 300;
+                tempListCount++;
+            }
+
             --worlds[id].listCount;
             socket.emit("updateLists", worlds[id]);
         });

@@ -370,6 +370,7 @@ function getServerData() {
 
     socket.on("updateLists", (data) => {
         updateListSelector(data);
+        insertIdeasToListsTab();
     })
 
     socket.on("error", (message) => {
@@ -536,6 +537,7 @@ function navigationListeners() {
         listsContent.style.display = "block";
         ideasContent.style.display = "none";
         timerContent.style.display = "none";
+        insertIdeasToListsTab(); 
     });
 
     ideasButton.addEventListener("click", (e) => {
@@ -597,13 +599,42 @@ function insertPlayersHtmlElement() {
         //insert the new row
         scrollBox.appendChild(new_row)
     }
-
-
-
-
-
-
 }
+
+//Inserts ideas to scroll box in the lists tab
+function insertIdeasToListsTab() {
+    const scrollBox = document.getElementById("listScrollBox");
+    let listId;
+
+    //clear scrollBox
+    scrollBox.innerHTML = "";
+    for (const key in localWorld.lists) {
+        if (localWorld.lists[key].title === listSelector.value) {
+            listId = localWorld.lists[key].id;
+        }
+    }
+
+    for (const key in localWorld.lists[listId].containedIdeas) {
+        //create container div
+        let new_row = document.createElement("div");
+        new_row.className = "idea-element";
+
+        //insert paragraph with name in div
+        let paragraph = document.createElement("p");
+        paragraph.innerHTML = localWorld.lists[listId].containedIdeas[title];
+
+        let colorDiv = document.createElement("div");
+        colorDiv.className = "circle";
+        colorDiv.style.backgroundColor = localWorld.lists[listId].containedIdeas[color];
+
+        new_row.appendChild(paragraph);
+        new_row.appendChild(colorDiv);
+
+        //insert the new row
+        scrollBox.appendChild(new_row);
+    }
+}
+
 
 canvas.onmousemove = function (e) {
     // Get the current mouse position
