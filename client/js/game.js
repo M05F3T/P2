@@ -496,7 +496,15 @@ function deleteListeners() {
 
 function deleteList() {
     console.log(localWorld.worldId);
-    socket.emit("removeSelectedList", localWorld.worldId, listSelector.value);
+    if (localWorld.listCount > 0) {
+        socket.emit(
+            "removeSelectedList",
+            localWorld.worldId,
+            listSelector.value
+        );
+    } else {
+        alert("There are no lists to remove");
+    }
 }
 
 function popUpListeners() {
