@@ -97,7 +97,6 @@ function drawLists(data) {
         //draw ideas
         let containedIdeasCount = 0;
         for (const object in data.lists[key].containedIdeas) {
-            console.log(object);
             ctx.font = "15px Arial";
             ctx.textAlign = "center";
             ctx.fillStyle = "black";
@@ -340,7 +339,6 @@ function getServerData() {
 
     socket.on("sendId", (data) => {
         myId = data;
-        console.log(`my socket ID is: ${myId}`);
     });
 
     socket.on("worldId", (worldId) => {
@@ -355,9 +353,8 @@ function getServerData() {
     });
 
     socket.on("newPlayerJoined", () => {
-
         insertPlayersHtmlElement();
-
+        updateListSelector(localWorld);
     });
 
     socket.on("worldUpdate", (data) => {
@@ -408,7 +405,6 @@ function createIdea() {
             alert("You have to specify a title");
             createIdea();
         } else{
-            console.log("i fired!");
             dataObj = {
                 ideaName: ideaName.value,
                 ideaDescription: ideaDescription.value,
@@ -495,7 +491,6 @@ function deleteListeners() {
 }
 
 function deleteList() {
-    console.log(localWorld.worldId);
     if (localWorld.listCount > 0) {
         socket.emit(
             "removeSelectedList",
@@ -566,6 +561,11 @@ function navigationListeners() {
         alert("u went back in time!!!!");
     });
 
+    listSelector.addEventListener("change", () => {
+        console.log("I changed");
+        insertIdeasToListsTab();
+    })
+
 
 }
 //----helper functions---
@@ -617,11 +617,14 @@ function insertIdeasToListsTab() {
     //clear scrollBox
     scrollBox.innerHTML = "";
     for (const key in localWorld.lists) {
+        console.log(localWorld.lists[key].title);
+        console.log(listSelector.value);
         if (localWorld.lists[key].title === listSelector.value) {
-            listId = localWorld.lists[key].id;
+            listId = key;
         }
     }
 
+    console.log("Selected list: " + listId);
     for (const key in localWorld.lists[listId].containedIdeas) {
         //create container div
         let new_row = document.createElement("div");
@@ -629,11 +632,11 @@ function insertIdeasToListsTab() {
 
         //insert paragraph with name in div
         let paragraph = document.createElement("p");
-        paragraph.innerHTML = localWorld.lists[listId].containedIdeas[title];
+        paragraph.innerHTML = localWorld.lists[listId].containedIdeas[key].title;
 
         let colorDiv = document.createElement("div");
         colorDiv.className = "circle";
-        colorDiv.style.backgroundColor = localWorld.lists[listId].containedIdeas[color];
+        colorDiv.style.backgroundColor = localWorld.lists[listId].containedIdeas[key].title;
 
         new_row.appendChild(paragraph);
         new_row.appendChild(colorDiv);
@@ -658,7 +661,6 @@ canvas.onmousemove = function (e) {
             if (x >= localWorld.entities[key].x && x <= localWorld.entities[key].x + localWorld.entities[key].w && y >= localWorld.entities[key].y && y <= localWorld.entities[key].y + localWorld.entities[key].h) {
                 hover = true
                 targetEntityId = localWorld.entities[key].id;
-                console.log(`I FOUND ENTITY: ${localWorld.entities[key].id}`);
 
                 document.body.style.cursor = "pointer";
                 break;
