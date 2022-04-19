@@ -273,15 +273,10 @@ function startClientUpdates() {
             socket.emit("updateLists", worlds[dataObj.worldId]);
         });
 
-        socket.on("removeSelectedList", (id, listTitle) => {
-            console.log("trying to remove list with title:" + listTitle);
-            console.log(listTitle);
-            let listId;
-            for (const key in worlds[id].lists) {
-                if (worlds[id].lists[key].title === listTitle) {
-                    listId = worlds[id].lists[key].id;
-                }
-            }
+        socket.on("removeSelectedList", (id, listId) => {
+            console.log("trying to remove list with id:" + listId);
+            console.log(listId);
+            
             let tempListCount = 0;
             
             delete worlds[id].lists[listId];
