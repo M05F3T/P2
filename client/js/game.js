@@ -477,7 +477,7 @@ function updateListSelector(data) {
         child = listSelector.lastElementChild;
     }
     for (const key in data.lists) {
-        let option = new Option(data.lists[key].title, data.lists[key].title);
+        let option = new Option(data.lists[key].title, data.lists[key].id);
         listSelector.appendChild(option);
     }
 }
@@ -612,17 +612,10 @@ function insertPlayersHtmlElement() {
 //Inserts ideas to scroll box in the lists tab
 function insertIdeasToListsTab() {
     const scrollBox = document.getElementById("listScrollBox");
-    let listId;
+    let listId = listSelector.value;
 
     //clear scrollBox
     scrollBox.innerHTML = "";
-    for (const key in localWorld.lists) {
-        console.log(localWorld.lists[key].title);
-        console.log(listSelector.value);
-        if (localWorld.lists[key].title === listSelector.value) {
-            listId = key;
-        }
-    }
 
     console.log("Selected list: " + listId);
     for (const key in localWorld.lists[listId].containedIdeas) {
