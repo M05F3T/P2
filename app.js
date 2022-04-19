@@ -270,7 +270,8 @@ function startClientUpdates() {
 
         socket.on("spawnList", (dataObj) => {
             spawnList(dataObj.worldId, socket, dataObj.listName);
-            socket.emit("updateLists", worlds[dataObj.worldId]);
+            sendWorldUpdate("updateLists",worlds[dataObj.worldId],dataObj.worldId);
+            //socket.emit("updateLists", worlds[dataObj.worldId]);
         });
 
         socket.on("removeSelectedList", (id, listId) => {
@@ -288,7 +289,8 @@ function startClientUpdates() {
             }
 
             --worlds[id].listCount;
-            socket.emit("updateLists", worlds[id]);
+            sendWorldUpdate("updateLists",worlds[id],id);
+            //socket.emit("updateLists", worlds[id]);
         });
 
         socket.on("playerMousePos", (data) => {
