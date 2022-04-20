@@ -1,3 +1,6 @@
+const settings = require('./js/settings.js');
+
+
 const express = require('express');
 const { v4: idGenerator } = require("uuid");
 var { nanoid } = require("nanoid");
@@ -8,10 +11,6 @@ const server = require('http').Server(app);
 
 
 //Global variables
-const PORT = 3000;
-const defaultWorldsActive = false; //default worlds with no active players wont be deleted.   
-const servThisFile = '/client/index.html'
-const allowAccessTo = '/client'
 
 let SOCKET_LIST = {}; //keeps tracks of connected clients
 let worlds = {} //holds data on all current worlds
@@ -224,7 +223,7 @@ function runServer() {
 
     createDefaultWorlds();
 
-    startExpress(servThisFile, allowAccessTo);
+    startExpress(settings.servThisFile, settings.allowAccessTo);
 
     startClientUpdates();
 
@@ -240,8 +239,8 @@ function startExpress(filePath, directoryPath) {
     //User can accses all files in /client (ex: http://www.hostwebsite.com/client/img.jpg)
     app.use('/client', express.static(__dirname + directoryPath));
 
-    server.listen(PORT);
-    console.log("Server started.. " + PORT);
+    server.listen(settings.PORT);
+    console.log("Server started.. " + settings.PORT);
 
 }
 
@@ -438,7 +437,7 @@ function startGameLoop() {
 }
 
 function createDefaultWorlds() {
-    if (defaultWorldsActive) {
+    if (settings.defaultWorldsActive) {
         let defaultWorld = World();
         defaultWorld.name = "Default World";
         worlds[defaultWorld.worldId] = defaultWorld;
