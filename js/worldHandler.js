@@ -1,4 +1,5 @@
-const settings = require('./settings.js')
+const settings = require('./settings.js');
+const objConstructor = require('./objConstructors.js');
 
 
 var tinycolor = require("tinycolor2");
@@ -15,9 +16,6 @@ function createDefaultWorlds() {
         worlds[defaultWorld.worldId] = defaultWorld;
     }
 }
-
-
-
 
 function listCurrentWorld() {
     let list = { };
@@ -177,11 +175,11 @@ function initializeConnection(socket) {
 
     socket.emit("currentWorlds", currentWorlds)
 
-    return Player(socket.id);
+    return objConstructor.Player(socket.id);
 }
 
 function hostServer(data, player, socket) {
-    let world = World();
+    let world = objConstructor.World();
 
     player.color = data.color;
     player.name = data.name;
@@ -235,11 +233,9 @@ function joinServer(data, player, socket) {
 
 }
 
-
-
 function spawnElement(id, socket, title, description,w) {
     if (doesWorldExist(id, socket)) {
-        let element = Entity(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
+        let element = objConstructor.Entity(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
 
         element.title = title;
         element.description = description;
@@ -256,7 +252,7 @@ function spawnElement(id, socket, title, description,w) {
 function spawnList(id, socket, title) {
     if (worlds[id].listCount <= worlds[id].maxListCount) {
         if (doesWorldExist(id, socket)) {
-            let list = List(50 + worlds[id].listCount * 300, 70, title, id);
+            let list = objConstructor.List(50 + worlds[id].listCount * 300, 70, title, id);
             worlds[id].lists[list.id] = list;
             console.log("Spawned list with title: " + list.title);
             worlds[id].listCount++;
@@ -282,13 +278,13 @@ function startGameLoop() {
             for (const world in worlds) {
 
                 for (const key in worlds[world].lists) {
-                    worlds[world].lists[key].detect_colision();
+                    detect_list_colision(worlds[world].lists[key]);
                 }
 
                 for (const key in worlds[world].players) {
 
-                    worlds[world].players[key].updatePosistion();
-                    worlds[world].players[key].detect_colision();
+                    updatePosistion(worlds[world].players[key]);
+                    detect_colision(worlds[world].players[key]);
 
                     for (let i in SOCKET_LIST) {
                         let socket = SOCKET_LIST[i];
@@ -310,193 +306,131 @@ function startGameLoop() {
 }
 
 
-let Player = (id, color, name) => {
-    let self = {
-        x: 250,
-        y: 250,
-        w: 50,
-        h: 50,
-        id: id,
-        mousePos: { x: 0, y: 0 },
-        color: color,
-        viewIndicatorColor: "#000000", //black by default
-        name: name,
-        myWorldId: 0,
-        isColliding: false,
-        canPickUp: true,
-        pickUpKeyPressed: false,
-        connectedEntity: {},
-        pressingRight: false,
-        pressingLeft: false,
-        pressingUp: false,
-        pressingDown: false,
-        maxSpd: 10,
+
+/*PLAYER LOGIC */
+
+function updatePosistion(playerObj) {
+    //move oneway
+
+
+    if (playerObj.pressingRight && !playerObj.pressingLeft && !playerObj.pressingUp && !playerObj.pressingDown) {
+        playerObj.x += playerObj.maxSpd;
     }
-    self.updatePosistion = () => {
-        //move oneway
+    if (playerObj.pressingLeft && !playerObj.pressingRight && !playerObj.pressingUp && !playerObj.pressingDown) {
+        playerObj.x -= playerObj.maxSpd;
+    }
+    if (playerObj.pressingUp && !playerObj.pressingRight && !playerObj.pressingLeft && !playerObj.pressingDown) {
+        playerObj.y -= playerObj.maxSpd;
+    }
+    if (playerObj.pressingDown && !playerObj.pressingRight && !playerObj.pressingUp && !playerObj.pressingLeft) {
+        playerObj.y += playerObj.maxSpd;
+    }
 
+    //move sideways
+    if (playerObj.pressingRight && playerObj.pressingUp) {
+        playerObj.y -= playerObj.maxSpd * 0.75; //up
+        playerObj.x += playerObj.maxSpd * 0.75; //right
+    }
+    if (playerObj.pressingRight && playerObj.pressingDown) {
+        playerObj.x += playerObj.maxSpd * 0.75; // right
+        playerObj.y += playerObj.maxSpd * 0.75; //down
+    }
+    if (playerObj.pressingDown && playerObj.pressingLeft) {
+        playerObj.x -= playerObj.maxSpd * 0.75; //left
+        playerObj.y += playerObj.maxSpd * 0.75; //down
+    }
+    if (playerObj.pressingLeft && playerObj.pressingUp) {
+        playerObj.x -= playerObj.maxSpd * 0.75; //left
+        playerObj.y -= playerObj.maxSpd * 0.75; //up
+    }
 
-        if (self.pressingRight && !self.pressingLeft && !self.pressingUp && !self.pressingDown) {
-            self.x += self.maxSpd;
-        }
-        if (self.pressingLeft && !self.pressingRight && !self.pressingUp && !self.pressingDown) {
-            self.x -= self.maxSpd;
-        }
-        if (self.pressingUp && !self.pressingRight && !self.pressingLeft && !self.pressingDown) {
-            self.y -= self.maxSpd;
-        }
-        if (self.pressingDown && !self.pressingRight && !self.pressingUp && !self.pressingLeft) {
-            self.y += self.maxSpd;
-        }
+    if (isEmpty(playerObj.connectedEntity) === false && playerObj.pickUpKeyPressed === true && playerObj.canPickUp === false) {
+        connectToWorld(playerObj);
 
-        //move sideways
-        if (self.pressingRight && self.pressingUp) {
-            self.y -= self.maxSpd * 0.75; //up
-            self.x += self.maxSpd * 0.75; //right
-        }
-        if (self.pressingRight && self.pressingDown) {
-            self.x += self.maxSpd * 0.75; // right
-            self.y += self.maxSpd * 0.75; //down
-        }
-        if (self.pressingDown && self.pressingLeft) {
-            self.x -= self.maxSpd * 0.75; //left
-            self.y += self.maxSpd * 0.75; //down
-        }
-        if (self.pressingLeft && self.pressingUp) {
-            self.x -= self.maxSpd * 0.75; //left
-            self.y -= self.maxSpd * 0.75; //up
-        }
+        setTimeout(() => {
+            playerObj.canPickUp = true;
+        }, 500)
 
-        if (isEmpty(self.connectedEntity) === false && self.pickUpKeyPressed === true && self.canPickUp === false) {
-            self.connectToWorld();
-
-            setTimeout(() => {
-                self.canPickUp = true;
-            }, 500)
-
-
-        }
-
-        if (!(isEmpty(self.connectedEntity))) {
-            self.connectedEntity.x = (self.x - self.connectedEntity.w / 2);
-            self.connectedEntity.y = (self.y - self.connectedEntity.h / 2) - 110;
-        }
 
     }
-    self.detect_colision = () => {
-        for (const key in worlds[self.myWorldId].entities) {
-            let object = worlds[self.myWorldId].entities[key];
-            if ((self.x - self.w / 2) < object.x + object.w &&
-                (self.x - self.w / 2) + self.w > object.x &&
-                (self.y - self.h / 2) < object.y + object.h &&
-                self.h + (self.y - self.h / 2) > object.y) {
+
+    if (!(isEmpty(playerObj.connectedEntity))) {
+        playerObj.connectedEntity.x = (playerObj.x - playerObj.connectedEntity.w / 2);
+        playerObj.connectedEntity.y = (playerObj.y - playerObj.connectedEntity.h / 2) - 110;
+    }
+
+}
+
+function detect_colision(playerObj) {
+    for (const key in worlds[playerObj.myWorldId].entities) {
+        let object = worlds[playerObj.myWorldId].entities[key];
+        if ((playerObj.x - playerObj.w / 2) < object.x + object.w &&
+            (playerObj.x - playerObj.w / 2) + playerObj.w > object.x &&
+            (playerObj.y - playerObj.h / 2) < object.y + object.h &&
+            playerObj.h + (playerObj.y - playerObj.h / 2) > object.y) {
 
 
-                //console.log(`COLISSION: player: ${self.id} and ${object.id}`)
+            //console.log(`COLISSION: player: ${playerObj.id} and ${object.id}`)
 
-                self.isColliding = true;
-
-
-                //pick up element
-                if (self.pickUpKeyPressed === true && self.canPickUp === true && isEmpty(self.connectedEntity)) {
-
-                    self.connectToPlayer(object);
-                    setTimeout(() => {
-                        self.canPickUp = false;
-                    }, 500)
-
-                }
+            playerObj.isColliding = true;
 
 
-            } else {
+            //pick up element
+            if (playerObj.pickUpKeyPressed === true && playerObj.canPickUp === true && isEmpty(playerObj.connectedEntity)) {
+
+                connectToPlayer(playerObj,object);
                 setTimeout(() => {
-                    self.isColliding = false;
-                }, 200);
+                    playerObj.canPickUp = false;
+                }, 500)
 
             }
+
+
+        } else {
+            setTimeout(() => {
+                playerObj.isColliding = false;
+            }, 200);
+
         }
     }
-    self.connectToWorld = () => {
-        worlds[self.myWorldId].entities[self.connectedEntity.id] = self.connectedEntity;
-        console.log(`player: ${self.id} placed an entity: ${self.connectedEntity.id}`);
-        self.connectedEntity = {};
-    }
-    self.connectToPlayer = (entity) => {
-        self.connectedEntity = entity;
-        console.log(`player: ${self.id} connected an entity: ${self.connectedEntity.id}`);
-        delete worlds[self.myWorldId].entities[entity.id];
-    }
-    return self;
 }
 
-let Entity = (posX, posY, id) => {
-    let self = {
-        x: posX,
-        y: posY,
-        h: 65,
-        w: 0,
-        id: idGenerator(),
-        title: "",
-        description: "",
-        color: "gray"
-    }
-    return self;
+function connectToWorld (playerObj) {
+    worlds[playerObj.myWorldId].entities[playerObj.connectedEntity.id] = playerObj.connectedEntity;
+    console.log(`player: ${playerObj.id} placed an entity: ${playerObj.connectedEntity.id}`);
+    playerObj.connectedEntity = {};
 }
 
-let List = (posX, posY, title, myWorldId) => {
-    let self = {
-        x: posX,
-        y: posY,
-        w: 200,
-        h: 300,
-        id: idGenerator(),
-        myWorldId: myWorldId,
-        color: "gray",
-        title: title,
-        containedIdeas: {}
-    };
-    self.detect_colision = () => {
-        for (const key in worlds[self.myWorldId].entities) {
-            let object = worlds[self.myWorldId].entities[key];
-            if (
-                self.x  < object.x + object.w &&
-                self.x + self.w  > object.x &&
-                self.y < object.y + object.h &&
-                self.h + self.y > object.y
-            ) {
-                self.connectToList(object);
-            } 
-        }
-    };
-    self.connectToList = (idea) => {
-        self.containedIdeas[idea.id] = idea;
-        console.log(
-            `list: ${self.id} connected an idea: ${self.containedIdeas[idea.id]}`
-        );
-        delete worlds[self.myWorldId].entities[idea.id];
-    };
-    return self;
+function connectToPlayer(playerObj,entity){
+    playerObj.connectedEntity = entity;
+    console.log(`player: ${playerObj.id} connected an entity: ${playerObj.connectedEntity.id}`);
+    delete worlds[playerObj.myWorldId].entities[entity.id];
+}
+
+
+/*LIST LOGIC*/
+
+function connectToList(listObj,idea) {
+    listObj.containedIdeas[idea.id] = idea;
+    console.log(
+        `list: ${listObj.id} connected an idea: ${listObj.containedIdeas[idea.id]}`
+    );
+    delete worlds[listObj.myWorldId].entities[idea.id];
 };
 
-let World = () => {
-    let self = {
-        worldId: nanoid(6),
-        name: "This is the world name",
-        listCount: 0,
-        maxListCount: 5 - 1,
-        players: {
-
-        },
-        entities: {
-
-        },
-        lists: {
-
-        },
+function detect_list_colision(listObj) {
+    for (const key in worlds[listObj.myWorldId].entities) {
+        let object = worlds[listObj.myWorldId].entities[key];
+        if (
+            listObj.x  < object.x + object.w &&
+            listObj.x + listObj.w  > object.x &&
+            listObj.y < object.y + object.h &&
+            listObj.h + listObj.y > object.y
+        ) {
+            connectToList(listObj,object);
+        } 
     }
-
-    return self;
-}
+};
 
 
 module.exports = {worlds,SOCKET_LIST,startGameLoop,spawnList,spawnElement,initializeConnection,hostServer,joinServer,determineIndicatorColor,removePlayer,sendWorldUpdate,sendServerData,createDefaultWorlds,isEmpty,listCurrentWorld,deleteEmptyWorlds,doesWorldExist,updateKeyState,updateMousePos,deleteAllEntities};

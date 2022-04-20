@@ -1,28 +1,11 @@
 const settings = require('./js/settings.js');
-
-//const objConstructor = require('./js/objConstructors.js');
 const worldHandler = require('./js/worldHandler.js');
-
-
-
-
 const express = require('express');
-
-
-
 const app = express();
 const server = require('http').Server(app);
 
-let SOCKET_LIST = worldHandler.SOCKET_LIST; //keeps tracks of connected clients
 
 
-
-/*  Collision squares conditional
-    self.x  < object.x + object.w &&
-    self.x + self.w  > object.x &&
-    self.y < object.y + object.h &&
-    self.h + self.y > object.y
-*/
 
 
 runServer();
@@ -111,13 +94,11 @@ function startClientUpdates() {
 
         socket.on('disconnect', () => {
 
-            //let worldId = findPlayerWorld(socket.id);
-
             worldHandler.removePlayer(socket);
+
             //check if no players is present and delete world if empty
             worldHandler.deleteEmptyWorlds();
 
-            //sendWorldUpdate("worldUpdate",{},worldId);
 
             console.log("Player disconnected " + socket.id);
         });
