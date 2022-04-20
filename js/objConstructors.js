@@ -78,4 +78,4 @@ let World = () => {
 
 
 
-module.exports = {Player, Entity, World,List};
+module.exports = { Player, Entity, World, List };

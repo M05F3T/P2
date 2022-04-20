@@ -4,4 +4,4 @@ const defaultWorldsActive = false; //default worlds with no active players wont 
 const servThisFile = '/client/index.html'
 const allowAccessTo = '/client'
 
-module.exports = {PORT,defaultWorldsActive,servThisFile,allowAccessTo};
+module.exports = { PORT, defaultWorldsActive, servThisFile, allowAccessTo };

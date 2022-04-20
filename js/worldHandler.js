@@ -18,7 +18,7 @@ function createDefaultWorlds() {
 }
 
 function listCurrentWorld() {
-    let list = { };
+    let list = {};
 
     for (const world in worlds) {
         list[worlds[world].worldId] = worlds[world].worldId;
@@ -70,7 +70,7 @@ function doesWorldExist(worldId, socket) {
 
 }
 
-function sendServerData(emit, obj){
+function sendServerData(emit, obj) {
 
     for (const world in worlds) {
 
@@ -80,7 +80,7 @@ function sendServerData(emit, obj){
                 let socket = SOCKET_LIST[i];
                 if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
 
-                    socket.emit(emit,obj);
+                    socket.emit(emit, obj);
 
 
                 }
@@ -91,7 +91,7 @@ function sendServerData(emit, obj){
 
 }
 
-function sendWorldUpdate(emit, obj,worldId) {
+function sendWorldUpdate(emit, obj, worldId) {
 
     for (const key in worlds[worldId].players) {
 
@@ -99,7 +99,7 @@ function sendWorldUpdate(emit, obj,worldId) {
             let socket = SOCKET_LIST[i];
             if (isEmpty(worlds[worldId].players) === false && worlds[worldId].players[key].id === socket.id) {
 
-                socket.emit(emit,obj);
+                socket.emit(emit, obj);
 
 
             }
@@ -155,7 +155,7 @@ function isEmpty(obj) {
 
 function determineIndicatorColor(colorHex) {
     var color1 = tinycolor(colorHex);
-    if(color1.getBrightness() > 128){ //get brightness returns value between 0 - 255 with 0 being darkest
+    if (color1.getBrightness() > 128) { //get brightness returns value between 0 - 255 with 0 being darkest
         return "#000" //return black
     }
     else {
@@ -192,11 +192,11 @@ function hostServer(data, player, socket) {
     worlds[world.worldId].players[socket.id] = player;
 
     //update world before updateing playerjoined
-    sendServerData("worldUpdate",worlds[world.worldId]);
-    
-    sendWorldUpdate("newPlayerJoined",{},world.worldId);
+    sendServerData("worldUpdate", worlds[world.worldId]);
 
-    
+    sendWorldUpdate("newPlayerJoined", {}, world.worldId);
+
+
 
     //Send world id to client
     socket.emit("worldId", world.worldId);
@@ -217,10 +217,10 @@ function joinServer(data, player, socket) {
         worlds[data.sessionId].players[socket.id] = player;
 
         //update world before updateing playerjoined
-        sendWorldUpdate("worldUpdate",worlds[data.sessionId],data.sessionId);
+        sendWorldUpdate("worldUpdate", worlds[data.sessionId], data.sessionId);
 
-        sendWorldUpdate("newPlayerJoined",{},data.sessionId);
-        
+        sendWorldUpdate("newPlayerJoined", {}, data.sessionId);
+
 
         //Send world id to client
         socket.emit("worldId", data.sessionId);
@@ -233,7 +233,7 @@ function joinServer(data, player, socket) {
 
 }
 
-function spawnElement(id, socket, title, description,w) {
+function spawnElement(id, socket, title, description, w) {
     if (doesWorldExist(id, socket)) {
         let element = objConstructor.Entity(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
 
@@ -268,7 +268,7 @@ function spawnList(id, socket, title) {
             "Reached max of 5 lists"
         );
     }
-        
+
 }
 
 function startGameLoop() {
@@ -284,7 +284,7 @@ function startGameLoop() {
                 for (const key in worlds[world].players) {
 
                     updatePosistion(worlds[world].players[key]);
-                    detect_colision(worlds[world].players[key]);
+                    detect_player_colision(worlds[world].players[key]);
 
                     for (let i in SOCKET_LIST) {
                         let socket = SOCKET_LIST[i];
@@ -306,6 +306,17 @@ function startGameLoop() {
 }
 
 
+function detect_colision(x1,y1,w1,h1,x2,y2,w2,h2){
+    //af en eller anden grund er den her anderledes fra collision detection på lister. kan ikke få den til at virke ens plz investigate. 
+    if((x1 - w1 / 2) < x2 + w2 &&
+    (x1 - w1 / 2) + w1 > x2 &&
+    (y1 - h1 / 2) < y2 + h2 && 
+    h1 + (y1 - h1 / 2) > y2) {
+        return true
+    } else {
+        return false
+    }
+}
 
 /*PLAYER LOGIC */
 
@@ -361,15 +372,11 @@ function updatePosistion(playerObj) {
 
 }
 
-function detect_colision(playerObj) {
+function detect_player_colision(playerObj) {
     for (const key in worlds[playerObj.myWorldId].entities) {
         let object = worlds[playerObj.myWorldId].entities[key];
-        if ((playerObj.x - playerObj.w / 2) < object.x + object.w &&
-            (playerObj.x - playerObj.w / 2) + playerObj.w > object.x &&
-            (playerObj.y - playerObj.h / 2) < object.y + object.h &&
-            playerObj.h + (playerObj.y - playerObj.h / 2) > object.y) {
-
-
+        
+        if (detect_colision(playerObj.x,playerObj.y,playerObj.w,playerObj.h,object.x,object.y,object.w,object.h)) {
             //console.log(`COLISSION: player: ${playerObj.id} and ${object.id}`)
 
             playerObj.isColliding = true;
@@ -378,7 +385,7 @@ function detect_colision(playerObj) {
             //pick up element
             if (playerObj.pickUpKeyPressed === true && playerObj.canPickUp === true && isEmpty(playerObj.connectedEntity)) {
 
-                connectToPlayer(playerObj,object);
+                connectToPlayer(playerObj, object);
                 setTimeout(() => {
                     playerObj.canPickUp = false;
                 }, 500)
@@ -395,22 +402,21 @@ function detect_colision(playerObj) {
     }
 }
 
-function connectToWorld (playerObj) {
+function connectToWorld(playerObj) {
     worlds[playerObj.myWorldId].entities[playerObj.connectedEntity.id] = playerObj.connectedEntity;
     console.log(`player: ${playerObj.id} placed an entity: ${playerObj.connectedEntity.id}`);
     playerObj.connectedEntity = {};
 }
 
-function connectToPlayer(playerObj,entity){
+function connectToPlayer(playerObj, entity) {
     playerObj.connectedEntity = entity;
     console.log(`player: ${playerObj.id} connected an entity: ${playerObj.connectedEntity.id}`);
     delete worlds[playerObj.myWorldId].entities[entity.id];
 }
 
-
 /*LIST LOGIC*/
 
-function connectToList(listObj,idea) {
+function connectToList(listObj, idea) {
     listObj.containedIdeas[idea.id] = idea;
     console.log(
         `list: ${listObj.id} connected an idea: ${listObj.containedIdeas[idea.id]}`
@@ -422,15 +428,16 @@ function detect_list_colision(listObj) {
     for (const key in worlds[listObj.myWorldId].entities) {
         let object = worlds[listObj.myWorldId].entities[key];
         if (
-            listObj.x  < object.x + object.w &&
-            listObj.x + listObj.w  > object.x &&
+            listObj.x < object.x + object.w &&
+            listObj.x + listObj.w > object.x &&
             listObj.y < object.y + object.h &&
             listObj.h + listObj.y > object.y
         ) {
-            connectToList(listObj,object);
-        } 
+            connectToList(listObj, object);
+        }
     }
 };
 
 
-module.exports = {worlds,SOCKET_LIST,startGameLoop,spawnList,spawnElement,initializeConnection,hostServer,joinServer,determineIndicatorColor,removePlayer,sendWorldUpdate,sendServerData,createDefaultWorlds,isEmpty,listCurrentWorld,deleteEmptyWorlds,doesWorldExist,updateKeyState,updateMousePos,deleteAllEntities};
+
+module.exports = { worlds, SOCKET_LIST, startGameLoop, spawnList, spawnElement, initializeConnection, hostServer, joinServer, determineIndicatorColor, removePlayer, sendWorldUpdate, sendServerData, createDefaultWorlds, isEmpty, listCurrentWorld, deleteEmptyWorlds, doesWorldExist, updateKeyState, updateMousePos, deleteAllEntities };
