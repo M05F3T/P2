@@ -1,5 +1,5 @@
 const settings = require('./js/settings.js');
-
+const worldHandler = require('./js/worldHandler.js');
 
 const express = require('express');
 const { v4: idGenerator } = require("uuid");
@@ -8,12 +8,7 @@ var tinycolor = require("tinycolor2");
 const app = express();
 const server = require('http').Server(app);
 
-
-
-//Global variables
-
 let SOCKET_LIST = {}; //keeps tracks of connected clients
-let worlds = {} //holds data on all current worlds
 
 //Object constructors
 
@@ -91,8 +86,8 @@ let Player = (id, color, name) => {
 
     }
     self.detect_colision = () => {
-        for (const key in worlds[self.myWorldId].entities) {
-            let object = worlds[self.myWorldId].entities[key];
+        for (const key in worldHandler.worlds[self.myWorldId].entities) {
+            let object = worldHandler.worlds[self.myWorldId].entities[key];
             if ((self.x - self.w / 2) < object.x + object.w &&
                 (self.x - self.w / 2) + self.w > object.x &&
                 (self.y - self.h / 2) < object.y + object.h &&
@@ -124,14 +119,14 @@ let Player = (id, color, name) => {
         }
     }
     self.connectToWorld = () => {
-        worlds[self.myWorldId].entities[self.connectedEntity.id] = self.connectedEntity;
+        worldHandler.worlds[self.myWorldId].entities[self.connectedEntity.id] = self.connectedEntity;
         console.log(`player: ${self.id} placed an entity: ${self.connectedEntity.id}`);
         self.connectedEntity = {};
     }
     self.connectToPlayer = (entity) => {
         self.connectedEntity = entity;
         console.log(`player: ${self.id} connected an entity: ${self.connectedEntity.id}`);
-        delete worlds[self.myWorldId].entities[entity.id];
+        delete worldHandler.worlds[self.myWorldId].entities[entity.id];
     }
     return self;
 }
@@ -183,8 +178,8 @@ let List = (posX, posY, title, myWorldId) => {
         containedIdeas: {}
     };
     self.detect_colision = () => {
-        for (const key in worlds[self.myWorldId].entities) {
-            let object = worlds[self.myWorldId].entities[key];
+        for (const key in worldHandler.worlds[self.myWorldId].entities) {
+            let object = worldHandler.worlds[self.myWorldId].entities[key];
             if (
                 self.x  < object.x + object.w &&
                 self.x + self.w  > object.x &&
@@ -203,7 +198,7 @@ let List = (posX, posY, title, myWorldId) => {
         console.log(
             `list: ${self.id} connected an idea: ${self.containedIdeas[idea.id]}`
         );
-        delete worlds[self.myWorldId].entities[idea.id];
+        delete worldHandler.worlds[self.myWorldId].entities[idea.id];
     };
     return self;
 };
@@ -269,8 +264,8 @@ function startClientUpdates() {
 
         socket.on("spawnList", (dataObj) => {
             spawnList(dataObj.worldId, socket, dataObj.listName);
-            sendWorldUpdate("updateLists",worlds[dataObj.worldId],dataObj.worldId);
-            //socket.emit("updateLists", worlds[dataObj.worldId]);
+            sendWorldUpdate("updateLists",worldHandler.worlds[dataObj.worldId],dataObj.worldId);
+            //socket.emit("updateLists", worldHandler.worlds[dataObj.worldId]);
         });
 
         socket.on("removeSelectedList", (id, listId) => {
@@ -279,17 +274,17 @@ function startClientUpdates() {
             
             let tempListCount = 0;
             
-            delete worlds[id].lists[listId];
+            delete worldHandler.worlds[id].lists[listId];
             console.log("Removed list with id: " + listId);
 
-            for (const key in worlds[id].lists) {
-                worlds[id].lists[key].x = 50 + tempListCount * 300;
+            for (const key in worldHandler.worlds[id].lists) {
+                worldHandler.worlds[id].lists[key].x = 50 + tempListCount * 300;
                 tempListCount++;
             }
 
-            --worlds[id].listCount;
-            sendWorldUpdate("updateLists",worlds[id],id);
-            //socket.emit("updateLists", worlds[id]);
+            --worldHandler.worlds[id].listCount;
+            sendWorldUpdate("updateLists",worldHandler.worlds[id],id);
+            //socket.emit("updateLists", worldHandler.worlds[id]);
         });
 
         socket.on("playerMousePos", (data) => {
@@ -317,13 +312,13 @@ function startClientUpdates() {
 
 function findPlayerWorld(id) {
 
-    for(const world in worlds) {
+    for(const world in worldHandler.worlds) {
 
-        for(const player in worlds[world]) {
+        for(const player in worldHandler.worlds[world]) {
 
-            if(worlds[world].players[player].id === id) {
+            if(worldHandler.worlds[world].players[player].id === id) {
 
-                return worlds[world].worldId;
+                return worldHandler.worlds[world].worldId;
 
             }
         }
@@ -354,14 +349,14 @@ function hostServer(data, player, socket) {
     player.name = data.name;
     player.myWorldId = world.worldId;
     player.viewIndicatorColor = determineIndicatorColor(data.color);
-    //add world to worlds object
-    worlds[world.worldId] = world;
+    //add world to worldHandler.worlds object
+    worldHandler.worlds[world.worldId] = world;
 
     //add player to world
-    worlds[world.worldId].players[socket.id] = player;
+    worldHandler.worlds[world.worldId].players[socket.id] = player;
 
     //update world before updateing playerjoined
-    sendServerData("worldUpdate",worlds[world.worldId]);
+    sendServerData("worldUpdate",worldHandler.worlds[world.worldId]);
     
     sendWorldUpdate("newPlayerJoined",{},world.worldId);
 
@@ -383,10 +378,10 @@ function joinServer(data, player, socket) {
         //check for valid session id HERE
 
         //add player to world
-        worlds[data.sessionId].players[socket.id] = player;
+        worldHandler.worlds[data.sessionId].players[socket.id] = player;
 
         //update world before updateing playerjoined
-        sendWorldUpdate("worldUpdate",worlds[data.sessionId],data.sessionId);
+        sendWorldUpdate("worldUpdate",worldHandler.worlds[data.sessionId],data.sessionId);
 
         sendWorldUpdate("newPlayerJoined",{},data.sessionId);
         
@@ -404,24 +399,24 @@ function joinServer(data, player, socket) {
 
 function startGameLoop() {
     setInterval(() => {
-        if (isEmpty(worlds) === false) {
+        if (isEmpty(worldHandler.worlds) === false) {
 
-            for (const world in worlds) {
+            for (const world in worldHandler.worlds) {
 
-                for (const key in worlds[world].lists) {
-                    worlds[world].lists[key].detect_colision();
+                for (const key in worldHandler.worlds[world].lists) {
+                    worldHandler.worlds[world].lists[key].detect_colision();
                 }
 
-                for (const key in worlds[world].players) {
+                for (const key in worldHandler.worlds[world].players) {
 
-                    worlds[world].players[key].updatePosistion();
-                    worlds[world].players[key].detect_colision();
+                    worldHandler.worlds[world].players[key].updatePosistion();
+                    worldHandler.worlds[world].players[key].detect_colision();
 
                     for (let i in SOCKET_LIST) {
                         let socket = SOCKET_LIST[i];
-                        if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
+                        if (isEmpty(worldHandler.worlds[world].players) === false && worldHandler.worlds[world].players[key].id === socket.id) {
 
-                            yourWorld = worlds[world];
+                            yourWorld = worldHandler.worlds[world];
                             socket.emit('worldUpdate', yourWorld);
 
 
@@ -440,32 +435,32 @@ function createDefaultWorlds() {
     if (settings.defaultWorldsActive) {
         let defaultWorld = World();
         defaultWorld.name = "Default World";
-        worlds[defaultWorld.worldId] = defaultWorld;
+        worldHandler.worlds[defaultWorld.worldId] = defaultWorld;
     }
 }
 
 function listCurrentWorld() {
     let list = { };
 
-    for (const world in worlds) {
-        list[worlds[world].worldId] = worlds[world].worldId;
+    for (const world in worldHandler.worlds) {
+        list[worldHandler.worlds[world].worldId] = worldHandler.worlds[world].worldId;
     }
 
     return list;
 }
 
 function deleteEmptyWorlds() {
-    for (const world in worlds) {
-        if (isEmpty(worlds[world].players) && worlds[world].name !== "Default World") {
-            delete worlds[world];
+    for (const world in worldHandler.worlds) {
+        if (isEmpty(worldHandler.worlds[world].players) && worldHandler.worlds[world].name !== "Default World") {
+            delete worldHandler.worlds[world];
         }
     }
 }
 
 function deleteAllEntities(id, socket) {
     if (doesWorldExist(id, socket)) {
-        for (const key in worlds[id].entities) {
-            delete worlds[id].entities[key];
+        for (const key in worldHandler.worlds[id].entities) {
+            delete worldHandler.worlds[id].entities[key];
         }
     } else {
         socket.emit("error", "This world is closed please refresh and select a new world");
@@ -481,7 +476,7 @@ function spawnElement(id, socket, title, description,w) {
         element.description = description;
         element.w = w;
 
-        worlds[id].entities[element.id] = element;
+        worldHandler.worlds[id].entities[element.id] = element;
 
         console.log(element);
     } else {
@@ -490,12 +485,12 @@ function spawnElement(id, socket, title, description,w) {
 }
 
 function spawnList(id, socket, title) {
-    if (worlds[id].listCount <= worlds[id].maxListCount) {
+    if (worldHandler.worlds[id].listCount <= worldHandler.worlds[id].maxListCount) {
         if (doesWorldExist(id, socket)) {
-            let list = List(50 + worlds[id].listCount * 300, 70, title, id);
-            worlds[id].lists[list.id] = list;
+            let list = List(50 + worldHandler.worlds[id].listCount * 300, 70, title, id);
+            worldHandler.worlds[id].lists[list.id] = list;
             console.log("Spawned list with title: " + list.title);
-            worlds[id].listCount++;
+            worldHandler.worlds[id].listCount++;
         } else {
             socket.emit(
                 "error",
@@ -513,8 +508,8 @@ function spawnList(id, socket, title) {
 
 function updateMousePos(data, socket) {
     if (doesWorldExist(data.worldID, socket)) {
-        worlds[data.worldID].players[data.playerId].mousePos.x = data.x;
-        worlds[data.worldID].players[data.playerId].mousePos.y = data.y;
+        worldHandler.worlds[data.worldID].players[data.playerId].mousePos.x = data.x;
+        worldHandler.worlds[data.worldID].players[data.playerId].mousePos.y = data.y;
     }
 }
 
@@ -542,10 +537,10 @@ function removePlayer(socket) {
     //delete PLAYER_LIST[socket.id];
 
     //delete player from world
-    for (const world in worlds) {
-        for (const key in worlds[world].players) {
-            if (worlds[world].players[key].id === socket.id) {
-                delete worlds[world].players[key];
+    for (const world in worldHandler.worlds) {
+        for (const key in worldHandler.worlds[world].players) {
+            if (worldHandler.worlds[world].players[key].id === socket.id) {
+                delete worldHandler.worlds[world].players[key];
             }
         }
     }
@@ -566,8 +561,8 @@ function isEmpty(obj) {
 }
 
 function doesWorldExist(worldId, socket) {
-    for (const world in worlds) {
-        if (worldId === worlds[world].worldId) {
+    for (const world in worldHandler.worlds) {
+        if (worldId === worldHandler.worlds[world].worldId) {
             return true;
         }
     }
@@ -591,11 +586,11 @@ function doesWorldExist(worldId, socket) {
 
 function sendWorldUpdate(emit, obj,worldId) {
 
-    for (const key in worlds[worldId].players) {
+    for (const key in worldHandler.worlds[worldId].players) {
 
         for (let i in SOCKET_LIST) {
             let socket = SOCKET_LIST[i];
-            if (isEmpty(worlds[worldId].players) === false && worlds[worldId].players[key].id === socket.id) {
+            if (isEmpty(worldHandler.worlds[worldId].players) === false && worldHandler.worlds[worldId].players[key].id === socket.id) {
 
                 socket.emit(emit,obj);
 
@@ -609,13 +604,13 @@ function sendWorldUpdate(emit, obj,worldId) {
 
 function sendServerData(emit, obj){
 
-        for (const world in worlds) {
+        for (const world in worldHandler.worlds) {
 
-            for (const key in worlds[world].players) {
+            for (const key in worldHandler.worlds[world].players) {
 
                 for (let i in SOCKET_LIST) {
                     let socket = SOCKET_LIST[i];
-                    if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
+                    if (isEmpty(worldHandler.worlds[world].players) === false && worldHandler.worlds[world].players[key].id === socket.id) {
 
                         socket.emit(emit,obj);
 
