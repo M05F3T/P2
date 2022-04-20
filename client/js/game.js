@@ -127,21 +127,12 @@ function drawPickUpToolTip(data) {
 function drawLineLength(x1, y1, x2, y2, maxLen, color) {
     let vx = x2 - x1; // get dist between start and end of line
     let vy = y2 - y1; // for x and y
-
     // use pythagoras to get line total length
     let mag = Math.sqrt(vx * vx + vy * vy);
-    if (mag > maxLen) {
-        // is the line longer than needed?
-
-        // calculate how much to scale the line to get the correct distance
-        mag = maxLen / mag;
-        vx *= mag;
-        vy *= mag;
-    } else if (mag < maxLen) {
-        maxLen = maxLen / mag;
-        vx *= maxLen;
-        vy *= maxLen;
-    }
+    // calculate how much to scale the line to get the correct distance
+    mag = maxLen / mag;
+    vx *= mag;
+    vy *= mag;
     ctx.strokeStyle = color;
     ctx.lineWidth = 5;
     ctx.beginPath();
