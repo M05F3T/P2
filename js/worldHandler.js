@@ -3,8 +3,6 @@ const objConstructor = require('./objConstructors.js');
 
 
 var tinycolor = require("tinycolor2");
-const { v4: idGenerator } = require("uuid");
-var { nanoid } = require("nanoid");
 
 let worlds = {} //holds data on all current worlds
 let SOCKET_LIST = {}; //keeps tracks of connected clients
