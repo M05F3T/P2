@@ -1,12 +1,32 @@
 const settings = require('./settings.js')
+const objConstructor = require('./objConstructors.js');
+
 
 let worlds = {} //holds data on all current worlds
 
 function createDefaultWorlds() {
     if (settings.defaultWorldsActive) {
-        let defaultWorld = World();
+        let defaultWorld = objConstructor.World();
         defaultWorld.name = "Default World";
-        worldHandler.worlds[defaultWorld.worldId] = defaultWorld;
+        worlds[defaultWorld.worldId] = defaultWorld;
+    }
+}
+
+function listCurrentWorld() {
+    let list = { };
+
+    for (const world in worlds) {
+        list[worlds[world].worldId] = worlds[world].worldId;
+    }
+
+    return list;
+}
+
+function deleteEmptyWorlds() {
+    for (const world in worlds) {
+        if (isEmpty(worlds[world].players) && worlds[world].name !== "Default World") {
+            delete worlds[world];
+        }
     }
 }
 
@@ -15,4 +35,4 @@ function isEmpty(obj) {
 }
 
 
-module.exports = {worlds,createDefaultWorlds,isEmpty};
+module.exports = {worlds,createDefaultWorlds,isEmpty,listCurrentWorld,deleteEmptyWorlds};

@@ -1,12 +1,12 @@
 const settings = require('./js/settings.js');
-const worldHandler = require('./js/worldHandler.js');
 const objConstructor = require('./js/objConstructors.js');
+const worldHandler = require('./js/worldHandler.js');
+
 
 
 const express = require('express');
 
 
-var { nanoid } = require("nanoid");
 var tinycolor = require("tinycolor2");
 const app = express();
 const server = require('http').Server(app);
@@ -113,7 +113,7 @@ function startClientUpdates() {
 
             removePlayer(socket);
             //check if no players is present and delete world if empty
-            deleteEmptyWorlds();
+            worldHandler.deleteEmptyWorlds();
 
             //sendWorldUpdate("worldUpdate",{},worldId);
 
@@ -147,7 +147,7 @@ function initializeConnection(socket) {
 
     socket.emit("sendId", socket.id);
 
-    let currentWorlds = listCurrentWorld();
+    let currentWorlds = worldHandler.listCurrentWorld();
 
     socket.emit("currentWorlds", currentWorlds)
 
@@ -245,23 +245,9 @@ function startGameLoop() {
 
 
 
-function listCurrentWorld() {
-    let list = { };
 
-    for (const world in worldHandler.worlds) {
-        list[worldHandler.worlds[world].worldId] = worldHandler.worlds[world].worldId;
-    }
 
-    return list;
-}
 
-function deleteEmptyWorlds() {
-    for (const world in worldHandler.worlds) {
-        if (worldHandler.isEmpty(worldHandler.worlds[world].players) && worldHandler.worlds[world].name !== "Default World") {
-            delete worldHandler.worlds[world];
-        }
-    }
-}
 
 function deleteAllEntities(id, socket) {
     if (doesWorldExist(id, socket)) {
