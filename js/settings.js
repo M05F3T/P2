@@ -1,6 +1,6 @@
 
 const PORT = 3000;
-const defaultWorldsActive = false; //default worlds with no active players wont be deleted.   
+const defaultWorldsActive = true; //default worlds with no active players wont be deleted.   
 const servThisFile = '/client/index.html'
 const allowAccessTo = '/client'
 

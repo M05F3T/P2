@@ -9,7 +9,7 @@ let SOCKET_LIST = {}; //keeps tracks of connected clients
 
 function createDefaultWorlds() {
     if (settings.defaultWorldsActive) {
-        let defaultWorld = World();
+        let defaultWorld = objConstructor.World();
         defaultWorld.name = "Default World";
         worlds[defaultWorld.worldId] = defaultWorld;
     }
