@@ -119,7 +119,7 @@ function drawPickUpToolTip(data) {
             ctx.font = "30px Arial";
             ctx.textAlign = "center";
             ctx.fillStyle = "black";
-            ctx.fillText("Press E to interact", data.players[key].x, data.players[key].y - 35)
+            ctx.fillText("Press E to interact", data.players[key].x, data.players[key].y - 45)
         }
     }
 }
@@ -152,17 +152,19 @@ function drawLineLength(x1, y1, x2, y2, maxLen, color) {
 
 function drawPlayers(data) {
     for (const key in data.players) {
-
+        ctx.save();
         //draw player circle
         ctx.beginPath();
         ctx.arc(data.players[key].x, data.players[key].y, data.players[key].h / 2, 0, 2 * Math.PI);
         ctx.fillStyle = data.players[key].color;
+        ctx.shadowColor = 'black';
+        ctx.shadowBlur = 5;
         ctx.fill();
         ctx.lineWidth = 1;
         ctx.strokeStyle = 'black';
         ctx.stroke();
 
-
+        
 
         drawLineLength(
             data.players[key].x,
@@ -172,6 +174,8 @@ function drawPlayers(data) {
             data.players[key].h / 2,
             data.players[key].viewIndicatorColor
         );
+
+        ctx.restore();
 
         //draw name
         ctx.font = "30px Arial";
