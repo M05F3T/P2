@@ -1,6 +1,4 @@
 // All global imports are declared as variables here
-const express = require("express");
-const http = require("http");
 const OAuth = require("oauth").OAuth;
 const url = require("url");
 

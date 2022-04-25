@@ -1,5 +1,6 @@
 const settings = require('./js/settings.js');
 const worldHandler = require('./js/worldHandler.js');
+const trelloApi = require('./js/trelloApi.js');
 const express = require('express');
 const app = express();
 const server = require('http').Server(app);
