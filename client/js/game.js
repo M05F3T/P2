@@ -11,6 +11,7 @@ const clearBtn = document.getElementById("delete");
 const formMenu = document.getElementById("form-menu");
 
 const hostBtn = document.getElementById("host");
+
 const joinBtn = document.getElementById("join");
 const worldSelect = document.getElementById("worldSelect");
 const colorInput = document.getElementById("color");
@@ -39,44 +40,48 @@ let mouseY;
 function sendClientData() {
 
 
-
     clearBtn.addEventListener("click", (e) => {
         socket.emit("clear", localWorld.worldId);
     });
 
-    joinBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        let name = nameInput.value;
-        let color = colorInput.value;
-        let Id = worldSelect.value;
-
-        //hide form
-        formMenu.style = "display: none;";
-
-        socket.emit('join', {
-            name: name,
-            color: color,
-            sessionId: Id,
-            host: false
+    if (joinBtn != null) {
+        joinBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            let name = nameInput.value;
+            let color = colorInput.value;
+            let Id = worldSelect.value;
+    
+            //hide form
+            formMenu.style = "display: none;";
+    
+            socket.emit('join', {
+                name: name,
+                color: color,
+                sessionId: Id,
+                host: false
+            });
         });
-    });
+    }
 
-    hostBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        let name = nameInput.value;
-        let color = colorInput.value;
-
-        //hide form
-        formMenu.style = "display: none;";
-
-
-        socket.emit('join', {
-            name: name,
-            color: color,
-            sessionId: "",
-            host: true
+    if (hostBtn != null) {
+        hostBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            let name = nameInput.value;
+            let color = colorInput.value;
+    
+            //hide form
+            formMenu.style = "display: none;";
+    
+    
+            socket.emit('join', {
+                name: name,
+                color: color,
+                sessionId: "",
+                host: true
+            });
         });
-    });
+    }
+
 
 
     document.onkeydown = (event) => {
@@ -166,12 +171,6 @@ function getServerData() {
         idText.innerHTML = "#" + worldId;
     });
 
-    socket.on("currentWorlds", (data) => {
-        insertWorldsInSelect(data);
-        if (worldSelect.value == "") {
-            joinBtn.disabled = true;
-        }
-    });
 
     socket.on("newPlayerJoined", () => {
         insertPlayersHtmlElement();
