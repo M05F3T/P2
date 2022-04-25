@@ -177,8 +177,12 @@ function initializeConnection(socket) {
     return objConstructor.Player(socket.id);
 }
 
-function hostServer(data, player, socket) {
+function hostServer(data, player, socket,tokenObj) {
     let world = objConstructor.World();
+
+     world.accToken = tokenObj.accessToken;
+     world.accTokenSecret = tokenObj.accessTokenSecret;
+
 
     player.color = data.color;
     player.name = data.name;

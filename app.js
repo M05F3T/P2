@@ -2,15 +2,12 @@ const settings = require('./js/settings.js');
 const worldHandler = require('./js/worldHandler.js');
 const trelloApi = require('./js/trelloApi.js');
 const express = require('express');
+const { url } = require('inspector');
 const app = express();
 const server = require('http').Server(app);
 
 
-
-
-
 runServer();
-
 
 function runServer() {
 
@@ -32,9 +29,25 @@ function startExpress(filePath, directoryPath) {
     //User can accses all files in /client (ex: http://www.hostwebsite.com/client/img.jpg)
     app.use('/client', express.static(__dirname + directoryPath));
 
+    //trello login
+    app.get("/login", function (req,res){
+        trelloApi.login(req,res);
+    });
+
     server.listen(settings.PORT);
     console.log("Server started.. " + settings.PORT);
 
+}
+
+
+
+async function joinAndHostServer(data, socket,player) {
+    if (data.host === true) {
+        let tokenObj = await trelloApi.trelloLoginCallback(data.href);
+        worldHandler.hostServer(data, player, socket, await tokenObj);
+     } else if (data.host === false) {
+        worldHandler.joinServer(data, player, socket);
+     }
 }
 
 function startClientUpdates() {
@@ -44,12 +57,15 @@ function startClientUpdates() {
 
         let player = worldHandler.initializeConnection(socket);
 
+        socket.on("hostWorld", (href) => {
+           
+        });
+
         socket.on('join', (data) => {
-            if (data.host === true) {
-               worldHandler.hostServer(data, player, socket);
-            } else if (data.host === false) {
-               worldHandler.joinServer(data, player, socket);
-            }
+
+            joinAndHostServer(data,socket,player);
+
+            
         });
 
         socket.on('clear', (id) => {

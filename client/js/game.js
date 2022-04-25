@@ -49,6 +49,7 @@ function sendClientData() {
             e.preventDefault();
             let name = nameInput.value;
             let color = colorInput.value;
+            console.log(worldSelect.value);
             let Id = worldSelect.value;
     
             //hide form
@@ -68,7 +69,11 @@ function sendClientData() {
             e.preventDefault();
             let name = nameInput.value;
             let color = colorInput.value;
-    
+            
+
+            socket.emit("hostWorld",location.href);
+
+
             //hide form
             formMenu.style = "display: none;";
     
@@ -77,6 +82,7 @@ function sendClientData() {
                 name: name,
                 color: color,
                 sessionId: "",
+                href: location.href,
                 host: true
             });
         });
@@ -168,8 +174,10 @@ function getServerData() {
     });
 
     socket.on("worldId", (worldId) => {
-        idText.innerHTML = "#" + worldId;
+        idText.innerHTML = worldId;
     });
+
+
 
 
     socket.on("newPlayerJoined", () => {

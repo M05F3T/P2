@@ -1,5 +1,7 @@
 // All global imports are declared as variables here
 const OAuth = require("oauth").OAuth;
+const { rejects } = require("assert");
+const { resolve } = require("path");
 const url = require("url");
 
 // OAuth setup and functions - This function redirects the user to an authentication page,
@@ -48,19 +50,29 @@ let token, tokenSecret, accToken, accTokenSecret;
 //});
 
 // Callback gets the access token and the access tokensecret
-const callback = function (req, res) {
+async function trelloLoginCallback(href) {
     //Gets information, from the returned URL
-    const query = url.parse(req.url, true).query;
+    const query = url.parse(href, true).query;
     const token = query.oauth_token;
     const tokenSecret = oauth_secrets[token];
     const verifier = query.oauth_verifier;
-    oauth.getOAuthAccessToken(token, tokenSecret, verifier, function (error, accessToken, accessTokenSecret, results) {
-        accToken = accessToken;
-        accTokenSecret = accessTokenSecret;
 
-        // Example to show the information about token and tokensecret
-        res.send(`<h1>Oh, hello there!</h1><a>This is what you want to know ${accToken} and ${accTokenSecret}</a>`);
+    let oauthPromise = new Promise(function (resolve, reject) {
+        oauth.getOAuthAccessToken(token, tokenSecret, verifier, function (error, accessToken, accessTokenSecret, results) {
+            if (!error) {
+                resolve({
+                    'accessToken': accessToken,
+                    'accessTokenSecret': accessTokenSecret
+                });
+            } else {
+                console.log("couldn't authenticate tokens. ",error);
+                reject();
+            }
+        });
     });
+
+    return await oauthPromise;
+
 };
 
 // Function used for creating a new board in Trello
@@ -76,35 +88,35 @@ function createBoard(accToken, accTokenSecret) {
     });
 };
 
-function createCard(accToken, accTokenSecret, idList, name, desc){
+function createCard(accToken, accTokenSecret, idList, name, desc) {
     let cardId;
-    oauth.getProtectedResource(`https://api.trello.com/1/cards?idList=${idList}&name=${name}&desc=${desc}`, "POST", accToken, accTokenSecret, function (error, data, response){
+    oauth.getProtectedResource(`https://api.trello.com/1/cards?idList=${idList}&name=${name}&desc=${desc}`, "POST", accToken, accTokenSecret, function (error, data, response) {
         cardId = JSON.parse(data);
         cardId = cardId.id;
     });
 }
 
-function createList(accToken, accTokenSecret, boardId, name){
+function createList(accToken, accTokenSecret, boardId, name) {
     let listId;
-    oauth.getProtectedResource(`https://api.trello.com/1/lists?name=${name}&idBoard=${boardId}`, "POST", accToken, accTokenSecret, function (error, data, response){
+    oauth.getProtectedResource(`https://api.trello.com/1/lists?name=${name}&idBoard=${boardId}`, "POST", accToken, accTokenSecret, function (error, data, response) {
         listId = JSON.parse(data);
         listId = listId.id;
     });
 }
 
-function deleteCard(accToken, accTokenSecret, cardId){
-    oauth.getProtectedResource(`https://api.trello.com/1/cards/${cardId}`, "POST", accToken, accTokenSecret, function(error, data, response){
+function deleteCard(accToken, accTokenSecret, cardId) {
+    oauth.getProtectedResource(`https://api.trello.com/1/cards/${cardId}`, "POST", accToken, accTokenSecret, function (error, data, response) {
     });
 }
 
-function archiveList(accToken, accTokenSecret, listId){
-    oauth.getProtectedResource(`https://api.trello.com/1/lists/${listId}/closed?`, "PUT", accToken, accTokenSecret, function(error, data, response){
+function archiveList(accToken, accTokenSecret, listId) {
+    oauth.getProtectedResource(`https://api.trello.com/1/lists/${listId}/closed?`, "PUT", accToken, accTokenSecret, function (error, data, response) {
     });
 }
 
-function deleteBoard(accToken, accTokenSecret, boardId){
-    oauth.getProtectedResource(`https://api.trello.com/1/boards/${boardId}?`, "DELETE", accToken, accTokenSecret, function(error, data, response){
+function deleteBoard(accToken, accTokenSecret, boardId) {
+    oauth.getProtectedResource(`https://api.trello.com/1/boards/${boardId}?`, "DELETE", accToken, accTokenSecret, function (error, data, response) {
     });
 }
 
-module.exports = {login,callback,createBoard,createCard,createList,deleteCard,archiveList,deleteBoard};
+module.exports = { login, trelloLoginCallback, createBoard, createCard, createList, deleteCard, archiveList, deleteBoard };
