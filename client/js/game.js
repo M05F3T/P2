@@ -19,7 +19,10 @@ const nameInput = document.getElementById("name");
     
 const listSelector = document.getElementById("listSelector");
 
-
+function play() {
+    var audio = new Audio('./js/beat.mp3');
+    audio.play();
+  }
 
 let myId;
 let localWorld;
@@ -41,6 +44,7 @@ function sendClientData() {
 
 
     clearBtn.addEventListener("click", (e) => {
+        play();
         socket.emit("clear", localWorld.worldId);
     });
 
