@@ -51,6 +51,7 @@ let List = (posX, posY, title, myWorldId) => {
         id: idGenerator(),
         myWorldId: myWorldId,
         color: "gray",
+        trelloListId: "",
         title: title,
         containedIdeas: {}
     };
@@ -59,10 +60,13 @@ let List = (posX, posY, title, myWorldId) => {
 
 let World = () => {
     let self = {
-        worldId: nanoid(6),
+        worldId: '#' + nanoid(6),
         name: "This is the world name",
         listCount: 0,
         maxListCount: 5 - 1,
+        accToken: "",
+        accTokenSecret: "",
+        trelloBoardId: "",
         players: {
 
         },

@@ -263,13 +263,31 @@ select {
 	height: 100vh;
 }
 
+
+
 #name-color-form {
     width: 300px;
-    height: 500px;
+    height: auto;
     margin: auto;
     padding: 50px;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     background-color: white;
+    border-radius: 7px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-block;
+}
+
+#name-color-form-login {
+    width: 300px;
+    height: 140px;
+    margin: auto;
+    padding: 50px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    background-color: white;
+    border-radius: 7px;
     position: absolute;
     top: 50%;
     left: 50%;

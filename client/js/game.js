@@ -11,6 +11,7 @@ const clearBtn = document.getElementById("delete");
 const formMenu = document.getElementById("form-menu");
 
 const hostBtn = document.getElementById("host");
+
 const joinBtn = document.getElementById("join");
 const worldSelect = document.getElementById("worldSelect");
 const colorInput = document.getElementById("color");
@@ -18,7 +19,10 @@ const nameInput = document.getElementById("name");
     
 const listSelector = document.getElementById("listSelector");
 
-
+// function play() {
+//     var audio = new Audio('./js/beat.mp3');
+//     audio.play();
+//   }
 
 let myId;
 let localWorld;
@@ -39,44 +43,54 @@ let mouseY;
 function sendClientData() {
 
 
-
     clearBtn.addEventListener("click", (e) => {
         socket.emit("clear", localWorld.worldId);
     });
 
-    joinBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        let name = nameInput.value;
-        let color = colorInput.value;
-        let Id = worldSelect.value;
-
-        //hide form
-        formMenu.style = "display: none;";
-
-        socket.emit('join', {
-            name: name,
-            color: color,
-            sessionId: Id,
-            host: false
+    if (joinBtn != null) {
+        joinBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            let name = nameInput.value;
+            let color = colorInput.value;
+            console.log(worldSelect.value);
+            let Id = worldSelect.value;
+    
+            //hide form
+            formMenu.style = "display: none;";
+    
+            socket.emit('join', {
+                name: name,
+                color: color,
+                sessionId: Id,
+                host: false
+            });
         });
-    });
+    }
 
-    hostBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        let name = nameInput.value;
-        let color = colorInput.value;
+    if (hostBtn != null) {
+        hostBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            let name = nameInput.value;
+            let color = colorInput.value;
+            
 
-        //hide form
-        formMenu.style = "display: none;";
+            socket.emit("hostWorld",location.href);
 
 
-        socket.emit('join', {
-            name: name,
-            color: color,
-            sessionId: "",
-            host: true
+            //hide form
+            formMenu.style = "display: none;";
+    
+    
+            socket.emit('join', {
+                name: name,
+                color: color,
+                sessionId: "",
+                href: location.href,
+                host: true
+            });
         });
-    });
+    }
+
 
 
     document.onkeydown = (event) => {
@@ -163,15 +177,11 @@ function getServerData() {
     });
 
     socket.on("worldId", (worldId) => {
-        idText.innerHTML = "#" + worldId;
+        idText.innerHTML = worldId;
     });
 
-    socket.on("currentWorlds", (data) => {
-        insertWorldsInSelect(data);
-        if (worldSelect.value == "") {
-            joinBtn.disabled = true;
-        }
-    });
+
+
 
     socket.on("newPlayerJoined", () => {
         insertPlayersHtmlElement();

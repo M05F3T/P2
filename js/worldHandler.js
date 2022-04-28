@@ -1,5 +1,6 @@
 const settings = require('./settings.js');
 const objConstructor = require('./objConstructors.js');
+const trelloApi = require('./trelloApi.js');
 
 
 var tinycolor = require("tinycolor2");
@@ -10,6 +11,7 @@ let SOCKET_LIST = {}; //keeps tracks of connected clients
 function createDefaultWorlds() {
     if (settings.defaultWorldsActive) {
         let defaultWorld = objConstructor.World();
+        defaultWorld.worldId = settings.defaultWorldId;
         defaultWorld.name = "Default World";
         worlds[defaultWorld.worldId] = defaultWorld;
     }
@@ -28,6 +30,9 @@ function listCurrentWorld() {
 function deleteEmptyWorlds() {
     for (const world in worlds) {
         if (isEmpty(worlds[world].players) && worlds[world].name !== "Default World") {
+            if (settings.deleteTrelloBoardWhenEmpty) {
+                trelloApi.deleteBoard(worlds[world].accToken, worlds[world].accTokenSecret, worlds[world].trelloBoardId);
+            }
             delete worlds[world];
         }
     }
@@ -176,8 +181,12 @@ function initializeConnection(socket) {
     return objConstructor.Player(socket.id);
 }
 
-function hostServer(data, player, socket) {
+function hostServer(data, player, socket, tokenObj, trelloBoardId) {
     let world = objConstructor.World();
+
+    world.accToken = tokenObj.accessToken;
+    world.accTokenSecret = tokenObj.accessTokenSecret;
+    world.trelloBoardId = trelloBoardId;
 
     player.color = data.color;
     player.name = data.name;
@@ -247,13 +256,15 @@ function spawnElement(id, socket, title, description, w) {
     }
 }
 
-function spawnList(id, socket, title) {
+function spawnList(id, socket, title, trelloListId) {
     if (worlds[id].listCount <= worlds[id].maxListCount) {
         if (doesWorldExist(id, socket)) {
             let list = objConstructor.List(50 + worlds[id].listCount * 300, 70, title, id);
             worlds[id].lists[list.id] = list;
+            worlds[id].lists[list.id].trelloListId = trelloListId;
             console.log("Spawned list with title: " + list.title);
             worlds[id].listCount++;
+
         } else {
             socket.emit(
                 "error",
@@ -271,45 +282,48 @@ function spawnList(id, socket, title) {
 
 function startGameLoop() {
     setInterval(() => {
-        if (isEmpty(worlds) === false) {
+        try {
+            if (isEmpty(worlds) === false) {
 
-            for (const world in worlds) {
+                for (const world in worlds) {
 
-                for (const key in worlds[world].lists) {
-                    detect_list_colision(worlds[world].lists[key]);
-                }
+                    for (const key in worlds[world].lists) {
+                        detect_list_colision(worlds[world].lists[key]);
+                    }
 
-                for (const key in worlds[world].players) {
+                    for (const key in worlds[world].players) {
 
                     detect_player_colision(worlds[world].players[key]);
                     updatePosistion(worlds[world].players[key]);
 
-                    for (let i in SOCKET_LIST) {
-                        let socket = SOCKET_LIST[i];
-                        if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
+                        for (let i in SOCKET_LIST) {
+                            let socket = SOCKET_LIST[i];
+                            if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
 
-                            yourWorld = worlds[world];
-                            socket.emit('worldUpdate', yourWorld);
+                                yourWorld = worlds[world];
+                                socket.emit('worldUpdate', yourWorld);
 
 
+                            }
                         }
+
                     }
-
                 }
+
             }
-
+        } catch (err) {
+            console.error(err);
         }
-
     }, 1000 / 60);
 }
 
 
-function detect_colision(x1,y1,w1,h1,x2,y2,w2,h2){
+function detect_colision(x1, y1, w1, h1, x2, y2, w2, h2) {
     //af en eller anden grund er den her anderledes fra collision detection på lister. kan ikke få den til at virke ens plz investigate. 
-    if((x1 - w1 / 2) < x2 + w2 &&
-    (x1 - w1 / 2) + w1 > x2 &&
-    (y1 - h1 / 2) < y2 + h2 && 
-    h1 + (y1 - h1 / 2) > y2) {
+    if ((x1 - w1 / 2) < x2 + w2 &&
+        (x1 - w1 / 2) + w1 > x2 &&
+        (y1 - h1 / 2) < y2 + h2 &&
+        h1 + (y1 - h1 / 2) > y2) {
         return true
     } else {
         return false
@@ -374,8 +388,8 @@ function detect_player_colision(playerObj) {
     //Player detection for entities
     for (const key in worlds[playerObj.myWorldId].entities) {
         let object = worlds[playerObj.myWorldId].entities[key];
-        
-        if (detect_colision(playerObj.x,playerObj.y,playerObj.w,playerObj.h,object.x,object.y,object.w,object.h)) {
+
+        if (detect_colision(playerObj.x, playerObj.y, playerObj.w, playerObj.h, object.x, object.y, object.w, object.h)) {
             //console.log(`COLISSION: player: ${playerObj.id} and ${object.id}`)
 
             playerObj.isColliding = true;
@@ -466,6 +480,7 @@ function connectToList(listObj, idea) {
     console.log(
         `list: ${listObj.id} connected an idea: ${listObj.containedIdeas[idea.id]}`
     );
+    trelloApi.createCard(worlds[listObj.myWorldId].accToken, worlds[listObj.myWorldId].accTokenSecret, listObj.trelloListId, idea.title, idea.description)
     delete worlds[listObj.myWorldId].entities[idea.id];
 };
 

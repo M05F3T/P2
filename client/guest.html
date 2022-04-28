@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/client/css/font-awesome-4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="/client/css/style.css">
+    <title>Pickle</title>
+</head>
+
+<body>
+    <!--Connect view-->
+
+    <div id="form-menu">
+        <form id="name-color-form">
+
+            <label id="top" for="name">NAME</label><br>
+            <input type="text" id="name" placeholder="John Doe" value="test" maxlength="20" required>
+
+            <label for="id">World</label>
+            
+            <input type="text" id="worldSelect" placeholder="#3464eb"  maxlength="20" required>
+
+            <label for="color">COLOR</label>
+            <input type="color" id="color" value="#3464eb">
+
+            <button id="join" class="button">JOIN</button>
+
+        </form>
+    </div>
+
+    <!--Game view-->
+
+
+
+    <div class="gameWindow">
+
+        <canvas id="ctx"></canvas>
+
+        <div id="popup-forms">
+            <div id="create-idea" style="display: none;">
+
+                <div class="cancel-button-container">
+                    <div id="create-idea-cancel-button" class="cancel-button"><svg class="cancel-button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg></div>
+                </div>
+
+                <div class="input-container">
+                    <input type="text" id="idea-name" placeholder="Idea name" maxlength="20" required>
+                    <textarea id="idea-description"  rows="15" cols="70" placeholder="Idea description"></textarea>
+                    <button id="create-idea-button" class="button">CREATE IDEA</button>
+                </div>
+                
+                
+            </div>
+            <div id="create-list" style="display: none;">
+                <div class="cancel-button-container">
+                    <div id="create-list-cancel-button" class="cancel-button"><svg class="cancel-button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg></div>
+                </div>
+
+                <div class="input-container">
+                    <input type="text" id="list-name" placeholder="List name" maxlength="11" required>
+                    <button id="create-list-button" class="button">CREATE LIST</button>
+                </div>
+            </div>
+            <div id="list-popup-menu" style="display: none;">
+                <div class="cancel-button-container">
+                    <div id="list-popup-menu-cancel-button" class="cancel-button"><svg class="cancel-button"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                            <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                            <path
+                                d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z" />
+                        </svg></div>
+                </div>
+                <p>Select Idea</p>
+                <select id="idea-selector"></select>
+                <p>Idea description</p>
+                <textarea id="idea-description" rows="15" cols="70" placeholder="Idea description"></textarea>
+                <button id="take-idea-button" class="button">TAKE IDEA</button>
+                </div>
+        </div>
+
+        <div class="ui">
+            <nav class="nav">
+                <button id="home-button" class="nav-element">HOME</button>
+                <button id="lists-button" class="nav-element">LISTS</button>
+                <button id="ideas-button" class="nav-element">IDEAS</button>
+                <Button id="timer-button" class="nav-element">TIMER</Button>
+                <div id="back-button" class="nav-element back-icon"><i class="fa fa-arrow-left" aria-hidden="true"></i></div>
+            </nav>
+            <div id="content">
+                <div id="home-content" style="display: block;">
+                    <h1 class="title">BRAINSTORM TITLE</h1>
+                    <h1 id="worldId" class="title"></h1>
+                    <hr>
+                    <h1 class="title">PLAYERS</h1>
+                    <div id="playerScrollBox" class="scroll-box" style="overflow: scroll ; height: 250px;  overflow-x:hidden;">
+
+                        <div class="player-element">
+                            <p>Daniel Sejersen</p>
+                            <div class="circle" style="background-color: #3a7bd5;"></div>
+                        </div>
+
+                    </div>
+
+                    <button id="spawn-card" class="button create-idea">CREATE IDEA</button>
+
+                </div>
+                <div id="lists-content" style="display: none;">
+                    <select id="listSelector">
+
+                    </select>
+
+                    <h1 id="worldId" class="title">SELECTED LIST</h1>
+                    <hr>
+                    <h1 class="title">IDEAS</h1>
+                    <div id="listScrollBox" class="scroll-box" style="overflow: scroll ; height: 250px;  overflow-x:hidden;">
+
+                    </div>
+
+                    <button id="spawn-list" class="button create-idea">CREATE LIST</button>
+                    <button id="delete-list" class="button create-idea">DELETE LIST</button>
+
+
+
+                </div>
+                <div id="ideas-content" style="display: none;">
+                    <h1 class="title">IDEAS</h1>
+                    <div class="scroll-box" style="overflow: scroll ; height: 250px;  overflow-x:hidden;">
+
+                    </div>
+                    <button id="delete" class="button">Clear</button>
+                </div>
+                <div id="timer-content" style="display: none;">
+                    <button id="" class="button">START TIMER</button>
+                    <button id="" class="button">PAUSE TIMER</button>
+                    <button id="" class="button">RESET TIMER</button>
+                    <select id="">
+                        <option>10 MIN</option>
+                        <option>15 MIN</option>
+                        <option>20 MIN</option>
+                        <option>30 MIN</option>
+                    </select>
+                    <button id="" class="button">SET TIMER</button>
+                </div>
+
+            </div>
+
+
+
+        </div>
+    </div>
+
+
+
+
+    <!--Socket.io embed-->
+    <script src="/socket.io/socket.io.js"></script>
+    <!--game logic-->
+    <script src="/client/js/canvasRender.js"></script>
+    <script src="/client/js/game.js"></script>
+
+</body>
+
+</html>
