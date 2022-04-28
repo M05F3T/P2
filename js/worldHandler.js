@@ -1,5 +1,6 @@
 const settings = require('./settings.js');
 const objConstructor = require('./objConstructors.js');
+const trelloApi = require('./trelloApi.js');
 
 
 var tinycolor = require("tinycolor2");
@@ -177,12 +178,12 @@ function initializeConnection(socket) {
     return objConstructor.Player(socket.id);
 }
 
-function hostServer(data, player, socket,tokenObj) {
+function hostServer(data, player, socket, tokenObj, trelloBoardId) {
     let world = objConstructor.World();
 
-     world.accToken = tokenObj.accessToken;
-     world.accTokenSecret = tokenObj.accessTokenSecret;
-
+    world.accToken = tokenObj.accessToken;
+    world.accTokenSecret = tokenObj.accessTokenSecret;
+    world.trelloBoardId = trelloBoardId;
 
     player.color = data.color;
     player.name = data.name;
@@ -252,13 +253,15 @@ function spawnElement(id, socket, title, description, w) {
     }
 }
 
-function spawnList(id, socket, title) {
+function spawnList(id, socket, title, trelloListId) {
     if (worlds[id].listCount <= worlds[id].maxListCount) {
         if (doesWorldExist(id, socket)) {
             let list = objConstructor.List(50 + worlds[id].listCount * 300, 70, title, id);
             worlds[id].lists[list.id] = list;
+            worlds[id].lists[list.id].trelloListId = trelloListId;
             console.log("Spawned list with title: " + list.title);
             worlds[id].listCount++;
+
         } else {
             socket.emit(
                 "error",
@@ -309,12 +312,12 @@ function startGameLoop() {
 }
 
 
-function detect_colision(x1,y1,w1,h1,x2,y2,w2,h2){
+function detect_colision(x1, y1, w1, h1, x2, y2, w2, h2) {
     //af en eller anden grund er den her anderledes fra collision detection på lister. kan ikke få den til at virke ens plz investigate. 
-    if((x1 - w1 / 2) < x2 + w2 &&
-    (x1 - w1 / 2) + w1 > x2 &&
-    (y1 - h1 / 2) < y2 + h2 && 
-    h1 + (y1 - h1 / 2) > y2) {
+    if ((x1 - w1 / 2) < x2 + w2 &&
+        (x1 - w1 / 2) + w1 > x2 &&
+        (y1 - h1 / 2) < y2 + h2 &&
+        h1 + (y1 - h1 / 2) > y2) {
         return true
     } else {
         return false
@@ -378,8 +381,8 @@ function updatePosistion(playerObj) {
 function detect_player_colision(playerObj) {
     for (const key in worlds[playerObj.myWorldId].entities) {
         let object = worlds[playerObj.myWorldId].entities[key];
-        
-        if (detect_colision(playerObj.x,playerObj.y,playerObj.w,playerObj.h,object.x,object.y,object.w,object.h)) {
+
+        if (detect_colision(playerObj.x, playerObj.y, playerObj.w, playerObj.h, object.x, object.y, object.w, object.h)) {
             //console.log(`COLISSION: player: ${playerObj.id} and ${object.id}`)
 
             playerObj.isColliding = true;
@@ -424,6 +427,7 @@ function connectToList(listObj, idea) {
     console.log(
         `list: ${listObj.id} connected an idea: ${listObj.containedIdeas[idea.id]}`
     );
+    trelloApi.createCard(worlds[listObj.myWorldId].accToken,worlds[listObj.myWorldId].accTokenSecret,listObj.trelloListId,idea.title,idea.description)
     delete worlds[listObj.myWorldId].entities[idea.id];
 };
 

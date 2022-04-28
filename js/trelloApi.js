@@ -28,11 +28,7 @@ const oauth_secrets = {};
 // The new authentication object that contains the setup settings
 const oauth = new OAuth(requestURL, accessURL, devKey, devSecret, "1.0A", loginCallback, "HMAC-SHA1");
 
-// This requires request/response from an app.get, for example:
-// app.get("/login", function (request, response) {
-//   console.log(`GET '/login'`);
-//   login(request, response);
-//});
+
 
 const login = function (request, response) {
     oauth.getOAuthRequestToken(function (error, token, tokenSecret, results) {
@@ -40,14 +36,6 @@ const login = function (request, response) {
         response.redirect(`${authorizeURL}?oauth_token=${token}&name=${appName}&scope=${scope}&expiration=${expiration}`);
     });
 };
-
-let token, tokenSecret, accToken, accTokenSecret;
-
-//Something needed to detect the callback, and call the final function that gives the final tokens
-//Example:
-// app.get("/callback", function (request, response) {
-//   callback(request, response);
-//});
 
 // Callback gets the access token and the access tokensecret
 async function trelloLoginCallback(href) {
@@ -65,7 +53,7 @@ async function trelloLoginCallback(href) {
                     'accessTokenSecret': accessTokenSecret
                 });
             } else {
-                console.log("couldn't authenticate tokens. ",error);
+                console.log("couldn't authenticate tokens. ", error);
                 reject();
             }
         });
@@ -76,32 +64,68 @@ async function trelloLoginCallback(href) {
 };
 
 // Function used for creating a new board in Trello
-function createBoard(accToken, accTokenSecret) {
+async function createBoard(accToken, accTokenSecret) {
     //Get current data
     let boardId;
     let today = new Date();
     let date = today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear();
-    oauth.getProtectedResource(`https://api.trello.com/1/boards/?name=Brainstorm ${date}`, "POST", accToken, accTokenSecret, function (error, data, response) {
-        //Now we can respond with data to show that we have access to your Trello account via OAuth
-        boardId = JSON.parse(data);
-        boardId = boardId.id;
+
+    let oauthPromise = new Promise(function (resolve, reject) {
+        oauth.getProtectedResource(`https://api.trello.com/1/boards/?name=Brainstorm ${date}`, "POST", accToken, accTokenSecret, function (error, data, response) {
+            //Now we can respond with data to show that we have access to your Trello account via OAuth
+            if (!error) {
+                boardId = JSON.parse(data);
+                resolve(boardId.id);
+            } else {
+                console.log("couldn't authenticate tokens. ", error);
+                reject();
+            }
+        });
     });
+
+    return await oauthPromise
+
 };
 
-function createCard(accToken, accTokenSecret, idList, name, desc) {
+async function createCard(accToken, accTokenSecret, idList, name, desc) {
     let cardId;
-    oauth.getProtectedResource(`https://api.trello.com/1/cards?idList=${idList}&name=${name}&desc=${desc}`, "POST", accToken, accTokenSecret, function (error, data, response) {
-        cardId = JSON.parse(data);
-        cardId = cardId.id;
+
+    let oauthPromise = new Promise(function (resolve, reject) {
+        oauth.getProtectedResource(`https://api.trello.com/1/cards?idList=${idList}&name=${encodeURIComponent(name)}&desc=${encodeURIComponent(desc)}`, "POST", accToken, accTokenSecret, function (error, data, response) {
+            if (!error) {
+                cardId = JSON.parse(data);
+                resolve(cardId.id);
+            } else {
+                console.log("couldn't authenticate tokens. ", error);
+                reject();
+            }
+        });
     });
+
+    return await oauthPromise;
+
+
 }
 
-function createList(accToken, accTokenSecret, boardId, name) {
+async function createList(accToken, accTokenSecret, boardId, name) {
     let listId;
-    oauth.getProtectedResource(`https://api.trello.com/1/lists?name=${name}&idBoard=${boardId}`, "POST", accToken, accTokenSecret, function (error, data, response) {
-        listId = JSON.parse(data);
-        listId = listId.id;
+    
+
+    let oauthPromise = new Promise(function (resolve, reject) {
+        oauth.getProtectedResource(`https://api.trello.com/1/lists?name=${encodeURIComponent(name)}&idBoard=${boardId}&pos=bottom`, "POST", accToken, accTokenSecret, function (error, data, response) {
+            if (!error) {
+                listId = JSON.parse(data);
+                resolve(listId.id);
+            } else {
+                console.log("couldn't authenticate tokens. ", error);
+                reject();
+            }
+
+        });
     });
+
+    return await oauthPromise;
+
 }
 
 function deleteCard(accToken, accTokenSecret, cardId) {

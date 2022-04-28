@@ -30,8 +30,8 @@ function startExpress(filePath, directoryPath) {
     app.use('/client', express.static(__dirname + directoryPath));
 
     //trello login
-    app.get("/login", function (req,res){
-        trelloApi.login(req,res);
+    app.get("/login", function (req, res) {
+        trelloApi.login(req, res);
     });
 
     server.listen(settings.PORT);
@@ -41,13 +41,19 @@ function startExpress(filePath, directoryPath) {
 
 
 
-async function joinAndHostServer(data, socket,player) {
+async function joinAndHostServer(data, socket, player) {
     if (data.host === true) {
         let tokenObj = await trelloApi.trelloLoginCallback(data.href);
-        worldHandler.hostServer(data, player, socket, await tokenObj);
-     } else if (data.host === false) {
+        let TrelloBoardId = await trelloApi.createBoard(tokenObj.accessToken, trelloApi.accessTokenSecret);
+        worldHandler.hostServer(data, player, socket, await tokenObj, await TrelloBoardId);
+    } else if (data.host === false) {
         worldHandler.joinServer(data, player, socket);
-     }
+    }
+}
+
+async function spawnList(dataObj,socket) {
+    let trelloListId = await trelloApi.createList(worldHandler.worlds[dataObj.worldId].accToken, worldHandler.worlds[dataObj.worldId].accTokenSecret, worldHandler.worlds[dataObj.worldId].trelloBoardId, dataObj.listName);
+    worldHandler.spawnList(dataObj.worldId, socket, dataObj.listName, await trelloListId);
 }
 
 function startClientUpdates() {
@@ -57,37 +63,33 @@ function startClientUpdates() {
 
         let player = worldHandler.initializeConnection(socket);
 
-        socket.on("hostWorld", (href) => {
-           
-        });
 
         socket.on('join', (data) => {
 
-            joinAndHostServer(data,socket,player);
+            joinAndHostServer(data, socket, player);
 
-            
+
         });
 
         socket.on('clear', (id) => {
-           worldHandler.deleteAllEntities(id, socket);
+            worldHandler.deleteAllEntities(id, socket);
         });
 
         socket.on('spawnElement', (dataObj) => {
-            worldHandler.spawnElement(dataObj.worldId, socket,dataObj.ideaName,dataObj.ideaDescription,dataObj.width);
+            worldHandler.spawnElement(dataObj.worldId, socket, dataObj.ideaName, dataObj.ideaDescription, dataObj.width);
         });
 
         socket.on("spawnList", (dataObj) => {
-            worldHandler.spawnList(dataObj.worldId, socket, dataObj.listName);
-            worldHandler.sendWorldUpdate("updateLists",worldHandler.worlds[dataObj.worldId],dataObj.worldId);
-            //socket.emit("updateLists", worldHandler.worlds[dataObj.worldId]);
+            spawnList(dataObj, socket);
+            worldHandler.sendWorldUpdate("updateLists", worldHandler.worlds[dataObj.worldId], dataObj.worldId);
         });
 
         socket.on("removeSelectedList", (id, listId) => {
             console.log("trying to remove list with id:" + listId);
             console.log(listId);
-            
+
             let tempListCount = 0;
-            
+
             delete worldHandler.worlds[id].lists[listId];
             console.log("Removed list with id: " + listId);
 
@@ -97,12 +99,12 @@ function startClientUpdates() {
             }
 
             --worldHandler.worlds[id].listCount;
-            worldHandler.sendWorldUpdate("updateLists",worldHandler.worlds[id],id);
+            worldHandler.sendWorldUpdate("updateLists", worldHandler.worlds[id], id);
             //socket.emit("updateLists", worldHandler.worlds[id]);
         });
 
         socket.on("playerMousePos", (data) => {
-           worldHandler.updateMousePos(data, socket);
+            worldHandler.updateMousePos(data, socket);
         });
 
         socket.on('keyPress', (data) => {
