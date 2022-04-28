@@ -118,7 +118,7 @@ function sendClientData() {
     }
 
     document.onkeyup = (event) => {
-        if (canUseKeyboard === true) {
+        //if (canUseKeyboard === true) {
             if (event.key === 'd' || event.key === 'D') {
                 socket.emit('keyPress', {
                     inputId: 'right',
@@ -152,7 +152,7 @@ function sendClientData() {
             }
         }
 
-    }
+    //}
 
 }
 
@@ -327,6 +327,7 @@ function listPopupMenu(listId) {
     takeIdeaButton.addEventListener(
         "click",
         () => {
+            canUseKeyboard = true;
             socket.emit(
                 "takeIdeaFromList",
                 localWorld.lists[listId].containedIdeas[ideaSelector.value],
@@ -336,7 +337,6 @@ function listPopupMenu(listId) {
             );
             console.log("Took idea");
             listPopupMenuContent.style.display = "none";
-            canUseKeyboard = true;
         },
         { once: true }
     );
