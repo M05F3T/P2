@@ -282,35 +282,38 @@ function spawnList(id, socket, title, trelloListId) {
 
 function startGameLoop() {
     setInterval(() => {
-        if (isEmpty(worlds) === false) {
+        try {
+            if (isEmpty(worlds) === false) {
 
-            for (const world in worlds) {
+                for (const world in worlds) {
 
-                for (const key in worlds[world].lists) {
-                    detect_list_colision(worlds[world].lists[key]);
-                }
-
-                for (const key in worlds[world].players) {
-
-                    updatePosistion(worlds[world].players[key]);
-                    detect_player_colision(worlds[world].players[key]);
-
-                    for (let i in SOCKET_LIST) {
-                        let socket = SOCKET_LIST[i];
-                        if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
-
-                            yourWorld = worlds[world];
-                            socket.emit('worldUpdate', yourWorld);
-
-
-                        }
+                    for (const key in worlds[world].lists) {
+                        detect_list_colision(worlds[world].lists[key]);
                     }
 
+                    for (const key in worlds[world].players) {
+
+                        updatePosistion(worlds[world].players[key]);
+                        detect_player_colision(worlds[world].players[key]);
+
+                        for (let i in SOCKET_LIST) {
+                            let socket = SOCKET_LIST[i];
+                            if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
+
+                                yourWorld = worlds[world];
+                                socket.emit('worldUpdate', yourWorld);
+
+
+                            }
+                        }
+
+                    }
                 }
+
             }
-
+        } catch (err) {
+            console.error(err);
         }
-
     }, 1000 / 60);
 }
 
