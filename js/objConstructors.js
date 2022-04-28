@@ -15,6 +15,7 @@ let Player = (id, color, name) => {
         name: name,
         myWorldId: 0,
         isColliding: false,
+        isCollidingWithList: false,
         canPickUp: true,
         pickUpKeyPressed: false,
         connectedEntity: {},
@@ -23,7 +24,7 @@ let Player = (id, color, name) => {
         pressingUp: false,
         pressingDown: false,
         maxSpd: 10,
-    }
+    };
     return self;
 }
 

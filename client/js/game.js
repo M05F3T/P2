@@ -191,6 +191,10 @@ function getServerData() {
         insertIdeasToListsTab();
     })
 
+    socket.on("openList", (listId) => {
+        listPopupMenu(listId);
+    });
+
     socket.on("error", (message) => {
         alert(message);
     });
@@ -252,8 +256,6 @@ function createIdea() {
 
         }
     },{once : true});
-
-
 }
 
 function createList() {
@@ -301,8 +303,48 @@ function createList() {
     },{once : true});
 }
 
+//List popup menu
+function listPopupMenu(listId) {
+    canUseKeyboard = false;
+
+    let list = localWorld.lists[listId];
+    const takeIdeaCancelButton = document.getElementById("list-popup-menu-cancel-button");
+    const ideaSelector = document.getElementById("idea-selector");
+    const ideaName = document.getElementById("idea-name");
+    const ideaDescription = document.getElementById("idea-description");
+    const takeIdeaButton = document.getElementById("take-idea-button");
+    const listPopupMenuContent = document.getElementById("list-popup-menu");
+
+    updateIdeaSelector(ideaSelector, listId);
+
+    listPopupMenuContent.style.display = "flex";
+
+    takeIdeaCancelButton.addEventListener("click", () => {
+        listPopupMenuContent.style.display = "none";
+        canUseKeyboard = true;
+    }, { once: true });
+
+    takeIdeaButton.addEventListener(
+        "click",
+        () => {
+            socket.emit(
+                "takeIdeaFromList",
+                localWorld.lists[listId].containedIdeas[ideaSelector.value],
+                localWorld.worldId,
+                myId,
+                listId
+            );
+            console.log("Took idea");
+            listPopupMenuContent.style.display = "none";
+            canUseKeyboard = true;
+        },
+        { once: true }
+    );
+}
+
+
 function updateListSelector(data) {
-    var child = listSelector.lastElementChild;
+    let child = listSelector.lastElementChild;
     while (child) {
         listSelector.removeChild(child);
         child = listSelector.lastElementChild;
@@ -310,6 +352,21 @@ function updateListSelector(data) {
     for (const key in data.lists) {
         let option = new Option(data.lists[key].title, data.lists[key].id);
         listSelector.appendChild(option);
+    }
+}
+
+function updateIdeaSelector(ideaSelector, listId) {
+    let child = ideaSelector.lastElementChild;
+    while (child) {
+        ideaSelector.removeChild(child);
+        child = ideaSelector.lastElementChild;
+    }
+    for (const key in localWorld.lists[listId].containedIdeas) {
+        let option = new Option(
+            localWorld.lists[listId].containedIdeas[key].title,
+            localWorld.lists[listId].containedIdeas[key].id
+        );
+        ideaSelector.appendChild(option);
     }
 }
 
@@ -336,7 +393,6 @@ function deleteList() {
 function popUpListeners() {
     const spawnBtn = document.getElementById("spawn-card");
     const spawnList = document.getElementById("spawn-list");
-
 
     spawnBtn.addEventListener("mouseup", (e) => {
         createIdea();

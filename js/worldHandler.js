@@ -281,8 +281,8 @@ function startGameLoop() {
 
                 for (const key in worlds[world].players) {
 
-                    updatePosistion(worlds[world].players[key]);
                     detect_player_colision(worlds[world].players[key]);
+                    updatePosistion(worlds[world].players[key]);
 
                     for (let i in SOCKET_LIST) {
                         let socket = SOCKET_LIST[i];
@@ -358,9 +358,8 @@ function updatePosistion(playerObj) {
 
         setTimeout(() => {
             playerObj.canPickUp = true;
+            playerObj.isColliding = false;
         }, 500)
-
-
     }
 
     if (!(isEmpty(playerObj.connectedEntity))) {
@@ -371,6 +370,8 @@ function updatePosistion(playerObj) {
 }
 
 function detect_player_colision(playerObj) {
+    
+    //Player detection for entities
     for (const key in worlds[playerObj.myWorldId].entities) {
         let object = worlds[playerObj.myWorldId].entities[key];
         
@@ -379,7 +380,6 @@ function detect_player_colision(playerObj) {
 
             playerObj.isColliding = true;
 
-
             //pick up element
             if (playerObj.pickUpKeyPressed === true && playerObj.canPickUp === true && isEmpty(playerObj.connectedEntity)) {
 
@@ -387,17 +387,64 @@ function detect_player_colision(playerObj) {
                 setTimeout(() => {
                     playerObj.canPickUp = false;
                 }, 500)
-
+                
             }
-
 
         } else {
             setTimeout(() => {
                 playerObj.isColliding = false;
             }, 200);
-
         }
     }
+
+    //Player detection for lists
+    for (const key in worlds[playerObj.myWorldId].lists) {
+        let list = worlds[playerObj.myWorldId].lists[key];
+
+        if (
+            detect_colision( playerObj.x, playerObj.y, playerObj.w, playerObj.h, list.x, list.y, list.w, list.h)
+        ) {
+            playerObj.isCollidingWithList = true;
+
+            //console.log("Spiller: " + playerObj.id + " kollidere med liste: " + list.id);
+
+            if (
+                playerObj.pickUpKeyPressed === true &&
+                playerObj.canPickUp === true &&
+                isEmpty(playerObj.connectedEntity)
+            ) {
+                let socket = SOCKET_LIST[playerObj.id];
+                console.log("Opened list with id: " + list.id);
+                socket.emit("openList", list.id);
+                setTimeout(() => {
+                    playerObj.canPickUp = false;
+                }, 500);
+            }
+        } else {
+            setTimeout(()=> {
+            playerObj.isCollidingWithList = false;
+            }, 200);
+
+            setTimeout(() => {
+                if (isEmpty(playerObj.connectedEntity) === true && playerObj.pickUpKeyPressed === false) {
+                    playerObj.canPickUp = true;
+                }
+            }, 600);
+        }
+        //console.log("Is colliding: " + playerObj.isColliding + " Is colliding with list" + playerObj.isCollidingWithList);
+    }
+    
+}
+
+function connectFromListToPlayer(idea, worldId, playerId, listId) {
+    worlds[worldId].players[playerId].connectedEntity = idea;
+    console.log(
+        `player: ${playerId} connected an entity: ${worlds[worldId].players[playerId].connectedEntity}`
+    );
+    delete worlds[worldId].lists[listId].containedIdeas[idea.id];
+    setTimeout(() => {
+        worlds[worldId].players[playerId].canPickUp = false;
+    }, 500);
 }
 
 function connectToWorld(playerObj) {
@@ -438,4 +485,26 @@ function detect_list_colision(listObj) {
 
 
 
-module.exports = { worlds, SOCKET_LIST, startGameLoop, spawnList, spawnElement, initializeConnection, hostServer, joinServer, determineIndicatorColor, removePlayer, sendWorldUpdate, sendServerData, createDefaultWorlds, isEmpty, listCurrentWorld, deleteEmptyWorlds, doesWorldExist, updateKeyState, updateMousePos, deleteAllEntities };
+module.exports = {
+    worlds,
+    SOCKET_LIST,
+    startGameLoop,
+    spawnList,
+    spawnElement,
+    initializeConnection,
+    hostServer,
+    joinServer,
+    determineIndicatorColor,
+    removePlayer,
+    sendWorldUpdate,
+    sendServerData,
+    createDefaultWorlds,
+    isEmpty,
+    listCurrentWorld,
+    deleteEmptyWorlds,
+    doesWorldExist,
+    updateKeyState,
+    updateMousePos,
+    deleteAllEntities,
+    connectFromListToPlayer,
+};

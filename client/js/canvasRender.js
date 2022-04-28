@@ -59,7 +59,6 @@ function drawLists(data) {
             );
             ++containedIdeasCount;
         }
-
         i--;
     }
 }
@@ -67,11 +66,22 @@ function drawLists(data) {
 function drawPickUpToolTip(data) {
     for (const key in data.players) {
         //only draws for the current clients player
-        if (data.players[key].id === myId && data.players[key].isColliding === true && isEmpty(data.players[key].connectedEntity) === true) {
+        if (
+            (data.players[key].id === myId &&
+                data.players[key].isColliding === true &&
+                isEmpty(data.players[key].connectedEntity) === true) ||
+            (data.players[key].id === myId &&
+                data.players[key].isCollidingWithList === true &&
+                isEmpty(data.players[key].connectedEntity) === true)
+        ) {
             ctx.font = "30px Arial";
             ctx.textAlign = "center";
             ctx.fillStyle = "black";
-            ctx.fillText("Press E to interact", data.players[key].x, data.players[key].y - 45)
+            ctx.fillText(
+                "Press E to interact",
+                data.players[key].x,
+                data.players[key].y - 45
+            );
         }
     }
 }
