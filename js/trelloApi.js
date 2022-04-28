@@ -1,3 +1,6 @@
+const settings = require('./settings.js');
+
+
 // All global imports are declared as variables here
 const OAuth = require("oauth").OAuth;
 const { rejects } = require("assert");
@@ -19,14 +22,12 @@ const expiration = "1day";
 const devKey = "3b7a692d77fa60e44426bb331ab783d6";
 const devSecret = "e03d444d5751f140816f637b90beb66a55930e36e3e3e80c14fa11ff6f0944d1";
 
-// Trello redirects the user here after authentication
-const loginCallback = `http://localhost:3000/client/host.html`;
 
 // The OAuth pair that contains token and tokensecret like this {"token": "tokenSecret"}
 const oauth_secrets = {};
 
 // The new authentication object that contains the setup settings
-const oauth = new OAuth(requestURL, accessURL, devKey, devSecret, "1.0A", loginCallback, "HMAC-SHA1");
+const oauth = new OAuth(requestURL, accessURL, devKey, devSecret, "1.0A", settings.trelloLoginCallback, "HMAC-SHA1");
 
 
 
@@ -134,12 +135,22 @@ function deleteCard(accToken, accTokenSecret, cardId) {
 }
 
 function archiveList(accToken, accTokenSecret, listId) {
-    oauth.getProtectedResource(`https://api.trello.com/1/lists/${listId}/closed?`, "PUT", accToken, accTokenSecret, function (error, data, response) {
+    oauth.getProtectedResource(`https://api.trello.com/1/lists/${listId}/closed?value=true`, "PUT", accToken, accTokenSecret, function (error, data, response) {
+        if(!error) {
+            console.log("TRELLO API: list deleted succsesfully");
+        }else{
+            console.log(error);
+        }
     });
 }
 
 function deleteBoard(accToken, accTokenSecret, boardId) {
     oauth.getProtectedResource(`https://api.trello.com/1/boards/${boardId}?`, "DELETE", accToken, accTokenSecret, function (error, data, response) {
+        if(!error) {
+            console.log("TRELLO API: world/board deleted succsesfully");
+        }else{
+            console.log(error);
+        }
     });
 }
 

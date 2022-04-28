@@ -30,6 +30,9 @@ function listCurrentWorld() {
 function deleteEmptyWorlds() {
     for (const world in worlds) {
         if (isEmpty(worlds[world].players) && worlds[world].name !== "Default World") {
+            if (settings.deleteTrelloBoardWhenEmpty) {
+                trelloApi.deleteBoard(worlds[world].accToken, worlds[world].accTokenSecret, worlds[world].trelloBoardId);
+            }
             delete worlds[world];
         }
     }
@@ -427,7 +430,7 @@ function connectToList(listObj, idea) {
     console.log(
         `list: ${listObj.id} connected an idea: ${listObj.containedIdeas[idea.id]}`
     );
-    trelloApi.createCard(worlds[listObj.myWorldId].accToken,worlds[listObj.myWorldId].accTokenSecret,listObj.trelloListId,idea.title,idea.description)
+    trelloApi.createCard(worlds[listObj.myWorldId].accToken, worlds[listObj.myWorldId].accTokenSecret, listObj.trelloListId, idea.title, idea.description)
     delete worlds[listObj.myWorldId].entities[idea.id];
 };
 

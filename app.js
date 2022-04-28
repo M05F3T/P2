@@ -89,7 +89,7 @@ function startClientUpdates() {
             console.log(listId);
 
             let tempListCount = 0;
-
+            trelloApi.archiveList(worldHandler.worlds[id].accToken,worldHandler.worlds[id].accTokenSecret,worldHandler.worlds[id].lists[listId].trelloListId);
             delete worldHandler.worlds[id].lists[listId];
             console.log("Removed list with id: " + listId);
 
