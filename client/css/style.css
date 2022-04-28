@@ -66,6 +66,20 @@ canvas {
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
+#list-popup-menu {
+    padding: 10px;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 500px;
+    height: 500px;
+    background-color: white;
+    transform: translate(-50%, -50%);
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
 #create-idea-button {
     width: 50%;
 }

@@ -92,6 +92,11 @@ function startClientUpdates() {
             worldHandler.updateKeyState(data, socket, player);
         });
 
+        socket.on("takeIdeaFromList", (idea, worldId, playerId, listId) => {
+            console.log(worldId);
+            worldHandler.connectFromListToPlayer(idea, worldId, playerId, listId);
+        });
+
         socket.on('disconnect', () => {
 
             worldHandler.removePlayer(socket);
