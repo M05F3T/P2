@@ -1,3 +1,4 @@
+
 //initialize connection between server and client
 const socket = io();
 
@@ -55,9 +56,6 @@ function sendClientData() {
             console.log(worldSelect.value);
             let Id = worldSelect.value;
     
-            //hide form
-            formMenu.style = "display: none;";
-    
             socket.emit('join', {
                 name: name,
                 color: color,
@@ -66,6 +64,16 @@ function sendClientData() {
             });
         });
     }
+
+    socket.on('join', (doesWorldExist) => {
+        if(!doesWorldExist) {
+            alert("World does not exist, please provide valid world");
+        }
+        else{
+            //hide form
+            formMenu.style = "display: none;";
+        }
+    });
 
     if (hostBtn != null) {
         hostBtn.addEventListener('click', (e) => {

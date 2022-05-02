@@ -42,14 +42,24 @@ function startExpress(filePath, directoryPath) {
 
 
 async function joinAndHostServer(data, socket, player) {
+    let doesWorldExist = false;
+    console.log(data.sessionId + "lol");
+    console.log(worldHandler.worlds[data.sessionId]);
     if (data.host === true) {
         let tokenObj = await trelloApi.trelloLoginCallback(data.href);
         let TrelloBoardId = await trelloApi.createBoard(tokenObj.accessToken, trelloApi.accessTokenSecret);
         worldHandler.hostServer(data, player, socket, await tokenObj, await TrelloBoardId);
-    } else if (data.host === false) {
-        worldHandler.joinServer(data, player, socket);
+    } 
+    else if (!worldHandler.worlds[data.sessionId] && data.host === false) {
+            doesWorldExist = false;
+            socket.emit('join', doesWorldExist);
     }
-}
+    else {
+            doesWorldExist = true;
+            socket.emit('join', doesWorldExist);
+            worldHandler.joinServer(data, player, socket);
+        }
+    }
 
 async function spawnList(dataObj,socket) {
     let trelloListId = await trelloApi.createList(worldHandler.worlds[dataObj.worldId].accToken, worldHandler.worlds[dataObj.worldId].accTokenSecret, worldHandler.worlds[dataObj.worldId].trelloBoardId, dataObj.listName);
@@ -63,12 +73,8 @@ function startClientUpdates() {
 
         let player = worldHandler.initializeConnection(socket);
 
-
         socket.on('join', (data) => {
-
             joinAndHostServer(data, socket, player);
-
-
         });
 
         socket.on('clear', (id) => {
@@ -133,19 +139,3 @@ function startClientUpdates() {
         });
     });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
