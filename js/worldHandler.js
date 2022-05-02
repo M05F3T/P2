@@ -23,7 +23,6 @@ function listCurrentWorld() {
     for (const world in worlds) {
         list[worlds[world].worldId] = worlds[world].worldId;
     }
-
     return list;
 }
 
@@ -482,6 +481,7 @@ function connectToList(listObj, idea) {
     );
     trelloApi.createCard(worlds[listObj.myWorldId].accToken, worlds[listObj.myWorldId].accTokenSecret, listObj.trelloListId, idea.title, idea.description)
     delete worlds[listObj.myWorldId].entities[idea.id];
+    sendWorldUpdate("updateIdeasInListSelector",  worlds[listObj.myWorldId], listObj.myWorldId);
 };
 
 function detect_list_colision(listObj) {

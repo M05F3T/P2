@@ -80,8 +80,13 @@ function startClientUpdates() {
         });
 
         socket.on("spawnList", (dataObj) => {
-            spawnList(dataObj, socket);
-            worldHandler.sendWorldUpdate("updateLists", worldHandler.worlds[dataObj.worldId], dataObj.worldId);
+            spawnList(dataObj, socket).then(()=>{
+                worldHandler.sendWorldUpdate(
+                    "updateLists",
+                    worldHandler.worlds[dataObj.worldId],
+                    dataObj.worldId
+                );
+            });
         });
 
         socket.on("removeSelectedList", (id, listId) => {

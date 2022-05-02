@@ -201,6 +201,11 @@ function getServerData() {
         insertIdeasToListsTab();
     })
 
+    socket.on("updateIdeasInListSelector", (world) => {
+        localWorld = world;
+        insertIdeasToListsTab();
+    });
+
     socket.on("openList", (listId) => {
         listPopupMenu(listId);
     });
