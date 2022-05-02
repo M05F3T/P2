@@ -267,7 +267,8 @@ function createIdea() {
                 ideaName: ideaName.value,
                 ideaDescription: ideaDescription.value,
                 worldId: localWorld.worldId,
-                width: w
+                width: w,
+                playerId: myId,
             }
 
             socket.emit("spawnElement", dataObj);
