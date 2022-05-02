@@ -72,7 +72,7 @@ async function createBoard(accToken, accTokenSecret) {
     let date = today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear();
 
     let oauthPromise = new Promise(function (resolve, reject) {
-        oauth.getProtectedResource(`https://api.trello.com/1/boards/?name=Brainstorm ${date}`, "POST", accToken, accTokenSecret, function (error, data, response) {
+        oauth.getProtectedResource(`https://api.trello.com/1/boards/?defaultLists=false&name=Brainstorm ${date}`, "POST", accToken, accTokenSecret, function (error, data, response) {
             //Now we can respond with data to show that we have access to your Trello account via OAuth
             if (!error) {
                 boardId = JSON.parse(data);
