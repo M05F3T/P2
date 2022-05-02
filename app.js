@@ -82,7 +82,7 @@ function startClientUpdates() {
         });
 
         socket.on('spawnElement', (dataObj) => {
-            worldHandler.spawnElement(dataObj.worldId, socket, dataObj.ideaName, dataObj.ideaDescription, dataObj.width);
+            worldHandler.spawnElement(dataObj.worldId, socket, dataObj.ideaName, dataObj.ideaDescription, dataObj.width, dataObj.playerId);
         });
 
         socket.on("spawnList", (dataObj) => {

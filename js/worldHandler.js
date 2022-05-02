@@ -239,9 +239,9 @@ function joinServer(data, player, socket) {
 
 }
 
-function spawnElement(id, socket, title, description, w) {
+function spawnElement(id, socket, title, description, w, playerId) {
     if (doesWorldExist(id, socket)) {
-        let element = objConstructor.Entity(Math.floor(Math.random() * 1000), Math.floor(Math.random() * 1000));
+        let element = objConstructor.Entity(worlds[id].players[playerId].x, worlds[id].players[playerId].y);
 
         element.title = title;
         element.description = description;
