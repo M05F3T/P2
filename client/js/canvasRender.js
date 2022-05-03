@@ -5,13 +5,15 @@ const trashcan_closed = new Image();
 trashcan_closed.src = `./img/trashcan_closed.svg`
 
 
-function drawTrashcan(isOpen) {
-    if(isOpen === true){
-        ctx.drawImage(trashcan_open,  window.innerWidth - 490, window.innerHeight - 140,100,100);
-    } else {
-        ctx.drawImage(trashcan_closed,  window.innerWidth - 490, window.innerHeight - 140,100,100);
+function drawTrashcan() {
+    for (const key in localWorld.players) {
+        if (localWorld.players[key].isCollidingWithTrashcan === true) {
+            ctx.drawImage(trashcan_open, 800, 800, 100, 100);
+        } else {
+            ctx.drawImage(trashcan_closed, 800, 800, 100, 100);
+        }
     }
-    
+
 }
 
 
