@@ -204,6 +204,7 @@ function getServerData() {
 
         //update local world storage
         localWorld = data;
+        timer.innerText = data.timerObj.seconds;
         //render new update
         renderCanvas();
     });
@@ -222,8 +223,8 @@ function getServerData() {
         listPopupMenu(listId);
     });
 
-    socket.on("updateTimer", (timerObject) => {
-        timer.innerText = timerObject.seconds;
+    socket.on("updateTimer", (timerSeconds) => {
+        timer.innerText = timerSeconds;
     })
 
     socket.on("error", (message) => {
@@ -444,11 +445,11 @@ function timerFunctions() {
     });
 
     pauseTimer.addEventListener("click", () => {
-        socket.emit("pauseTimer");
+        socket.emit("pauseTimer", localWorld.worldId);
     });
 
     resetTimer.addEventListener("click", () => {
-        socket.emit("resetTimer");
+        socket.emit("resetTimer", localWorld.worldId, selectedTimer);
     });
 
 }

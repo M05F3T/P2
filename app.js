@@ -157,6 +157,13 @@ function startClientUpdates() {
             timer.setTimer(worldId, selectedTimer);
         })
 
+        socket.on("pauseTimer", (worldId) => {
+            timer.pauseTimer(worldId);
+        })
+
+        socket.on("resetTimer", (worldId, selectedTimer) => {
+            timer.resetTimer(worldId, selectedTimer);
+        });
 
     });
 }
