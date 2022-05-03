@@ -280,7 +280,7 @@ function spawnList(id, socket, title, trelloListId) {
     }
 }
 
-async function SpawnListFromTemplate(id, trelloObject){
+async function SpawnListFromTemplate(id, trelloObject) {
     trelloObject.forEach(trelloList => {
         let listId = trelloList.id;
         let name = trelloList.name;
@@ -380,7 +380,7 @@ function updatePosistion(playerObj) {
         playerObj.y -= playerObj.maxSpd * 0.75; //up
     }
 
-    if (playerObj.isCollidingWithTrashcan === false && isEmpty(playerObj.connectedEntity) === false && playerObj.pickUpKeyPressed === true && playerObj.canPickUp === false ) {
+    if (playerObj.isCollidingWithTrashcan === false && isEmpty(playerObj.connectedEntity) === false && playerObj.pickUpKeyPressed === true && playerObj.canPickUp === false) {
         connectToWorld(playerObj);
 
         setTimeout(() => {
@@ -463,17 +463,6 @@ function detect_player_colision(playerObj) {
 
 }
 
-function connectFromListToPlayer(idea, worldId, playerId, listId) {
-    worlds[worldId].players[playerId].connectedEntity = idea;
-    console.log(
-        `player: ${playerId} connected an entity: ${worlds[worldId].players[playerId].connectedEntity}`
-    );
-    delete worlds[worldId].lists[listId].containedIdeas[idea.id];
-    setTimeout(() => {
-        worlds[worldId].players[playerId].canPickUp = false;
-    }, 500);
-}
-
 function connectToWorld(playerObj) {
     worlds[playerObj.myWorldId].entities[playerObj.connectedEntity.id] = playerObj.connectedEntity;
     console.log(`player: ${playerObj.id} placed an entity: ${playerObj.connectedEntity.id}`);
@@ -488,12 +477,49 @@ function connectToPlayer(playerObj, entity) {
 
 /*LIST LOGIC*/
 
+function connectFromListToPlayer(idea, worldId, playerId, listId) {
+    worlds[worldId].players[playerId].connectedEntity = idea;
+    console.log(
+        `player: ${playerId} connected an entity: ${worlds[worldId].players[playerId].connectedEntity}`
+    );
+    deleteCard(idea, worldId, listId);
+    setTimeout(() => {
+        worlds[worldId].players[playerId].canPickUp = false;
+    }, 500);
+}
+
+function deleteCard(idea, worldId, listId) {
+    for (const key in worlds[worldId].lists[listId].containedIdeas) {
+        if (worlds[worldId].lists[listId].containedIdeas[key].id === idea.id) {
+            console.log(idea)
+            trelloApi.deleteCard(worlds[worldId].accToken, worlds[worldId].accTokenSecret, idea.trelloCardId)
+            delete worlds[worldId].lists[listId].containedIdeas[idea.id];
+        } else {
+            console.log("cant find element in list");
+        }
+    }
+
+
+
+
+}
+
+async function insertTrelloCardId(listObj, idea) {
+
+    let trelloCardId = await trelloApi.createCard(worlds[listObj.myWorldId].accToken, worlds[listObj.myWorldId].accTokenSecret, listObj.trelloListId, idea.title, idea.description)
+    console.log(await trelloCardId);
+    idea.trelloCardId = await trelloCardId;
+}
+
+
 function connectToList(listObj, idea) {
     listObj.containedIdeas[idea.id] = idea;
     console.log(
         `list: ${listObj.id} connected an idea: ${listObj.containedIdeas[idea.id]}`
     );
-    trelloApi.createCard(worlds[listObj.myWorldId].accToken, worlds[listObj.myWorldId].accTokenSecret, listObj.trelloListId, idea.title, idea.description)
+
+    insertTrelloCardId(listObj, listObj.containedIdeas[idea.id]);
+
     delete worlds[listObj.myWorldId].entities[idea.id];
     sendWorldUpdate("updateIdeasInListSelector", worlds[listObj.myWorldId], listObj.myWorldId);
 };
@@ -531,7 +557,7 @@ function detect_trashcan_colision(player) {
             player.isColliding = false;
         }
 
-    }else {
+    } else {
         player.isCollidingWithTrashcan = false;
     }
 

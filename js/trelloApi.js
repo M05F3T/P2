@@ -181,7 +181,10 @@ async function createList(accToken, accTokenSecret, boardId, name) {
 }
 
 function deleteCard(accToken, accTokenSecret, cardId) {
-    oauth.getProtectedResource(`https://api.trello.com/1/cards/${cardId}`, "POST", accToken, accTokenSecret, function (error, data, response) {
+    oauth.getProtectedResource(`https://api.trello.com/1/cards/${cardId}`, "DELETE", accToken, accTokenSecret, function (error, data, response) {
+        if(error) {
+            console.error(error);
+        }
     });
 }
 
