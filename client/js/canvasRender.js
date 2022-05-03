@@ -1,28 +1,42 @@
+const trashcan_open = new Image();
+trashcan_open.src = `./img/trashcan_open.svg`
+
+const trashcan_closed = new Image();
+trashcan_closed.src = `./img/trashcan_closed.svg`
+
+
+function drawTrashcan() {
+    // trashcan_closed.height = 400;
+    // trashcan_closed.width = 400;
+    ctx.drawImage(trashcan_open, 0, 0,100,100);
+    ctx.drawImage(trashcan_closed, 0, 0,100,100);
+}
+
 function drawElements(data) {
     for (const key in data.entities) {
         ctx.beginPath();
         ctx.lineWidth = 1;
         ctx.fillStyle = data.entities[key].color;
-        ctx.rect(data.entities[key].x, data.entities[key].y,  data.entities[key].w,data.entities[key].h);
+        ctx.rect(data.entities[key].x, data.entities[key].y, data.entities[key].w, data.entities[key].h);
         ctx.fill();
         ctx.stroke();
 
-        drawCardText(data.entities[key].title, data.entities[key].x + (data.entities[key].w / 2),data.entities[key].y + (data.entities[key].h / 2));
+        drawCardText(data.entities[key].title, data.entities[key].x + (data.entities[key].w / 2), data.entities[key].y + (data.entities[key].h / 2));
     }
 }
 
 
-function drawCardText(title,x,y) {
-        ctx.font = "20px Arial";
-        ctx.textAlign = "center";
-        ctx.fillStyle = "black";
-        ctx.textBaseline = "middle";
-        ctx.fillText(title, x, y);
+function drawCardText(title, x, y) {
+    ctx.font = "20px Arial";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "black";
+    ctx.textBaseline = "middle";
+    ctx.fillText(title, x, y);
 }
 
 function drawLists(data) {
     let i = localWorld.listCount - 1;
-    
+
     for (const key in data.lists) {
         ctx.beginPath();
         ctx.lineWidth = 1;
@@ -117,7 +131,7 @@ function drawPlayers(data) {
         ctx.strokeStyle = 'black';
         ctx.stroke();
 
-        
+
 
         drawLineLength(
             data.players[key].x,
@@ -141,11 +155,11 @@ function drawPlayers(data) {
             ctx.beginPath();
             ctx.strokeStyle = data.players[key].color;
             ctx.fillStyle = data.players[key].connectedEntity.color;
-            ctx.rect(data.players[key].connectedEntity.x, data.players[key].connectedEntity.y,  data.players[key].connectedEntity.w,data.players[key].connectedEntity.h);
+            ctx.rect(data.players[key].connectedEntity.x, data.players[key].connectedEntity.y, data.players[key].connectedEntity.w, data.players[key].connectedEntity.h);
             ctx.fill();
             ctx.stroke();
 
-            drawCardText(data.players[key].connectedEntity.title,data.players[key].connectedEntity.x + (data.players[key].connectedEntity.w / 2), data.players[key].connectedEntity.y + (data.players[key].connectedEntity.h / 2));
+            drawCardText(data.players[key].connectedEntity.title, data.players[key].connectedEntity.x + (data.players[key].connectedEntity.w / 2), data.players[key].connectedEntity.y + (data.players[key].connectedEntity.h / 2));
         }
 
     }
@@ -156,7 +170,7 @@ function renderCanvas() {
 
 
     resetCanvas();
-
+    drawTrashcan();
     drawLists(localWorld);
     drawElements(localWorld);
     drawPlayers(localWorld);
