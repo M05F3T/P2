@@ -37,8 +37,7 @@ function startExpress(filePath, directoryPath) {
     });
 
     server.listen(settings.PORT);
-    console.log("Server started.. " + settings.PORT);
-    dataLogger.writeLog("server started..");
+    dataLogger.writeLog("server started on Port: " + settings.PORT);
 
 }
 
@@ -107,13 +106,12 @@ function startClientUpdates() {
         });
 
         socket.on("removeSelectedList", (id, listId) => {
-            console.log("trying to remove list with id:" + listId);
-            console.log(listId);
+            dataLogger.writeLog("trying to remove list with id:" + listId);
 
             let tempListCount = 0;
             trelloApi.archiveList(worldHandler.worlds[id].accToken, worldHandler.worlds[id].accTokenSecret, worldHandler.worlds[id].lists[listId].trelloListId);
             delete worldHandler.worlds[id].lists[listId];
-            console.log("Removed list with id: " + listId);
+            dataLogger.writeLog("Removed list with id: " + listId);
 
             for (const key in worldHandler.worlds[id].lists) {
                 worldHandler.worlds[id].lists[key].x = 50 + tempListCount * 300;
@@ -134,7 +132,6 @@ function startClientUpdates() {
         });
 
         socket.on("takeIdeaFromList", (idea, worldId, playerId, listId) => {
-            console.log(worldId);
             worldHandler.connectFromListToPlayer(idea, worldId, playerId, listId);
         });
 
@@ -146,7 +143,7 @@ function startClientUpdates() {
             worldHandler.deleteEmptyWorlds();
 
 
-            console.log("Player disconnected " + socket.id);
+            dataLogger.writeLog("Player disconnected " + socket.id);
         });
 
         socket.on("startTimer", (worldId) => {

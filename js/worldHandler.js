@@ -1,6 +1,7 @@
 const settings = require('./settings.js');
 const objConstructor = require('./objConstructors.js');
 const trelloApi = require('./trelloApi.js');
+const dataLogger = require('./dataLogger.js');
 
 
 var tinycolor = require("tinycolor2");
@@ -165,7 +166,6 @@ function determineIndicatorColor(colorHex) {
 }
 
 function initializeConnection(socket) {
-    console.log("Player connected " + socket.id);
 
     //add connection to socket list
     SOCKET_LIST[socket.id] = socket;
@@ -206,7 +206,7 @@ function hostServer(data, player, socket, tokenObj, trelloBoardId) {
     //Send world id to client
     socket.emit("worldId", world.worldId);
 
-    console.log(`player: ${player.name} => created world: ${world.worldId}`);
+    dataLogger.writeLog(`player: ${player.name} => created world: ${world.worldId}`);
 
     return world.worldId;
 }
@@ -232,7 +232,7 @@ function joinServer(data, player, socket) {
         //Send world id to client
         socket.emit("worldId", data.sessionId);
 
-        console.log(`player: ${player.name} => joined world: ${data.sessionId}`);
+        dataLogger.writeLog(`player: ${player.name} => joined world: ${data.sessionId}`);
     } else {
         socket.emit("error", "This world is closed please refresh and select a new world");
     }
@@ -250,7 +250,7 @@ function spawnElement(id, socket, title, description, w, playerId) {
 
         worlds[id].entities[element.id] = element;
 
-        console.log(element);
+        dataLogger.writeLog("an element was spawned with id of " + element.id);
     } else {
         socket.emit("error", "This world is closed please refresh and select a new world");
     }
@@ -262,7 +262,7 @@ function spawnList(id, socket, title, trelloListId) {
             let list = objConstructor.List(50 + worlds[id].listCount * 300, 70, title, id);
             worlds[id].lists[list.id] = list;
             worlds[id].lists[list.id].trelloListId = trelloListId;
-            console.log("Spawned list with title: " + list.title);
+            dataLogger.writeLog("Spawned list with title: " + list.title);
             worlds[id].listCount++;
 
         } else {
@@ -286,7 +286,7 @@ async function SpawnListFromTemplate(id, trelloObject) {
         let list = objConstructor.List(50 + worlds[id].listCount * 300, 70, name, id);
         worlds[id].lists[list.id] = list;
         worlds[id].lists[list.id].trelloListId = listId;
-        console.log("Spawned list with title: " + list.title);
+        dataLogger.writeLog("Spawned list with title: " + list.title);
         worlds[id].listCount++;
     });
 }
@@ -402,7 +402,7 @@ function detect_player_colision(playerObj) {
         let object = worlds[playerObj.myWorldId].entities[key];
 
         if (detect_colision(playerObj.x, playerObj.y, playerObj.w, playerObj.h, object.x, object.y, object.w, object.h)) {
-            //console.log(`COLISSION: player: ${playerObj.id} and ${object.id}`)
+            
 
             playerObj.isColliding = true;
 
@@ -432,7 +432,6 @@ function detect_player_colision(playerObj) {
         ) {
             playerObj.isCollidingWithList = true;
 
-            //console.log("Spiller: " + playerObj.id + " kollidere med liste: " + list.id);
 
             if (
                 playerObj.pickUpKeyPressed === true &&
@@ -440,7 +439,6 @@ function detect_player_colision(playerObj) {
                 isEmpty(playerObj.connectedEntity)
             ) {
                 let socket = SOCKET_LIST[playerObj.id];
-                console.log("Opened list with id: " + list.id);
                 socket.emit("openList", list.id);
                 setTimeout(() => {
                     playerObj.canPickUp = false;
@@ -457,20 +455,19 @@ function detect_player_colision(playerObj) {
                 }
             }, 600);
         }
-        //console.log("Is colliding: " + playerObj.isColliding + " Is colliding with list" + playerObj.isCollidingWithList);
     }
 
 }
 
 function connectToWorld(playerObj) {
     worlds[playerObj.myWorldId].entities[playerObj.connectedEntity.id] = playerObj.connectedEntity;
-    console.log(`player: ${playerObj.id} placed an entity: ${playerObj.connectedEntity.id}`);
+    dataLogger.writeLog(`player: ${playerObj.id} placed an entity: ${playerObj.connectedEntity.id}`);
     playerObj.connectedEntity = {};
 }
 
 function connectToPlayer(playerObj, entity) {
     playerObj.connectedEntity = entity;
-    console.log(`player: ${playerObj.id} connected an entity: ${playerObj.connectedEntity.id}`);
+    dataLogger.writeLog(`player: ${playerObj.id} connected an entity: ${playerObj.connectedEntity.id}`);
     delete worlds[playerObj.myWorldId].entities[entity.id];
 }
 
@@ -478,7 +475,7 @@ function connectToPlayer(playerObj, entity) {
 
 function connectFromListToPlayer(idea, worldId, playerId, listId) {
     worlds[worldId].players[playerId].connectedEntity = idea;
-    console.log(
+    dataLogger.writeLog(
         `player: ${playerId} connected an entity: ${worlds[worldId].players[playerId].connectedEntity}`
     );
     deleteCard(idea, worldId, listId);
@@ -490,11 +487,10 @@ function connectFromListToPlayer(idea, worldId, playerId, listId) {
 function deleteCard(idea, worldId, listId) {
     for (const key in worlds[worldId].lists[listId].containedIdeas) {
         if (worlds[worldId].lists[listId].containedIdeas[key].id === idea.id) {
-            console.log(idea)
             trelloApi.deleteCard(worlds[worldId].accToken, worlds[worldId].accTokenSecret, idea.trelloCardId)
             delete worlds[worldId].lists[listId].containedIdeas[idea.id];
         } else {
-            console.log("cant find element in list");
+            dataLogger.writeLog("cant find element in list");
         }
     }
 
@@ -506,15 +502,14 @@ function deleteCard(idea, worldId, listId) {
 async function insertTrelloCardId(listObj, idea) {
 
     let trelloCardId = await trelloApi.createCard(worlds[listObj.myWorldId].accToken, worlds[listObj.myWorldId].accTokenSecret, listObj.trelloListId, idea.title, idea.description)
-    console.log(await trelloCardId);
     idea.trelloCardId = await trelloCardId;
 }
 
 
 function connectToList(listObj, idea) {
     listObj.containedIdeas[idea.id] = idea;
-    console.log(
-        `list: ${listObj.id} connected an idea: ${listObj.containedIdeas[idea.id]}`
+    dataLogger.writeLog(
+        `list: ${listObj.id} connected an idea: ${listObj.containedIdeas[idea.id].title}`
     );
 
     insertTrelloCardId(listObj, listObj.containedIdeas[idea.id]);
