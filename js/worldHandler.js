@@ -95,21 +95,14 @@ function sendServerData(emit, obj) {
 }
 
 function sendWorldUpdate(emit, obj, worldId) {
-
     for (const key in worlds[worldId].players) {
-
         for (let i in SOCKET_LIST) {
             let socket = SOCKET_LIST[i];
             if (isEmpty(worlds[worldId].players) === false && worlds[worldId].players[key].id === socket.id) {
-
                 socket.emit(emit, obj);
-
-
             }
         }
-
     }
-
 }
 
 function removePlayer(socket) {
@@ -147,8 +140,14 @@ function updateKeyState(data, socket, player) {
 
 function updateMousePos(data, socket) {
     if (doesWorldExist(data.worldID, socket)) {
-        worlds[data.worldID].players[data.playerId].mousePos.x = data.x;
-        worlds[data.worldID].players[data.playerId].mousePos.y = data.y;
+        try {
+            worlds[data.worldID].players[data.playerId].mousePos.x = data.x;
+            worlds[data.worldID].players[data.playerId].mousePos.y = data.y;
+        }
+        catch(err) {
+            console.log("Tried to update non-existing players' mouseposition: " + err);
+        }
+        
     }
 }
 

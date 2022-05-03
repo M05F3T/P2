@@ -40,7 +40,7 @@
 
 
     <div class="gameWindow">
-
+        <timer id="timer"></timer>
         <canvas id="ctx"></canvas>
 
         <div id="popup-forms">
@@ -137,17 +137,18 @@
                     </div>
                     <button id="delete" class="button">Clear</button>
                 </div>
+                <!-- Timer div -->
                 <div id="timer-content" style="display: none;">
-                    <button id="" class="button">START TIMER</button>
-                    <button id="" class="button">PAUSE TIMER</button>
-                    <button id="" class="button">RESET TIMER</button>
-                    <select id="">
-                        <option>10 MIN</option>
-                        <option>15 MIN</option>
-                        <option>20 MIN</option>
-                        <option>30 MIN</option>
+                    <button id="starttimer" class="button">START TIMER</button>
+                    <button id="pausetimer" class="button">PAUSE TIMER</button>
+                    <button id="resettimer" class="button">RESET TIMER</button>
+                    <select id="timeselector">
+                        <option value="10">10 MIN</option>
+                        <option value="15">15 MIN</option>
+                        <option value="20">20 MIN</option>
+                        <option value="30">30 MIN</option>
                     </select>
-                    <button id="" class="button">SET TIMER</button>
+                    <button id="settimer" class="button">SET TIMER</button>
                 </div>
 
             </div>
