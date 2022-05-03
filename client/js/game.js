@@ -12,6 +12,7 @@ const clearBtn = document.getElementById("delete");
 const formMenu = document.getElementById("form-menu");
 
 const hostBtn = document.getElementById("host");
+const templateSelector = document.getElementById("template-selector");
 
 const joinBtn = document.getElementById("join");
 const worldSelect = document.getElementById("worldSelect");
@@ -81,7 +82,7 @@ function sendClientData() {
             e.preventDefault();
             let name = nameInput.value;
             let color = colorInput.value;
-
+            let template = templateSelector.value;
 
             socket.emit("hostWorld", location.href);
 
@@ -96,7 +97,7 @@ function sendClientData() {
                 sessionId: "",
                 href: location.href,
                 host: true,
-                template: "none"
+                template: template
             });
         });
     }
