@@ -41,15 +41,23 @@ function startExpress(filePath, directoryPath) {
 
 
 
-async function joinAndHostServer(data, socket, player) {
+async function joinAndHostServer(data, socket, player, template) {
     let doesWorldExist = false;
-    console.log(data.sessionId + "lol");
+    console.log(data.sessionId);
     console.log(worldHandler.worlds[data.sessionId]);
-    if (data.host === true) {
+    if (data.host === true && template === "none") {
         let tokenObj = await trelloApi.trelloLoginCallback(data.href);
-        let TrelloBoardId = await trelloApi.createBoard(tokenObj.accessToken, trelloApi.accessTokenSecret);
-        worldHandler.hostServer(data, player, socket, await tokenObj, await TrelloBoardId);
-    } 
+        let trelloBoardId = await trelloApi.createBoard(tokenObj.accessToken, trelloApi.accessTokenSecret);
+        worldHandler.hostServer(data, player, socket, await tokenObj, await trelloBoardId);
+    }
+    else if(data.host === true && template !== "none"){
+        let worldTemplateId;
+        let tokenObj = await trelloApi.trelloLoginCallback(data.href);
+        let trelloBoardId = await trelloApi.createBoardFromTemplate(tokenObj.accessToken, trelloApi.accessTokenSecret, template);
+        worldTemplateId = worldHandler.hostServer(data, player, socket, await tokenObj, await trelloBoardId);
+        let trelloObject = await trelloApi.GetListsFromBoard(tokenObj.accessToken, tokenObj.accTokenSecret, await trelloBoardId);
+        worldHandler.SpawnListFromTemplate(worldTemplateId, await trelloObject);
+    }
     else if (!worldHandler.worlds[data.sessionId] && data.host === false) {
             doesWorldExist = false;
             socket.emit('join', doesWorldExist);
@@ -74,7 +82,7 @@ function startClientUpdates() {
         let player = worldHandler.initializeConnection(socket);
 
         socket.on('join', (data) => {
-            joinAndHostServer(data, socket, player);
+            joinAndHostServer(data, socket, player, data.template);
         });
 
         socket.on('clear', (id) => {

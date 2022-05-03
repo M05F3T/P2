@@ -60,14 +60,15 @@ function sendClientData() {
                 name: name,
                 color: color,
                 sessionId: Id,
-                host: false
+                host: false,
+                template: "none"
             });
         });
     }
 
     socket.on('join', (doesWorldExist) => {
         if(!doesWorldExist) {
-            alert("World does not exist, please provide valid world");
+            alert("World does not exist, please provide valid world id");
         }
         else{
             //hide form
@@ -94,7 +95,8 @@ function sendClientData() {
                 color: color,
                 sessionId: "",
                 href: location.href,
-                host: true
+                host: true,
+                template: "none"
             });
         });
     }

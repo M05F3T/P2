@@ -73,12 +73,63 @@ async function createBoard(accToken, accTokenSecret) {
 
     let oauthPromise = new Promise(function (resolve, reject) {
         oauth.getProtectedResource(`https://api.trello.com/1/boards/?defaultLists=false&name=Brainstorm ${date}`, "POST", accToken, accTokenSecret, function (error, data, response) {
-            //Now we can respond with data to show that we have access to your Trello account via OAuth
+            //In this callback we get the information from Trello
             if (!error) {
                 boardId = JSON.parse(data);
                 resolve(boardId.id);
             } else {
                 console.log("couldn't authenticate tokens. ", error);
+                reject();
+            }
+        });
+    });
+
+    return await oauthPromise
+
+};
+
+// Function used for creating a new board in Trello
+async function createBoardFromTemplate(accToken, accTokenSecret, templateType) {
+    //Get current data
+    let boardId;
+    let today = new Date();
+    let date = today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear();
+
+    let idBoardSource;
+    //Can be upgraded to switch when there is more templates
+    if(templateType === "ReverseBrainstorm")
+    {
+        idBoardSource = `626fbb5c852bf104bd1b9c8a`;
+    }
+
+    let oauthPromise = new Promise(function (resolve, reject) {
+        oauth.getProtectedResource(`https://api.trello.com/1/boards/?idBoardSource=${idBoardSource}&name=${templateType} ${date}`, "POST", accToken, accTokenSecret, function (error, data, response) {
+            //In this callback we get the information from Trello
+            if (!error) {
+                boardId = JSON.parse(data);
+                resolve(boardId.id);
+            } else {
+                console.log("An error occured at template creation: ", error);
+                reject();
+            }
+        });
+    });
+
+    return await oauthPromise
+
+};
+
+// Function used for creating a new board in Trello
+async function GetListsFromBoard(accToken, accTokenSecret, boardId) {
+    console.log(boardId);
+    let oauthPromise = new Promise(function (resolve, reject) {
+        oauth.getProtectedResource(`https://api.trello.com/1/boards/${boardId}/lists?`, "GET", accToken, accTokenSecret, function (error, data, response) {
+            //In this callback we get the information from Trello
+            if (!error) {
+                let listArray = JSON.parse(data);
+                resolve(listArray);
+            } else {
+                console.log("An error occured while getting lists from board: ", error);
                 reject();
             }
         });
@@ -154,4 +205,4 @@ function deleteBoard(accToken, accTokenSecret, boardId) {
     });
 }
 
-module.exports = { login, trelloLoginCallback, createBoard, createCard, createList, deleteCard, archiveList, deleteBoard };
+module.exports = { login, trelloLoginCallback, createBoard, createCard, createList, deleteCard, archiveList, deleteBoard, createBoardFromTemplate, GetListsFromBoard};
