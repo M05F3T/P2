@@ -1,4 +1,5 @@
 const settings = require('./settings.js');
+const dataLogger = require('./dataLogger.js');
 
 
 // All global imports are declared as variables here
@@ -54,7 +55,7 @@ async function trelloLoginCallback(href) {
                     'accessTokenSecret': accessTokenSecret
                 });
             } else {
-                console.log("couldn't authenticate tokens. ", error);
+                dataLogger.writeLog("couldn't authenticate tokens. ", error);
                 reject();
             }
         });
@@ -78,7 +79,7 @@ async function createBoard(accToken, accTokenSecret) {
                 boardId = JSON.parse(data);
                 resolve(boardId.id);
             } else {
-                console.log("couldn't authenticate tokens. ", error);
+                dataLogger.writeLog("couldn't authenticate tokens. ", error);
                 reject();
             }
         });
@@ -108,7 +109,7 @@ async function createBoardFromTemplate(accToken, accTokenSecret, templateType) {
                 boardId = JSON.parse(data);
                 resolve(boardId.id);
             } else {
-                console.log("An error occured at template creation: ", error);
+                dataLogger.writeLog("An error occured at template creation: ", error);
                 reject();
             }
         });
@@ -120,7 +121,7 @@ async function createBoardFromTemplate(accToken, accTokenSecret, templateType) {
 
 // Function used for creating a new board in Trello
 async function GetListsFromBoard(accToken, accTokenSecret, boardId) {
-    console.log(boardId);
+    dataLogger.writeLog(boardId);
     let oauthPromise = new Promise(function (resolve, reject) {
         oauth.getProtectedResource(`https://api.trello.com/1/boards/${boardId}/lists?`, "GET", accToken, accTokenSecret, function (error, data, response) {
             //In this callback we get the information from Trello
@@ -128,7 +129,7 @@ async function GetListsFromBoard(accToken, accTokenSecret, boardId) {
                 let listArray = JSON.parse(data);
                 resolve(listArray);
             } else {
-                console.log("An error occured while getting lists from board: ", error);
+                dataLogger.writeLog("An error occured while getting lists from board: ", error);
                 reject();
             }
         });
@@ -147,7 +148,7 @@ async function createCard(accToken, accTokenSecret, idList, name, desc) {
                 cardId = JSON.parse(data);
                 resolve(cardId.id);
             } else {
-                console.log("couldn't authenticate tokens. ", error);
+                dataLogger.writeLog("couldn't authenticate tokens. ", error);
                 reject();
             }
         });
@@ -168,7 +169,7 @@ async function createList(accToken, accTokenSecret, boardId, name) {
                 listId = JSON.parse(data);
                 resolve(listId.id);
             } else {
-                console.log("couldn't authenticate tokens. ", error);
+                dataLogger.writeLog("couldn't authenticate tokens. ", error);
                 reject();
             }
 
@@ -182,7 +183,7 @@ async function createList(accToken, accTokenSecret, boardId, name) {
 function deleteCard(accToken, accTokenSecret, cardId) {
     oauth.getProtectedResource(`https://api.trello.com/1/cards/${cardId}`, "DELETE", accToken, accTokenSecret, function (error, data, response) {
         if (!error) {
-            console.log("TRELLO API: card deleted succsesfully");
+            dataLogger.writeLog("TRELLO API: card deleted succsesfully");
         } else {
             console.error(error);
         }
@@ -192,9 +193,9 @@ function deleteCard(accToken, accTokenSecret, cardId) {
 function archiveList(accToken, accTokenSecret, listId) {
     oauth.getProtectedResource(`https://api.trello.com/1/lists/${listId}/closed?value=true`, "PUT", accToken, accTokenSecret, function (error, data, response) {
         if (!error) {
-            console.log("TRELLO API: list deleted succsesfully");
+            dataLogger.writeLog("TRELLO API: list deleted succsesfully");
         } else {
-            console.log(error);
+            dataLogger.writeLog(error);
         }
     });
 }
@@ -202,9 +203,9 @@ function archiveList(accToken, accTokenSecret, listId) {
 function deleteBoard(accToken, accTokenSecret, boardId) {
     oauth.getProtectedResource(`https://api.trello.com/1/boards/${boardId}?`, "DELETE", accToken, accTokenSecret, function (error, data, response) {
         if (!error) {
-            console.log("TRELLO API: world/board deleted succsesfully");
+            dataLogger.writeLog("TRELLO API: world/board deleted succsesfully");
         } else {
-            console.log(error);
+            dataLogger.writeLog(error);
         }
     });
 }
