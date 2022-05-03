@@ -6,12 +6,19 @@ trashcan_closed.src = `./img/trashcan_closed.svg`
 
 
 function drawTrashcan() {
+    let open;
     for (const key in localWorld.players) {
         if (localWorld.players[key].isCollidingWithTrashcan === true) {
-            ctx.drawImage(trashcan_open, 800, 800, 100, 100);
+            open = true
         } else {
-            ctx.drawImage(trashcan_closed, 800, 800, 100, 100);
+            open = false
         }
+    }
+
+    if(open) {
+        ctx.drawImage(trashcan_open, 800, 800, 100, 100);
+    } else {
+        ctx.drawImage(trashcan_closed, 800, 800, 100, 100);
     }
 
 }
