@@ -68,6 +68,10 @@ let World = () => {
         accToken: "",
         accTokenSecret: "",
         trelloBoardId: "",
+        timerObj: {
+            timerOn: false,
+            seconds: 0,
+        },
         players: {
 
         },
