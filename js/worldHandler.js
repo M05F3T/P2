@@ -139,8 +139,14 @@ function updateKeyState(data, socket, player) {
 
 function updateMousePos(data, socket) {
     if (doesWorldExist(data.worldID, socket)) {
-        worlds[data.worldID].players[data.playerId].mousePos.x = data.x;
-        worlds[data.worldID].players[data.playerId].mousePos.y = data.y;
+        try {
+            worlds[data.worldID].players[data.playerId].mousePos.x = data.x;
+            worlds[data.worldID].players[data.playerId].mousePos.y = data.y;
+        }
+        catch(err) {
+            console.log("Tried to update non-existing players' mouseposition: " + err);
+        }
+        
     }
 }
 
