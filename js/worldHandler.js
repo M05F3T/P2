@@ -94,21 +94,14 @@ function sendServerData(emit, obj) {
 }
 
 function sendWorldUpdate(emit, obj, worldId) {
-
     for (const key in worlds[worldId].players) {
-
         for (let i in SOCKET_LIST) {
             let socket = SOCKET_LIST[i];
             if (isEmpty(worlds[worldId].players) === false && worlds[worldId].players[key].id === socket.id) {
-
                 socket.emit(emit, obj);
-
-
             }
         }
-
     }
-
 }
 
 function removePlayer(socket) {

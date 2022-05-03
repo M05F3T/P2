@@ -222,6 +222,10 @@ function getServerData() {
         listPopupMenu(listId);
     });
 
+    socket.on("updateTimer", (timerObject) => {
+        timer.innerText = timerObject.seconds;
+    })
+
     socket.on("error", (message) => {
         alert(message);
     });
@@ -432,11 +436,11 @@ function timerFunctions() {
     });
 
     startTimer.addEventListener("click", () => {
-        socket.emit("startTimer");
+        socket.emit("startTimer", localWorld.worldId);
     })
 
     setTimer.addEventListener("click", () => {
-        socket.emit("setTimer");
+        socket.emit("setTimer", localWorld.worldId, selectedTimer);
     });
 
     pauseTimer.addEventListener("click", () => {
