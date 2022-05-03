@@ -1,4 +1,5 @@
 const settings = require('./js/settings.js');
+const timer = require("./js/timer.js");
 const worldHandler = require('./js/worldHandler.js');
 const trelloApi = require('./js/trelloApi.js');
 const dataLogger = require('./js/dataLogger.js');
@@ -144,5 +145,22 @@ function startClientUpdates() {
 
             dataLogger.writeLog("Player disconnected " + socket.id);
         });
+
+        socket.on("startTimer", (worldId) => {
+            timer.startTimer(worldId);
+        })
+
+        socket.on("setTimer", (worldId, selectedTimer) => {
+            timer.setTimer(worldId, selectedTimer);
+        })
+
+        socket.on("pauseTimer", (worldId) => {
+            timer.pauseTimer(worldId);
+        })
+
+        socket.on("resetTimer", (worldId, selectedTimer) => {
+            timer.resetTimer(worldId, selectedTimer);
+        });
+
     });
 }

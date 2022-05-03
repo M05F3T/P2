@@ -19,6 +19,7 @@ const colorInput = document.getElementById("color");
 const nameInput = document.getElementById("name");
 
 const listSelector = document.getElementById("listSelector");
+const timer = document.getElementById("timer");
 
 // function play() {
 //     var audio = new Audio('./js/beat.mp3');
@@ -30,13 +31,14 @@ let localWorld;
 let hover = false;
 let targetEntityId;
 let canUseKeyboard = true;
-
+let timerValue = 0;
 
 getServerData();
 sendClientData();
 navigationListeners();
 popUpListeners();
 deleteListeners();
+timerFunctions();
 
 let mouseX;
 let mouseY;
@@ -202,6 +204,7 @@ function getServerData() {
 
         //update local world storage
         localWorld = data;
+        timer.innerText = data.timerObj.seconds;
         //render new update
         renderCanvas();
     });
@@ -219,6 +222,10 @@ function getServerData() {
     socket.on("openList", (listId) => {
         listPopupMenu(listId);
     });
+
+    socket.on("updateTimer", (timerSeconds) => {
+        timer.innerText = timerSeconds;
+    })
 
     socket.on("error", (message) => {
         alert(message);
@@ -414,6 +421,37 @@ function deleteList() {
     } else {
         alert("There are no lists to remove");
     }
+}
+
+function timerFunctions() {
+    const startTimer = document.getElementById("starttimer");
+    const pauseTimer = document.getElementById("pausetimer");
+    const resetTimer = document.getElementById("resettimer");
+    const timeSelector = document.getElementById("timeselector");
+    const setTimer = document.getElementById("settimer");
+    let selectedTimer = timeSelector.value;
+    
+    timeSelector.addEventListener("change", () => {
+        selectedTimer = timeSelector.value;
+        console.log(selectedTimer);
+    });
+
+    startTimer.addEventListener("click", () => {
+        socket.emit("startTimer", localWorld.worldId);
+    })
+
+    setTimer.addEventListener("click", () => {
+        socket.emit("setTimer", localWorld.worldId, selectedTimer);
+    });
+
+    pauseTimer.addEventListener("click", () => {
+        socket.emit("pauseTimer", localWorld.worldId);
+    });
+
+    resetTimer.addEventListener("click", () => {
+        socket.emit("resetTimer", localWorld.worldId, selectedTimer);
+    });
+
 }
 
 function popUpListeners() {
