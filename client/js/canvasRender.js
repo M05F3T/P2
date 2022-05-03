@@ -5,12 +5,15 @@ const trashcan_closed = new Image();
 trashcan_closed.src = `./img/trashcan_closed.svg`
 
 
-function drawTrashcan() {
-    // trashcan_closed.height = 400;
-    // trashcan_closed.width = 400;
-    ctx.drawImage(trashcan_open, 0, 0,100,100);
-    ctx.drawImage(trashcan_closed, 0, 0,100,100);
+function drawTrashcan(isOpen) {
+    if(isOpen === true){
+        ctx.drawImage(trashcan_open,  window.innerWidth - 490, window.innerHeight - 140,100,100);
+    } else {
+        ctx.drawImage(trashcan_closed,  window.innerWidth - 490, window.innerHeight - 140,100,100);
+    }
+    
 }
+
 
 function drawElements(data) {
     for (const key in data.entities) {
@@ -170,7 +173,7 @@ function renderCanvas() {
 
 
     resetCanvas();
-    drawTrashcan();
+    drawTrashcan(true);
     drawLists(localWorld);
     drawElements(localWorld);
     drawPlayers(localWorld);
