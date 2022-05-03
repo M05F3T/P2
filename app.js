@@ -1,6 +1,7 @@
 const settings = require('./js/settings.js');
 const worldHandler = require('./js/worldHandler.js');
 const trelloApi = require('./js/trelloApi.js');
+const dataLogger = require('./js/dataLogger.js');
 const express = require('express');
 const { url } = require('inspector');
 const app = express();
@@ -36,10 +37,9 @@ function startExpress(filePath, directoryPath) {
 
     server.listen(settings.PORT);
     console.log("Server started.. " + settings.PORT);
+    dataLogger.writeLog("server started..");
 
 }
-
-
 
 async function joinAndHostServer(data, socket, player, template) {
     let doesWorldExist = false;
@@ -80,6 +80,8 @@ function startClientUpdates() {
     io.sockets.on('connection', (socket) => {
 
         let player = worldHandler.initializeConnection(socket);
+
+        dataLogger.writeLog(`Player connected to server with id: ${socket.id}`);
 
         socket.on('join', (data) => {
             joinAndHostServer(data, socket, player, data.template);

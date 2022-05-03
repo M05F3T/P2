@@ -304,9 +304,10 @@ function startGameLoop() {
                     }
 
                     for (const key in worlds[world].players) {
+                        detect_trashcan_colision(worlds[world].players[key]);
 
-                    detect_player_colision(worlds[world].players[key]);
-                    updatePosistion(worlds[world].players[key]);
+                        detect_player_colision(worlds[world].players[key]);
+                        updatePosistion(worlds[world].players[key]);
 
                         for (let i in SOCKET_LIST) {
                             let socket = SOCKET_LIST[i];
@@ -379,7 +380,7 @@ function updatePosistion(playerObj) {
         playerObj.y -= playerObj.maxSpd * 0.75; //up
     }
 
-    if (isEmpty(playerObj.connectedEntity) === false && playerObj.pickUpKeyPressed === true && playerObj.canPickUp === false) {
+    if (playerObj.isCollidingWithTrashcan === false && isEmpty(playerObj.connectedEntity) === false && playerObj.pickUpKeyPressed === true && playerObj.canPickUp === false ) {
         connectToWorld(playerObj);
 
         setTimeout(() => {
@@ -396,7 +397,7 @@ function updatePosistion(playerObj) {
 }
 
 function detect_player_colision(playerObj) {
-    
+
     //Player detection for entities
     for (const key in worlds[playerObj.myWorldId].entities) {
         let object = worlds[playerObj.myWorldId].entities[key];
@@ -413,7 +414,7 @@ function detect_player_colision(playerObj) {
                 setTimeout(() => {
                     playerObj.canPickUp = false;
                 }, 500)
-                
+
             }
 
         } else {
@@ -428,7 +429,7 @@ function detect_player_colision(playerObj) {
         let list = worlds[playerObj.myWorldId].lists[key];
 
         if (
-            detect_colision( playerObj.x, playerObj.y, playerObj.w, playerObj.h, list.x, list.y, list.w, list.h)
+            detect_colision(playerObj.x, playerObj.y, playerObj.w, playerObj.h, list.x, list.y, list.w, list.h)
         ) {
             playerObj.isCollidingWithList = true;
 
@@ -447,8 +448,8 @@ function detect_player_colision(playerObj) {
                 }, 500);
             }
         } else {
-            setTimeout(()=> {
-            playerObj.isCollidingWithList = false;
+            setTimeout(() => {
+                playerObj.isCollidingWithList = false;
             }, 200);
 
             setTimeout(() => {
@@ -459,7 +460,7 @@ function detect_player_colision(playerObj) {
         }
         //console.log("Is colliding: " + playerObj.isColliding + " Is colliding with list" + playerObj.isCollidingWithList);
     }
-    
+
 }
 
 function connectFromListToPlayer(idea, worldId, playerId, listId) {
@@ -494,7 +495,7 @@ function connectToList(listObj, idea) {
     );
     trelloApi.createCard(worlds[listObj.myWorldId].accToken, worlds[listObj.myWorldId].accTokenSecret, listObj.trelloListId, idea.title, idea.description)
     delete worlds[listObj.myWorldId].entities[idea.id];
-    sendWorldUpdate("updateIdeasInListSelector",  worlds[listObj.myWorldId], listObj.myWorldId);
+    sendWorldUpdate("updateIdeasInListSelector", worlds[listObj.myWorldId], listObj.myWorldId);
 };
 
 function detect_list_colision(listObj) {
@@ -510,6 +511,32 @@ function detect_list_colision(listObj) {
         }
     }
 };
+
+function detect_trashcan_colision(player) {
+    const trashcan_x = 800;
+    const trashcan_y = 800;
+    const trashcan_h = 100;
+    const trashcan_w = 100;
+
+    if (
+        player.x < trashcan_x + trashcan_w &&
+        player.x + player.w > trashcan_x &&
+        player.y < trashcan_y + trashcan_h &&
+        player.h + player.y > trashcan_y
+    ) {
+        player.isCollidingWithTrashcan = true;
+        if (player.pickUpKeyPressed === true && player.canPickUp === false && isEmpty(player.connectedEntity) === false) {
+            player.connectedEntity = {};
+            player.canPickUp = true;
+            player.isColliding = false;
+        }
+
+    }else {
+        player.isCollidingWithTrashcan = false;
+    }
+
+};
+
 
 
 
