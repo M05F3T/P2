@@ -56,7 +56,7 @@ function drawLists(data) {
         ctx.stroke();
 
         //draw list name
-        ctx.font = "30px Arial";
+        ctx.font = "20px Arial";
         ctx.textAlign = "center";
         ctx.fillStyle = "black";
         ctx.fillText(
