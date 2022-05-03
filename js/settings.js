@@ -8,7 +8,7 @@ const trelloLoginCallback = "http://localhost:3000/client/host.html";
 
 const servThisFile = '/client/login.html'
 const allowAccessTo = '/client'
-const defaultWorldId ='111111'
+const defaultWorldId = '111111'
 
 
-module.exports = { PORT, defaultWorldsActive, servThisFile, allowAccessTo,defaultWorldId,deleteTrelloBoardWhenEmpty,trelloLoginCallback};
+module.exports = { PORT, defaultWorldsActive, servThisFile, allowAccessTo, defaultWorldId, deleteTrelloBoardWhenEmpty, trelloLoginCallback };

@@ -97,8 +97,7 @@ async function createBoardFromTemplate(accToken, accTokenSecret, templateType) {
 
     let idBoardSource;
     //Can be upgraded to switch when there is more templates
-    if(templateType === "ReverseBrainstorm")
-    {
+    if (templateType === "ReverseBrainstorm") {
         idBoardSource = `626fbb5c852bf104bd1b9c8a`;
     }
 
@@ -161,7 +160,7 @@ async function createCard(accToken, accTokenSecret, idList, name, desc) {
 
 async function createList(accToken, accTokenSecret, boardId, name) {
     let listId;
-    
+
 
     let oauthPromise = new Promise(function (resolve, reject) {
         oauth.getProtectedResource(`https://api.trello.com/1/lists?name=${encodeURIComponent(name)}&idBoard=${boardId}&pos=bottom`, "POST", accToken, accTokenSecret, function (error, data, response) {
@@ -182,7 +181,9 @@ async function createList(accToken, accTokenSecret, boardId, name) {
 
 function deleteCard(accToken, accTokenSecret, cardId) {
     oauth.getProtectedResource(`https://api.trello.com/1/cards/${cardId}`, "DELETE", accToken, accTokenSecret, function (error, data, response) {
-        if(error) {
+        if (!error) {
+            console.log("TRELLO API: card deleted succsesfully");
+        } else {
             console.error(error);
         }
     });
@@ -190,9 +191,9 @@ function deleteCard(accToken, accTokenSecret, cardId) {
 
 function archiveList(accToken, accTokenSecret, listId) {
     oauth.getProtectedResource(`https://api.trello.com/1/lists/${listId}/closed?value=true`, "PUT", accToken, accTokenSecret, function (error, data, response) {
-        if(!error) {
+        if (!error) {
             console.log("TRELLO API: list deleted succsesfully");
-        }else{
+        } else {
             console.log(error);
         }
     });
@@ -200,12 +201,12 @@ function archiveList(accToken, accTokenSecret, listId) {
 
 function deleteBoard(accToken, accTokenSecret, boardId) {
     oauth.getProtectedResource(`https://api.trello.com/1/boards/${boardId}?`, "DELETE", accToken, accTokenSecret, function (error, data, response) {
-        if(!error) {
+        if (!error) {
             console.log("TRELLO API: world/board deleted succsesfully");
-        }else{
+        } else {
             console.log(error);
         }
     });
 }
 
-module.exports = { login, trelloLoginCallback, createBoard, createCard, createList, deleteCard, archiveList, deleteBoard, createBoardFromTemplate, GetListsFromBoard};
+module.exports = { login, trelloLoginCallback, createBoard, createCard, createList, deleteCard, archiveList, deleteBoard, createBoardFromTemplate, GetListsFromBoard };

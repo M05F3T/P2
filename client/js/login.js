@@ -3,15 +3,15 @@ const loginBtn = document.getElementById("login");
 const guestBtn = document.getElementById("guest");
 
 
-loginBtn.addEventListener('click', (e) => { 
+loginBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    location.href="./login";
+    location.href = "./login";
 });
 
 
 
 
-guestBtn.addEventListener('click', (e) => { 
+guestBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    location.href='./client/guest.html';
+    location.href = './client/guest.html';
 });

@@ -50,7 +50,7 @@ async function joinAndHostServer(data, socket, player, template) {
         let trelloBoardId = await trelloApi.createBoard(tokenObj.accessToken, trelloApi.accessTokenSecret);
         worldHandler.hostServer(data, player, socket, await tokenObj, await trelloBoardId);
     }
-    else if(data.host === true && template !== "none"){
+    else if (data.host === true && template !== "none") {
         let worldTemplateId;
         let tokenObj = await trelloApi.trelloLoginCallback(data.href);
         let trelloBoardId = await trelloApi.createBoardFromTemplate(tokenObj.accessToken, trelloApi.accessTokenSecret, template);
@@ -59,17 +59,17 @@ async function joinAndHostServer(data, socket, player, template) {
         worldHandler.SpawnListFromTemplate(worldTemplateId, await trelloObject);
     }
     else if (!worldHandler.worlds[data.sessionId] && data.host === false) {
-            doesWorldExist = false;
-            socket.emit('join', doesWorldExist);
+        doesWorldExist = false;
+        socket.emit('join', doesWorldExist);
     }
     else {
-            doesWorldExist = true;
-            socket.emit('join', doesWorldExist);
-            worldHandler.joinServer(data, player, socket);
-        }
+        doesWorldExist = true;
+        socket.emit('join', doesWorldExist);
+        worldHandler.joinServer(data, player, socket);
     }
+}
 
-async function spawnList(dataObj,socket) {
+async function spawnList(dataObj, socket) {
     let trelloListId = await trelloApi.createList(worldHandler.worlds[dataObj.worldId].accToken, worldHandler.worlds[dataObj.worldId].accTokenSecret, worldHandler.worlds[dataObj.worldId].trelloBoardId, dataObj.listName);
     worldHandler.spawnList(dataObj.worldId, socket, dataObj.listName, await trelloListId);
 }
@@ -96,7 +96,7 @@ function startClientUpdates() {
         });
 
         socket.on("spawnList", (dataObj) => {
-            spawnList(dataObj, socket).then(()=>{
+            spawnList(dataObj, socket).then(() => {
                 worldHandler.sendWorldUpdate(
                     "updateLists",
                     worldHandler.worlds[dataObj.worldId],
@@ -110,7 +110,7 @@ function startClientUpdates() {
             console.log(listId);
 
             let tempListCount = 0;
-            trelloApi.archiveList(worldHandler.worlds[id].accToken,worldHandler.worlds[id].accTokenSecret,worldHandler.worlds[id].lists[listId].trelloListId);
+            trelloApi.archiveList(worldHandler.worlds[id].accToken, worldHandler.worlds[id].accTokenSecret, worldHandler.worlds[id].lists[listId].trelloListId);
             delete worldHandler.worlds[id].lists[listId];
             console.log("Removed list with id: " + listId);
 

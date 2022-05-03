@@ -17,7 +17,7 @@ const joinBtn = document.getElementById("join");
 const worldSelect = document.getElementById("worldSelect");
 const colorInput = document.getElementById("color");
 const nameInput = document.getElementById("name");
-    
+
 const listSelector = document.getElementById("listSelector");
 
 // function play() {
@@ -55,7 +55,7 @@ function sendClientData() {
             let color = colorInput.value;
             console.log(worldSelect.value);
             let Id = worldSelect.value;
-    
+
             socket.emit('join', {
                 name: name,
                 color: color,
@@ -67,10 +67,10 @@ function sendClientData() {
     }
 
     socket.on('join', (doesWorldExist) => {
-        if(!doesWorldExist) {
+        if (!doesWorldExist) {
             alert("World does not exist, please provide valid world id");
         }
-        else{
+        else {
             //hide form
             formMenu.style = "display: none;";
         }
@@ -81,15 +81,15 @@ function sendClientData() {
             e.preventDefault();
             let name = nameInput.value;
             let color = colorInput.value;
-            
 
-            socket.emit("hostWorld",location.href);
+
+            socket.emit("hostWorld", location.href);
 
 
             //hide form
             formMenu.style = "display: none;";
-    
-    
+
+
             socket.emit('join', {
                 name: name,
                 color: color,
@@ -143,38 +143,38 @@ function sendClientData() {
 
     document.onkeyup = (event) => {
         //if (canUseKeyboard === true) {
-            if (event.key === 'd' || event.key === 'D') {
-                socket.emit('keyPress', {
-                    inputId: 'right',
-                    state: false,
-                    worldId: localWorld.worldId
-                })
-            } else if (event.key === 's' || event.key === 'S') {
-                socket.emit('keyPress', {
-                    inputId: 'down',
-                    state: false,
-                    worldId: localWorld.worldId
-                })
-            } else if (event.key === 'a' || event.key === 'A') {
-                socket.emit('keyPress', {
-                    inputId: 'left',
-                    state: false,
-                    worldId: localWorld.worldId
-                })
-            } else if (event.key === 'w' || event.key === 'W') {
-                socket.emit('keyPress', {
-                    inputId: 'up',
-                    state: false,
-                    worldId: localWorld.worldId
-                })
-            } else if (event.key === 'e' || event.key === 'E') {
-                socket.emit('keyPress', {
-                    inputId: 'pickUpKeyPressed',
-                    state: false,
-                    worldId: localWorld.worldId
-                })
-            }
+        if (event.key === 'd' || event.key === 'D') {
+            socket.emit('keyPress', {
+                inputId: 'right',
+                state: false,
+                worldId: localWorld.worldId
+            })
+        } else if (event.key === 's' || event.key === 'S') {
+            socket.emit('keyPress', {
+                inputId: 'down',
+                state: false,
+                worldId: localWorld.worldId
+            })
+        } else if (event.key === 'a' || event.key === 'A') {
+            socket.emit('keyPress', {
+                inputId: 'left',
+                state: false,
+                worldId: localWorld.worldId
+            })
+        } else if (event.key === 'w' || event.key === 'W') {
+            socket.emit('keyPress', {
+                inputId: 'up',
+                state: false,
+                worldId: localWorld.worldId
+            })
+        } else if (event.key === 'e' || event.key === 'E') {
+            socket.emit('keyPress', {
+                inputId: 'pickUpKeyPressed',
+                state: false,
+                worldId: localWorld.worldId
+            })
         }
+    }
 
     //}
 
@@ -241,7 +241,7 @@ function createIdea() {
 
     spawnBtn.disabled = true;
     canUseKeyboard = false
-    
+
     const createIdeaCancelButton = document.getElementById("create-idea-cancel-button");
     const ideaName = document.getElementById("idea-name");
     const ideaDescription = document.getElementById("idea-description");
@@ -260,11 +260,11 @@ function createIdea() {
 
     createIdeaButton.addEventListener("click", () => {
         let w = ctx.measureText(ideaName.value).width + 10;
-        
-        if(ideaName.value === "") {
+
+        if (ideaName.value === "") {
             alert("You have to specify a title");
             createIdea();
-        } else{
+        } else {
             dataObj = {
                 ideaName: ideaName.value,
                 ideaDescription: ideaDescription.value,
@@ -281,7 +281,7 @@ function createIdea() {
             spawnBtn.disabled = false;
 
         }
-    },{once : true});
+    }, { once: true });
 }
 
 function createList() {
@@ -291,7 +291,7 @@ function createList() {
 
 
     canUseKeyboard = false
-    
+
     const createListCancelButton = document.getElementById("create-list-cancel-button");
     const listName = document.getElementById("list-name");
     const createListButton = document.getElementById("create-list-button")
@@ -307,10 +307,10 @@ function createList() {
     });
 
     createListButton.addEventListener("click", () => {
-        if(listName.value === "") {
+        if (listName.value === "") {
             alert("You have to specify a title");
             //createList();
-        }else {
+        } else {
             //alert("you've created a list!");
             dataObj = {
                 listName: listName.value,
@@ -326,7 +326,7 @@ function createList() {
 
             spawnList.disabled = false;
         }
-    },{once : true});
+    }, { once: true });
 }
 
 //List popup menu
@@ -453,7 +453,7 @@ function navigationListeners() {
         listsContent.style.display = "block";
         ideasContent.style.display = "none";
         timerContent.style.display = "none";
-        insertIdeasToListsTab(); 
+        insertIdeasToListsTab();
     });
 
     ideasButton.addEventListener("click", (e) => {
