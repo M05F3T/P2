@@ -208,6 +208,8 @@ function hostServer(data, player, socket, tokenObj, trelloBoardId) {
     socket.emit("worldId", world.worldId);
 
     console.log(`player: ${player.name} => created world: ${world.worldId}`);
+
+    return world.worldId;
 }
 
 function joinServer(data, player, socket) {
@@ -276,7 +278,18 @@ function spawnList(id, socket, title, trelloListId) {
             "Reached max of 5 lists"
         );
     }
+}
 
+async function SpawnListFromTemplate(id, trelloObject){
+    trelloObject.forEach(trelloList => {
+        let listId = trelloList.id;
+        let name = trelloList.name;
+        let list = objConstructor.List(50 + worlds[id].listCount * 300, 70, name, id);
+        worlds[id].lists[list.id] = list;
+        worlds[id].lists[list.id].trelloListId = listId;
+        console.log("Spawned list with title: " + list.title);
+        worlds[id].listCount++;
+    });
 }
 
 function startGameLoop() {
@@ -549,4 +562,5 @@ module.exports = {
     updateMousePos,
     deleteAllEntities,
     connectFromListToPlayer,
+    SpawnListFromTemplate,
 };
