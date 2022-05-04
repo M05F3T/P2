@@ -1,10 +1,11 @@
 const worldHandler = require("./worldHandler.js");
+const dataLogger = require("./dataLogger.js");
 
 let timeInterval;
 let timeWorlds = [];
 
 timeInterval = setInterval(() => {
-    if (worldHandler.doesWorldExist(worldHandler.worlds[worldId]))
+    try {
         timeWorlds.forEach((worldId) => {
             if (
                 worldHandler.worlds[worldId].timerObj.seconds > 0 &&
@@ -24,10 +25,16 @@ timeInterval = setInterval(() => {
                     worldHandler.worlds[worldId].timerObj.seconds,
                     worldId
                 );
-            } else if (worldHandler.worlds[worldId].timerObj.seconds === 0) {
+            } else if (
+                worldHandler.worlds[worldId].timerObj.seconds === 0
+            ) {
                 worldHandler.sendWorldUpdate("error", "Time's up", worldId);
             }
         });
+    }
+    catch(err) {
+        dataLogger.writeError("Error while updating time: " + err);
+    }
 }, 1000);
 
 function startTimer(worldId) {
