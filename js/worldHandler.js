@@ -197,7 +197,7 @@ function hostServer(data, player, socket, tokenObj, trelloBoardId) {
     worlds[world.worldId].players[socket.id] = player;
 
     //update world before updateing playerjoined
-    sendServerData("worldUpdate", worlds[world.worldId]);
+    sendServerData("worldUpdate", parseSensitiveWorldData(worlds[world.worldId]));
 
     sendWorldUpdate("newPlayerJoined", {}, world.worldId);
 
@@ -224,7 +224,7 @@ function joinServer(data, player, socket) {
         worlds[data.sessionId].players[socket.id] = player;
 
         //update world before updateing playerjoined
-        sendWorldUpdate("worldUpdate", worlds[data.sessionId], data.sessionId);
+        sendWorldUpdate("worldUpdate",parseSensitiveWorldData(worlds[data.sessionId]), data.sessionId);
 
         sendWorldUpdate("newPlayerJoined", {}, data.sessionId);
 
@@ -238,6 +238,17 @@ function joinServer(data, player, socket) {
     }
 
 
+}
+
+function parseSensitiveWorldData(world) {
+        //make clone of object so its not parsed by reference. 
+        let parsedWorld = Object.assign({},world)
+
+        parsedWorld.accTokenSecret = {};
+        parsedWorld.accToken = {};
+        parsedWorld.trelloBoardId = {};
+
+        return parsedWorld;
 }
 
 function spawnElement(id, socket, title, description, w, playerId) {
@@ -313,7 +324,7 @@ function startGameLoop() {
                             if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
 
                                 yourWorld = worlds[world];
-                                socket.emit('worldUpdate', yourWorld);
+                                socket.emit('worldUpdate', parseSensitiveWorldData(yourWorld));
 
 
                             }
@@ -515,7 +526,7 @@ function connectToList(listObj, idea) {
     insertTrelloCardId(listObj, listObj.containedIdeas[idea.id]);
 
     delete worlds[listObj.myWorldId].entities[idea.id];
-    sendWorldUpdate("updateIdeasInListSelector", worlds[listObj.myWorldId], listObj.myWorldId);
+    sendWorldUpdate("updateIdeasInListSelector", parseSensitiveWorldData(worlds[listObj.myWorldId]), listObj.myWorldId);
 };
 
 function detect_list_colision(listObj) {

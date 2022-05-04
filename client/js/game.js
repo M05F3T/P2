@@ -203,6 +203,7 @@ function getServerData() {
 
     socket.on("worldUpdate", (data) => {
 
+        
         //update local world storage
         localWorld = data;
         timer.innerText = data.timerObj.seconds;
