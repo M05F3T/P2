@@ -110,6 +110,8 @@
                     </div>
 
                     <button id="spawn-card" class="button create-idea">CREATE IDEA</button>
+                    <button id="delete" class="button">Clear</button> 
+
 
                 </div>
                 <div id="lists-content" style="display: none;">
@@ -131,11 +133,13 @@
 
                 </div>
                 <div id="ideas-content" style="display: none;">
-                    <h1 class="title">IDEAS</h1>
-                    <div class="scroll-box" style="overflow: scroll ; height: 250px;  overflow-x:hidden;">
+                    <h1 class="title">CURRENT IDEA</h1>
 
-                    </div>
-                    <button id="delete" class="button">Clear</button>
+                    <input type="text" id="current-idea-title" placeholder="Idea name" maxlength="20" required>
+                    <textarea id="current-idea-description"  rows="15" cols="70" placeholder="Idea description"></textarea>
+
+                    <button id="save-current-idea" class="button">save</button> 
+                   
                 </div>
                 <!-- Timer div -->
                 <div id="timer-content" style="display: none;">

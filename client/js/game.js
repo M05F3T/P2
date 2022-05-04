@@ -185,6 +185,40 @@ function sendClientData() {
 
 function getServerData() {
 
+
+    socket.on("updateCurrentIdeaTab", (idea) => {
+        console.log(idea);
+        let ideaTitle = document.getElementById("current-idea-title")
+        let ideaDescription = document.getElementById("current-idea-description")
+        let saveBtn = document.getElementById("save-current-idea")
+
+        ideaTitle.style.display = "block";
+        ideaDescription.style.display = "block";
+        saveBtn.style.display = "block";
+
+        ideaTitle.value = idea.title;
+        if(idea.description !== null) {
+            ideaDescription.value = idea.description;
+        }
+
+        console.log("current tab updated with the idea " + idea)
+    });
+
+    socket.on("clearCurrentIdeaTab", () => {
+        let ideaTitle = document.getElementById("current-idea-title")
+        let ideaDescription = document.getElementById("current-idea-description")
+        let saveBtn = document.getElementById("save-current-idea")
+
+
+        ideaTitle.value = "";
+        ideaDescription.value = "";
+
+        ideaTitle.style.display = "none";
+        ideaDescription.style.display = "none";
+        saveBtn.style.display = "none";
+        console.log("current tab cleard")
+    });
+
     socket.on("sendId", (data) => {
         myId = data;
     });
@@ -203,7 +237,7 @@ function getServerData() {
 
     socket.on("worldUpdate", (data) => {
 
-        
+
         //update local world storage
         localWorld = data;
         timer.innerText = data.timerObj.seconds;
@@ -432,7 +466,7 @@ function timerFunctions() {
     const timeSelector = document.getElementById("timeselector");
     const setTimer = document.getElementById("settimer");
     let selectedTimer = timeSelector.value;
-    
+
     timeSelector.addEventListener("change", () => {
         selectedTimer = timeSelector.value;
         console.log(selectedTimer);
