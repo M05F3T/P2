@@ -33,6 +33,7 @@ let hover = false;
 let targetEntityId;
 let canUseKeyboard = true;
 let timerValue = 0;
+let currentIdea;
 
 getServerData();
 sendClientData();
@@ -192,6 +193,8 @@ function getServerData() {
         let ideaDescription = document.getElementById("current-idea-description")
         let saveBtn = document.getElementById("save-current-idea")
 
+        currentIdea = idea;
+
         ideaTitle.style.display = "block";
         ideaDescription.style.display = "block";
         saveBtn.style.display = "block";
@@ -209,6 +212,7 @@ function getServerData() {
         let ideaDescription = document.getElementById("current-idea-description")
         let saveBtn = document.getElementById("save-current-idea")
 
+        currentIdea = null;
 
         ideaTitle.value = "";
         ideaDescription.value = "";
@@ -465,11 +469,25 @@ function timerFunctions() {
     const resetTimer = document.getElementById("resettimer");
     const timeSelector = document.getElementById("timeselector");
     const setTimer = document.getElementById("settimer");
+    const saveBtn = document.getElementById("save-current-idea")
+
     let selectedTimer = timeSelector.value;
 
     timeSelector.addEventListener("change", () => {
         selectedTimer = timeSelector.value;
         console.log(selectedTimer);
+    });
+
+    saveBtn.addEventListener("click", () => {
+        console.log("i clicked with idea: " + currentIdea.id);
+        let ideaTitle = document.getElementById("current-idea-title")
+        let ideaDescription = document.getElementById("current-idea-description")
+
+        socket.emit("updateIdea",currentIdea.id,ideaTitle.value,ideaDescription.value,localWorld.worldId,myId)
+
+        // currentIdea.title = ideaTitle.value
+        // currentIdea.ideaDescription = ideaDescription.value;
+
     });
 
     startTimer.addEventListener("click", () => {

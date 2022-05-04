@@ -135,6 +135,16 @@ function startClientUpdates() {
             worldHandler.connectFromListToPlayer(idea, worldId, playerId, listId);
         });
 
+        socket.on("updateIdea", (entityId,ideaTitle,ideaDescription,worldId,playerId) => {
+            
+
+            let updatedIdea = worldHandler.worlds[worldId].players[playerId].connectedEntity;
+
+            console.log(updatedIdea);
+            updatedIdea.title = ideaTitle;
+            updatedIdea.description = ideaDescription;
+        })
+
         socket.on('disconnect', () => {
 
             worldHandler.removePlayer(socket);
