@@ -4,23 +4,30 @@ let timeInterval;
 let timeWorlds = [];
 
 timeInterval = setInterval(() => {
-    timeWorlds.forEach(worldId => {
-        if (
-            worldHandler.worlds[worldId].timerObj.seconds > 0 &&
-            worldHandler.worlds[worldId].timerObj.timerOn === true
-        ) {
-            worldHandler.worlds[worldId].timerObj.seconds--;
-            worldHandler.sendWorldUpdate("updateTimer",worldHandler.worlds[worldId].timerObj.seconds, worldId);
-        } else if (worldHandler.worlds[worldId].timerObj.timerOn === false) {
-            worldHandler.sendWorldUpdate(
-                "updateTimer",
-                worldHandler.worlds[worldId].timerObj.seconds,
-                worldId
-            );
-        } else if (worldHandler.worlds[worldId].timerObj.seconds === 0) {
-            worldHandler.sendWorldUpdate("error", "Time's up", worldId);
-        }
-    });
+    if (worldHandler.doesWorldExist(worldHandler.worlds[worldId]))
+        timeWorlds.forEach((worldId) => {
+            if (
+                worldHandler.worlds[worldId].timerObj.seconds > 0 &&
+                worldHandler.worlds[worldId].timerObj.timerOn === true
+            ) {
+                worldHandler.worlds[worldId].timerObj.seconds--;
+                worldHandler.sendWorldUpdate(
+                    "updateTimer",
+                    worldHandler.worlds[worldId].timerObj.seconds,
+                    worldId
+                );
+            } else if (
+                worldHandler.worlds[worldId].timerObj.timerOn === false
+            ) {
+                worldHandler.sendWorldUpdate(
+                    "updateTimer",
+                    worldHandler.worlds[worldId].timerObj.seconds,
+                    worldId
+                );
+            } else if (worldHandler.worlds[worldId].timerObj.seconds === 0) {
+                worldHandler.sendWorldUpdate("error", "Time's up", worldId);
+            }
+        });
 }, 1000);
 
 function startTimer(worldId) {
