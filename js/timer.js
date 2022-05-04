@@ -5,8 +5,8 @@ let timeInterval;
 let timeWorlds = [];
 
 timeInterval = setInterval(() => {
-    try {
-        timeWorlds.forEach((worldId) => {
+    timeWorlds.forEach((worldId) => {
+        try {
             if (
                 worldHandler.worlds[worldId].timerObj.seconds > 0 &&
                 worldHandler.worlds[worldId].timerObj.timerOn === true
@@ -28,13 +28,19 @@ timeInterval = setInterval(() => {
             } else if (
                 worldHandler.worlds[worldId].timerObj.seconds === 0
             ) {
-                worldHandler.sendWorldUpdate("error", "Time's up", worldId);
+                worldHandler.sendWorldUpdate(
+                    "error",
+                    "Time's up",
+                    worldId
+                );
             }
-        });
-    }
-    catch(err) {
-        dataLogger.writeError("Error while updating time: " + err);
-    }
+        } catch (err) {
+            dataLogger.writeLog(
+                "Removed world" + worldId + " from timeWorlds"
+            );
+            timeWorlds = timeWorlds.filter((world) => world !== worldId);
+        }
+    }); 
 }, 1000);
 
 function startTimer(worldId) {
