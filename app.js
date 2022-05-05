@@ -93,6 +93,7 @@ function startClientUpdates() {
 
         socket.on('spawnElement', (dataObj) => {
             worldHandler.spawnElement(dataObj.worldId, socket, dataObj.ideaName, dataObj.ideaDescription, dataObj.width, dataObj.playerId);
+            
         });
 
         socket.on("spawnList", (dataObj) => {
@@ -135,14 +136,38 @@ function startClientUpdates() {
             worldHandler.connectFromListToPlayer(idea, worldId, playerId, listId);
         });
 
+        socket.on("updateIdeaWidth", (ideaObj,w) => {
+
+            if(ideaObj.isConnected === true) {
+                worldHandler.worlds[ideaObj.worldId].players[ideaObj.playerId].connectedEntity.w = w;
+            } else {
+                worldHandler.worlds[ideaObj.worldId].entities[ideaObj.entityId].w = w;
+            }
+
+        })
+
         socket.on("updateIdea", (entityId,ideaTitle,ideaDescription,worldId,playerId) => {
             
 
             let updatedIdea = worldHandler.worlds[worldId].players[playerId].connectedEntity;
 
-            console.log(updatedIdea);
+            
+            
             updatedIdea.title = ideaTitle;
             updatedIdea.description = ideaDescription;
+
+            socket.emit("updateIdeaWidth", {
+                    ideaTitle: ideaTitle,
+                    playerId: playerId,
+                    entityId: entityId,
+                    worldId: worldId,
+                    isConnected: true
+                });
+
+            // worldHandler.sendWorldUpdate("updateIdeaWidth",{
+            //     ideaTitle: ideaTitle,
+            //     playerId: playerId
+            // },worldId)
         })
 
         socket.on('disconnect', () => {

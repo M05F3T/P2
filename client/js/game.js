@@ -254,7 +254,12 @@ function getServerData() {
     });
 
 
+    socket.on("updateIdeaWidth", (dataObj) => {
+        ctx.font = "20px Arial";
+        w = ctx.measureText(dataObj.ideaTitle).width + 10;
 
+        socket.emit("updateIdeaWidth", dataObj,w);
+    });
 
     socket.on("newPlayerJoined", () => {
         insertPlayersHtmlElement();
@@ -338,7 +343,7 @@ function createIdea() {
                 ideaName: ideaName.value,
                 ideaDescription: ideaDescription.value,
                 worldId: localWorld.worldId,
-                width: w,
+                width: 0,
                 playerId: myId,
             }
 

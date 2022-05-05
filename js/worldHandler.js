@@ -257,7 +257,14 @@ function spawnElement(id, socket, title, description, w, playerId) {
 
         element.title = title;
         element.description = description;
-        element.w = w;
+        console.log(title)
+        socket.emit("updateIdeaWidth", {
+            ideaTitle: title,
+            playerId: playerId,
+            entityId: element.id,
+            worldId: id,
+            isConnected: false
+        });
 
         worlds[id].entities[element.id] = element;
 
