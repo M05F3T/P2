@@ -90,7 +90,7 @@
             <nav class="nav">
                 <button id="home-button" class="nav-element">HOME</button>
                 <button id="lists-button" class="nav-element">LISTS</button>
-                <button id="ideas-button" class="nav-element">IDEAS</button>
+                <button id="ideas-button" class="nav-element" style="display: none;">IDEAS</button>
                 <Button id="timer-button" class="nav-element">TIMER</Button>
                 <div id="back-button" class="nav-element back-icon"><i class="fa fa-arrow-left" aria-hidden="true"></i></div>
             </nav>
@@ -135,10 +135,10 @@
                 <div id="ideas-content" style="display: none;">
                     <h1 class="title">CURRENT IDEA</h1>
 
-                    <input type="text" id="current-idea-title" placeholder="Idea name" maxlength="20" required>
-                    <textarea id="current-idea-description"  rows="15" cols="70" placeholder="Idea description"></textarea>
+                    <input type="text" id="current-idea-title" placeholder="Idea name" maxlength="20" style="display: none;" required >
+                    <textarea id="current-idea-description"  rows="15" cols="70" placeholder="Idea description" style="display: none;"></textarea>
 
-                    <button id="save-current-idea" class="button">save</button> 
+                    <button id="save-current-idea" class="button" style="display: none;">save</button> 
                    
                 </div>
                 <!-- Timer div -->

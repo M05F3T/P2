@@ -189,10 +189,21 @@ function getServerData() {
 
 
     socket.on("updateCurrentIdeaTab", (idea) => {
-        console.log(idea);
+        const homeContent = document.getElementById("home-content");
+        const listsContent = document.getElementById("lists-content");
+        const ideasContent = document.getElementById("ideas-content");
+        const timerContent = document.getElementById("timer-content");
+
+        homeContent.style.display = "none";
+        listsContent.style.display = "none";
+        ideasContent.style.display = "block";
+        timerContent.style.display = "none";
+    
         let ideaTitle = document.getElementById("current-idea-title")
         let ideaDescription = document.getElementById("current-idea-description")
         let saveBtn = document.getElementById("save-current-idea")
+
+        
 
         currentIdea = idea;
 
@@ -209,6 +220,16 @@ function getServerData() {
     });
 
     socket.on("clearCurrentIdeaTab", () => {
+        const homeContent = document.getElementById("home-content");
+        const listsContent = document.getElementById("lists-content");
+        const ideasContent = document.getElementById("ideas-content");
+        const timerContent = document.getElementById("timer-content");
+
+        homeContent.style.display = "block";
+        listsContent.style.display = "none";
+        ideasContent.style.display = "none";
+        timerContent.style.display = "none";
+    
         let ideaTitle = document.getElementById("current-idea-title")
         let ideaDescription = document.getElementById("current-idea-description")
         let saveBtn = document.getElementById("save-current-idea")

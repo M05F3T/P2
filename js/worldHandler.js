@@ -583,6 +583,11 @@ function detect_trashcan_colision(player) {
             player.connectedEntity = {};
             player.canPickUp = true;
             player.isColliding = false;
+
+            let socket =findSocketFromPlayerObj(player.id);
+
+            socket.emit("clearCurrentIdeaTab");
+
         }
 
     } else {
