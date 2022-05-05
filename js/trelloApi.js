@@ -7,6 +7,7 @@ const OAuth = require("oauth").OAuth;
 const { rejects } = require("assert");
 const { resolve } = require("path");
 const url = require("url");
+require('dotenv').config()
 
 // OAuth setup and functions - This function redirects the user to an authentication page,
 // to get the users token and key
@@ -20,8 +21,9 @@ const scope = "read,write,account";
 const expiration = "1day";
 
 //The developer API key and secret to access initial Trello connection - Keep safe :)
-const devKey = "3b7a692d77fa60e44426bb331ab783d6";
-const devSecret = "e03d444d5751f140816f637b90beb66a55930e36e3e3e80c14fa11ff6f0944d1";
+//Temporary, should be changed when done with project development for safety reasons
+const devKey = process.env.DEVKEY;
+const devSecret = process.env.DEVSECRET;
 
 
 // The OAuth pair that contains token and tokensecret like this {"token": "tokenSecret"}
