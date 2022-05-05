@@ -41,6 +41,7 @@ navigationListeners();
 popUpListeners();
 deleteListeners();
 timerFunctions();
+detectIdeaTabFocus();
 
 let mouseX;
 let mouseY;
@@ -415,6 +416,27 @@ function listPopupMenu(listId) {
     );
 }
 
+function detectIdeaTabFocus() {
+    let ideaTitle = document.getElementById("current-idea-title")
+    let ideaDescription = document.getElementById("current-idea-description")
+
+    ideaTitle.addEventListener("focus", (event) => {
+        canUseKeyboard = false;
+    });
+
+    ideaDescription.addEventListener("focus", (event) => {
+        canUseKeyboard = false
+    });
+
+    ideaTitle.addEventListener("blur", (event) => {
+        canUseKeyboard = true
+    });
+
+    ideaDescription.addEventListener("blur", (event) => {
+        canUseKeyboard = true
+    });
+}
+
 
 function updateListSelector(data) {
     let child = listSelector.lastElementChild;
@@ -507,6 +529,8 @@ function timerFunctions() {
     });
 
 }
+
+
 
 function popUpListeners() {
     const spawnBtn = document.getElementById("spawn-card");
