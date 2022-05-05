@@ -335,22 +335,9 @@ function startGameLoop() {
 
             }
         } catch (err) {
-            console.error(err);
+            dataLogger.writeError("Error while executing startGameLoop: " + err);
         }
     }, 1000 / 60);
-}
-
-
-function detect_colision(x1, y1, w1, h1, x2, y2, w2, h2) {
-    //af en eller anden grund er den her anderledes fra collision detection på lister. kan ikke få den til at virke ens plz investigate. 
-    if ((x1 - w1 / 2) < x2 + w2 &&
-        (x1 - w1 / 2) + w1 > x2 &&
-        (y1 - h1 / 2) < y2 + h2 &&
-        h1 + (y1 - h1 / 2) > y2) {
-        return true
-    } else {
-        return false
-    }
 }
 
 /*PLAYER LOGIC */
@@ -504,10 +491,6 @@ function deleteCard(idea, worldId, listId) {
             dataLogger.writeLog("cant find element in list");
         }
     }
-
-
-
-
 }
 
 async function insertTrelloCardId(listObj, idea) {
@@ -529,19 +512,36 @@ function connectToList(listObj, idea) {
     sendWorldUpdate("updateIdeasInListSelector", parseSensitiveWorldData(worlds[listObj.myWorldId]), listObj.myWorldId);
 };
 
+function detect_colision(x1, y1, w1, h1, x2, y2, w2, h2) {
+    if (
+        x1 - w1 / 2 < x2 + w2 &&
+        x1 - w1 / 2 + w1 > x2 &&
+        y1 - h1 / 2 < y2 + h2 &&
+        h1 + (y1 - h1 / 2) > y2
+    ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function detect_list_colision(listObj) {
     for (const key in worlds[listObj.myWorldId].entities) {
         let object = worlds[listObj.myWorldId].entities[key];
-        if (
-            listObj.x < object.x + object.w &&
-            listObj.x + listObj.w > object.x &&
-            listObj.y < object.y + object.h &&
-            listObj.h + listObj.y > object.y
-        ) {
+        if (detect_rec_and_rec_collision(listObj.x, listObj.y, listObj.w, listObj.h, object.x, object.y, object.w, object.h)) {
             connectToList(listObj, object);
         }
     }
 };
+
+function detect_rec_and_rec_collision(x1, y1, w1, h1, x2, y2, w2, h2) {
+    return (
+        x1 < x2 + w2 &&
+        x1 + w1 > x2 &&
+        y1 < y2 + h2 &&
+        h1 + y1 > y2
+    );
+}
 
 function detect_trashcan_colision(player) {
     const trashcan_x = 800;
@@ -549,19 +549,13 @@ function detect_trashcan_colision(player) {
     const trashcan_h = 100;
     const trashcan_w = 100;
 
-    if (
-        player.x < trashcan_x + trashcan_w &&
-        player.x + player.w > trashcan_x &&
-        player.y < trashcan_y + trashcan_h &&
-        player.h + player.y > trashcan_y
-    ) {
+    if (detect_colision(player.x, player.y, player.w, player.h, trashcan_x, trashcan_y, trashcan_w, trashcan_h)) {
         player.isCollidingWithTrashcan = true;
         if (player.pickUpKeyPressed === true && player.canPickUp === false && isEmpty(player.connectedEntity) === false) {
             player.connectedEntity = {};
             player.canPickUp = true;
             player.isColliding = false;
         }
-
     } else {
         player.isCollidingWithTrashcan = false;
     }
@@ -594,4 +588,7 @@ module.exports = {
     deleteAllEntities,
     connectFromListToPlayer,
     SpawnListFromTemplate,
+    detect_colision,
+    detect_rec_and_rec_collision,
+    detect_trashcan_colision
 };

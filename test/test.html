@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hej</title>
+</head>
+<body>
+    <canvas id="canvas" width="300" height="300">
+
+    </canvas>
+</body>
+<script>
+    var c = document.getElementById("canvas");
+    var ctx = c.getContext("2d");
+    ctx.beginPath();
+    ctx.rect(25, 20, 150, 100);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.rect(50, 130, 150, 100);
+    ctx.stroke();
+
+</script>
+</html>
