@@ -306,13 +306,10 @@ function startGameLoop() {
     setInterval(() => {
         try {
             if (isEmpty(worlds) === false) {
-
                 for (const world in worlds) {
-
                     for (const key in worlds[world].lists) {
                         detect_list_colision(worlds[world].lists[key]);
                     }
-
                     for (const key in worlds[world].players) {
                         detect_trashcan_colision(worlds[world].players[key]);
 
@@ -322,17 +319,12 @@ function startGameLoop() {
                         for (let i in SOCKET_LIST) {
                             let socket = SOCKET_LIST[i];
                             if (isEmpty(worlds[world].players) === false && worlds[world].players[key].id === socket.id) {
-
                                 yourWorld = worlds[world];
                                 socket.emit('worldUpdate', parseSensitiveWorldData(yourWorld));
-
-
                             }
                         }
-
                     }
                 }
-
             }
         } catch (err) {
             dataLogger.writeError("Error while executing startGameLoop: " + err);
@@ -590,5 +582,7 @@ module.exports = {
     SpawnListFromTemplate,
     detect_colision,
     detect_rec_and_rec_collision,
-    detect_trashcan_colision
+    detect_trashcan_colision,
+    connectToWorld,
+    connectToPlayer
 };
