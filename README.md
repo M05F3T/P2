@@ -68,8 +68,6 @@ sudo node app.js
 
 ## Authors
 
-Contributors names and contact info
-
 [@Daniel E. Sejersen](https://github.com/M05F3T)
 
 [@Andreas Würtz](https://github.com/UrinTrolden)
