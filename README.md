@@ -1,6 +1,6 @@
-# Project Title
+# Pickle 
 
-Pickle - A visual brainstorm application 🤯
+A visual brainstorm application 🤯
 
 ## Description
 
