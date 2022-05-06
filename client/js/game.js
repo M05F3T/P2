@@ -578,6 +578,7 @@ function navigationListeners() {
     const timerContent = document.getElementById("timer-content");
 
     const homeButton = document.getElementById("home-button")
+    homeButton.style.textDecoration = "underline";
     const listsButton = document.getElementById("lists-button")
     const ideasButton = document.getElementById("ideas-button")
     const timerButton = document.getElementById("timer-button")
@@ -585,16 +586,33 @@ function navigationListeners() {
 
     homeButton.addEventListener("click", (e) => {
         homeContent.style.display = "block";
+        homeButton.style.textDecoration = "underline";
+
         listsContent.style.display = "none";
+        listsButton.style.textDecoration = "none";
+
         ideasContent.style.display = "none";
+
         timerContent.style.display = "none";
+        timerButton.style.textDecoration = "none"
+
+
+        //text-decoration: underline; 
+
+
     });
 
     listsButton.addEventListener("click", (e) => {
         homeContent.style.display = "none";
+        homeButton.style.textDecoration = "none";
+
         listsContent.style.display = "block";
+        listsButton.style.textDecoration = "underline";
+        
         ideasContent.style.display = "none";
+
         timerContent.style.display = "none";
+        timerButton.style.textDecoration = "none";
         insertIdeasToListsTab();
     });
 
@@ -607,9 +625,15 @@ function navigationListeners() {
 
     timerButton.addEventListener("click", (e) => {
         homeContent.style.display = "none";
+        homeButton.style.textDecoration = "none";
+
         listsContent.style.display = "none";
+        listsButton.style.textDecoration = "none";
+
         ideasContent.style.display = "none";
+
         timerContent.style.display = "block";
+        timerButton.style.textDecoration = "underline"
     });
 
     backButton.addEventListener("click", (e) => {
