@@ -71,10 +71,15 @@ sudo node app.js
 Contributors names and contact info
 
 [@Daniel E. Sejersen](https://github.com/M05F3T)
+
 [@Andreas Würtz](https://github.com/M05F3T)
+
 [@Nicolai Bergulff](https://github.com/M05F3T)
+
 [@Peter Ellefsen](https://github.com/M05F3T)
+
 [@Jonas S. Poulsen](https://github.com/M05F3T)
+
 [@Gustas Jucaitis](https://github.com/M05F3T)
 
 ## License
