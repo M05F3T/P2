@@ -8,7 +8,7 @@ This application is an online brainstorm application that tries to emulate a phy
 
 ## Getting Started
 
-Berfore installing be sure you have the newest version of node.js and npm (node package maneger) installed on your hosting machine.
+Before installing be sure you have the newest version of node.js and npm (node package manager) installed on your hosting machine.
 
 You can download the latest version of node.js [here](https://nodejs.org/en/download/ "Node.js homepage"). 
 
@@ -20,7 +20,7 @@ DEVKEY = "INSERT KEY HERE"
 
 DEVSECRET = "INSERT OAUTH SECRET KEY HERE"
 
-The keys SHOULD be sorrounded by qoutation marks. Save the keys to a .env file. dont give the file a name, it's supposed to be just ".env". DO NOT share these keys with anyone since these keys grants access to your trello account.
+The keys SHOULD be sorrounded by qoutation marks. Save the keys to a .env file. Do not give the file a name, it's supposed to be just ".env". DO NOT share these keys with anyone since these keys grants access to your trello account.
 
 
 ### Installing
