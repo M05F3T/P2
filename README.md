@@ -28,45 +28,54 @@ To install go to your intended installation folder and use the following git com
 ```
 git clone git@github.com:M05F3T/P2.git
 ```
-now go to your newly created folder with:
+Now go to your newly created folder with:
 ```
 cd P2/
 ```
-Now install the required node modules using:
+And install the required node modules using:
 ```
 npm install
 ```
 
+Before running the application insert your ".env" file in the root directory of the application (.../P2/INSERT-FILE-HERE)
+
+If you do not have a ".env" file read the "Getting Started" section again.
 
 ### Executing program
 
-* How to run the program
-* Step-by-step bullets
+Before starting the program go to your settings file located at ./P2/js/settings.js and open it in your desired editor.
+
+Change and save the PORT and trelloLoginCallback to match your hosting prefrences. If you want to run this local leave these settings alone. The trelloLoginCallback should be URL or IP of your hosting machine. 
 ```
-code blocks for commands
+const PORT = 3000;
+const trelloLoginCallback = "http://www.YOUR-SERVER-URL.com/client/host.html";
+```
+
+You are now ready to start the program ⭐
+
+use the following command in the root directory ./P2/ to start the program:
+```
+node app.js
 ```
 
 ## Help
+You can check your logged errors in the database folder to indentify errors located at ./P2/database/errors
 
-Any advise for common problems or issues.
+If you get an console error while trying to run of Fx. port 80 try to use higher privilige with sudo
 ```
-command to run if program contains helper info
+sudo node app.js
 ```
 
 ## Authors
 
 Contributors names and contact info
 
-ex. Dominique Pizzie  
-ex. [@DomPizzie](https://twitter.com/dompizzie)
-
-## Version History
-
-* 0.2
-    * Various bug fixes and optimizations
-    * See [commit change]() or See [release history]()
-* 0.1
-    * Initial Release
+[@Daniel E. Sejersen](https://github.com/M05F3T)
+[@Andreas Würtz](https://github.com/M05F3T)
+[@Nicolai Bergulff](https://github.com/M05F3T)
+[@Peter Ellefsen](https://github.com/M05F3T)
+[@Jonas S. Poulsen](https://github.com/M05F3T)
+[@Gustas Jucaitis](https://github.com/M05F3T)
 
 ## License
 
@@ -74,9 +83,13 @@ This project is licensed under the MIT License - see the LICENSE.md file for det
 
 ## Acknowledgments
 
+Thanks to our counselor [@Emil Nesgaard](https://www.linkedin.com/in/emil-nesgaard/) for great guidance in the development of this project.
+
 Inspiration, code snippets, etc.
 * [awesome-readme](https://github.com/matiassingers/awesome-readme)
-* [PurpleBooth](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2)
-* [dbader](https://github.com/dbader/readme-template)
-* [zenorocha](https://gist.github.com/zenorocha/4526327)
-* [fvcproductions](https://gist.github.com/fvcproductions/1bfc2d4aecb01a834b46)
+* [awesome-readme](https://github.com/matiassingers/awesome-readme)
+* [awesome-readme](https://github.com/matiassingers/awesome-readme)
+* [awesome-readme](https://github.com/matiassingers/awesome-readme)
+* [awesome-readme](https://github.com/matiassingers/awesome-readme)
+* 
+
