@@ -25,6 +25,9 @@ const expiration = "1day";
 const devKey = process.env.DEVKEY;
 const devSecret = process.env.DEVSECRET;
 
+if (devKey === undefined || devSecret === undefined) {
+    dataLogger.writeError("No enviroment keys found - please add .env file to root directory see readme file for more information.");
+}
 
 // The OAuth pair that contains token and tokensecret like this {"token": "tokenSecret"}
 const oauth_secrets = {};
