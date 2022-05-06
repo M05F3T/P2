@@ -257,7 +257,14 @@ function spawnElement(id, socket, title, description, w, playerId) {
 
         element.title = title;
         element.description = description;
-        element.w = w;
+        console.log(title)
+        socket.emit("updateIdeaWidth", {
+            ideaTitle: title,
+            playerId: playerId,
+            entityId: element.id,
+            worldId: id,
+            isConnected: false
+        });
 
         worlds[id].entities[element.id] = element;
 
@@ -370,7 +377,9 @@ function updatePosistion(playerObj) {
     }
 
     if (playerObj.isCollidingWithTrashcan === false && isEmpty(playerObj.connectedEntity) === false && playerObj.pickUpKeyPressed === true && playerObj.canPickUp === false) {
-        connectToWorld(playerObj);
+        connectToWorld(playerObj,findSocketFromPlayerObj(playerObj.id));
+
+        //clear current idea field
 
         setTimeout(() => {
             playerObj.canPickUp = true;
@@ -399,7 +408,10 @@ function detect_player_colision(playerObj) {
             //pick up element
             if (playerObj.pickUpKeyPressed === true && playerObj.canPickUp === true && isEmpty(playerObj.connectedEntity)) {
 
-                connectToPlayer(playerObj, object);
+                connectToPlayer(playerObj, object, findSocketFromPlayerObj(playerObj.id));
+
+                //insert current idea fields
+
                 setTimeout(() => {
                     playerObj.canPickUp = false;
                 }, 500)
@@ -449,19 +461,37 @@ function detect_player_colision(playerObj) {
 
 }
 
-function connectToWorld(playerObj) {
+function connectToWorld(playerObj,socket) {
     worlds[playerObj.myWorldId].entities[playerObj.connectedEntity.id] = playerObj.connectedEntity;
+    socket.emit("clearCurrentIdeaTab",{});
     dataLogger.writeLog(`player: ${playerObj.id} placed an entity: ${playerObj.connectedEntity.id}`);
     playerObj.connectedEntity = {};
 }
 
-function connectToPlayer(playerObj, entity) {
+function connectToPlayer(playerObj, entity,socket) {
     playerObj.connectedEntity = entity;
+    socket.emit("updateCurrentIdeaTab",entity);
     dataLogger.writeLog(`player: ${playerObj.id} connected an entity: ${playerObj.connectedEntity.id}`);
     delete worlds[playerObj.myWorldId].entities[entity.id];
 }
 
 /*LIST LOGIC*/
+
+function findSocketFromPlayerObj(playerId) {
+    let socket;
+
+    for(const currentSocket in SOCKET_LIST) {
+        if(SOCKET_LIST[currentSocket].id === playerId) {
+           return SOCKET_LIST[currentSocket]
+        }
+        else {
+            dataLogger.writeError("couldn't find socket from playobj");
+        }
+    }
+
+
+
+}
 
 function connectFromListToPlayer(idea, worldId, playerId, listId) {
     worlds[worldId].players[playerId].connectedEntity = idea;
@@ -547,6 +577,11 @@ function detect_trashcan_colision(player) {
             player.connectedEntity = {};
             player.canPickUp = true;
             player.isColliding = false;
+
+            let socket =findSocketFromPlayerObj(player.id);
+
+            socket.emit("clearCurrentIdeaTab");
+
         }
     } else {
         player.isCollidingWithTrashcan = false;

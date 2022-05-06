@@ -33,6 +33,7 @@ let hover = false;
 let targetEntityId;
 let canUseKeyboard = true;
 let timerValue = 0;
+let currentIdea;
 
 getServerData();
 sendClientData();
@@ -40,6 +41,7 @@ navigationListeners();
 popUpListeners();
 deleteListeners();
 timerFunctions();
+detectIdeaTabFocus();
 
 let mouseX;
 let mouseY;
@@ -185,6 +187,64 @@ function sendClientData() {
 
 function getServerData() {
 
+
+    socket.on("updateCurrentIdeaTab", (idea) => {
+        const homeContent = document.getElementById("home-content");
+        const listsContent = document.getElementById("lists-content");
+        const ideasContent = document.getElementById("ideas-content");
+        const timerContent = document.getElementById("timer-content");
+
+        homeContent.style.display = "none";
+        listsContent.style.display = "none";
+        ideasContent.style.display = "block";
+        timerContent.style.display = "none";
+    
+        let ideaTitle = document.getElementById("current-idea-title")
+        let ideaDescription = document.getElementById("current-idea-description")
+        let saveBtn = document.getElementById("save-current-idea")
+
+        
+
+        currentIdea = idea;
+
+        ideaTitle.style.display = "block";
+        ideaDescription.style.display = "block";
+        saveBtn.style.display = "block";
+
+        ideaTitle.value = idea.title;
+        if(idea.description !== null) {
+            ideaDescription.value = idea.description;
+        }
+
+        console.log("current tab updated with the idea " + idea)
+    });
+
+    socket.on("clearCurrentIdeaTab", () => {
+        const homeContent = document.getElementById("home-content");
+        const listsContent = document.getElementById("lists-content");
+        const ideasContent = document.getElementById("ideas-content");
+        const timerContent = document.getElementById("timer-content");
+
+        homeContent.style.display = "block";
+        listsContent.style.display = "none";
+        ideasContent.style.display = "none";
+        timerContent.style.display = "none";
+    
+        let ideaTitle = document.getElementById("current-idea-title")
+        let ideaDescription = document.getElementById("current-idea-description")
+        let saveBtn = document.getElementById("save-current-idea")
+
+        currentIdea = null;
+
+        ideaTitle.value = "";
+        ideaDescription.value = "";
+
+        ideaTitle.style.display = "none";
+        ideaDescription.style.display = "none";
+        saveBtn.style.display = "none";
+        console.log("current tab cleard")
+    });
+
     socket.on("sendId", (data) => {
         myId = data;
     });
@@ -194,7 +254,12 @@ function getServerData() {
     });
 
 
+    socket.on("updateIdeaWidth", (dataObj) => {
+        ctx.font = "20px Arial";
+        w = ctx.measureText(dataObj.ideaTitle).width + 10;
 
+        socket.emit("updateIdeaWidth", dataObj,w);
+    });
 
     socket.on("newPlayerJoined", () => {
         insertPlayersHtmlElement();
@@ -203,7 +268,7 @@ function getServerData() {
 
     socket.on("worldUpdate", (data) => {
 
-        
+
         //update local world storage
         localWorld = data;
         timer.innerText = data.timerObj.seconds;
@@ -278,7 +343,7 @@ function createIdea() {
                 ideaName: ideaName.value,
                 ideaDescription: ideaDescription.value,
                 worldId: localWorld.worldId,
-                width: w,
+                width: 0,
                 playerId: myId,
             }
 
@@ -377,6 +442,27 @@ function listPopupMenu(listId) {
     );
 }
 
+function detectIdeaTabFocus() {
+    let ideaTitle = document.getElementById("current-idea-title")
+    let ideaDescription = document.getElementById("current-idea-description")
+
+    ideaTitle.addEventListener("focus", (event) => {
+        canUseKeyboard = false;
+    });
+
+    ideaDescription.addEventListener("focus", (event) => {
+        canUseKeyboard = false
+    });
+
+    ideaTitle.addEventListener("blur", (event) => {
+        canUseKeyboard = true
+    });
+
+    ideaDescription.addEventListener("blur", (event) => {
+        canUseKeyboard = true
+    });
+}
+
 
 function updateListSelector(data) {
     let child = listSelector.lastElementChild;
@@ -431,11 +517,25 @@ function timerFunctions() {
     const resetTimer = document.getElementById("resettimer");
     const timeSelector = document.getElementById("timeselector");
     const setTimer = document.getElementById("settimer");
+    const saveBtn = document.getElementById("save-current-idea")
+
     let selectedTimer = timeSelector.value;
-    
+
     timeSelector.addEventListener("change", () => {
         selectedTimer = timeSelector.value;
         console.log(selectedTimer);
+    });
+
+    saveBtn.addEventListener("click", () => {
+        console.log("i clicked with idea: " + currentIdea.id);
+        let ideaTitle = document.getElementById("current-idea-title")
+        let ideaDescription = document.getElementById("current-idea-description")
+
+        socket.emit("updateIdea",currentIdea.id,ideaTitle.value,ideaDescription.value,localWorld.worldId,myId)
+
+        // currentIdea.title = ideaTitle.value
+        // currentIdea.ideaDescription = ideaDescription.value;
+
     });
 
     startTimer.addEventListener("click", () => {
@@ -455,6 +555,8 @@ function timerFunctions() {
     });
 
 }
+
+
 
 function popUpListeners() {
     const spawnBtn = document.getElementById("spawn-card");
