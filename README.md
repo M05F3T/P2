@@ -17,6 +17,7 @@ follow [this](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm 
 To use the application you have to register/login to trello to get the required keys for the Trello API. After logging in to your trello account click [here](https://trello.com/app-key "Trello API page") and add your URL or IP to the intended hosting machine as a "New Allowed Origin" and write down the API keys in the following format:
 
 DEVKEY = "INSERT KEY HERE"
+
 DEVSECRET = "INSERT OAUTH SECRET KEY HERE"
 
 The keys SHOULD be sorrounded by qoutation marks. Save the keys to a .env file. dont give the file a name, it's supposed to be just ".env". DO NOT share these keys with anyone since these keys grants access to your trello account.
