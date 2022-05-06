@@ -61,7 +61,7 @@ node app.js
 ## Help
 You can check your logged errors in the database folder to indentify errors located at ./P2/database/errors
 
-If you get an console error while trying to run of Fx. port 80 try to use higher privilige with sudo
+If you get an console error while trying to run on Fx. port 80 try to use higher privilige with sudo
 ```
 sudo node app.js
 ```
@@ -91,9 +91,5 @@ Thanks to our counselor [@Emil Nesgaard](https://www.linkedin.com/in/emil-nesgaa
 
 Inspiration, code snippets, etc.
 * [awesome-readme](https://github.com/matiassingers/awesome-readme)
-* [awesome-readme](https://github.com/matiassingers/awesome-readme)
-* [awesome-readme](https://github.com/matiassingers/awesome-readme)
-* [awesome-readme](https://github.com/matiassingers/awesome-readme)
-* [awesome-readme](https://github.com/matiassingers/awesome-readme)
-* 
+* [Tinycolor2](https://github.com/TinyCommunity/tinycolor2)
 
