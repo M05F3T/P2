@@ -164,14 +164,7 @@ function drawPlayers(data) {
 
 
 
-            drawLineLength(
-                data.players[key].x,
-                data.players[key].y,
-                data.players[key].mousePos.x ,
-                data.players[key].mousePos.y,
-                data.players[key].h / 2,
-                data.players[key].viewIndicatorColor
-            );
+
 
             ctx.restore();
 
@@ -199,11 +192,11 @@ function drawPlayers(data) {
 
 
 function renderCanvas() {
-
     
     ctx.save();
 
     resetCanvas();
+
     ctx.translate(-localWorld.players[myId].x + ctx.canvas.width / 2, -localWorld.players[myId].y + ctx.canvas.height / 2);
 
     drawTrashcan(true);
@@ -216,12 +209,25 @@ function renderCanvas() {
     drawPlayers(localWorld);
 
     ctx.restore();
-    
+
+    for (const key in localWorld.players) {
+        if ((localWorld.players[myId].id !== localWorld.players[key].id)) {
+            drawLineLength(
+                localWorld.players[key].x,
+                localWorld.players[key].y,
+                localWorld.players[key].mousePos.x,
+                localWorld.players[key].mousePos.y,
+                localWorld.players[key].h / 2,
+                localWorld.players[key].viewIndicatorColor
+            )
+        }
+    }
+
     drawMyLineLength(
-        localWorld.players[myId].x ,
-        localWorld.players[myId].y ,
-        localWorld.players[myId].mousePos.x ,
-        localWorld.players[myId].mousePos.y ,
+        localWorld.players[myId].x,
+        localWorld.players[myId].y,
+        localWorld.players[myId].mousePos.x,
+        localWorld.players[myId].mousePos.y,
         localWorld.players[myId].h / 2,
         localWorld.players[myId].viewIndicatorColor
     );
@@ -244,8 +250,8 @@ function drawMyPlayer(player) {
     ctx.strokeStyle = 'black';
     ctx.stroke();
 
-    
-    
+
+
 
     ctx.restore();
 
