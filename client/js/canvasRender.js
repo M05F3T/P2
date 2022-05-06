@@ -130,6 +130,7 @@ function drawLineLength(x1, y1, x2, y2, maxLen, color) {
 }
 
 function drawPlayers(data) {
+    
     for (const key in data.players) {
         ctx.save();
         //draw player circle
@@ -180,16 +181,28 @@ function drawPlayers(data) {
 function renderCanvas() {
 
 
+    ctx.save();
 
     resetCanvas();
+    ctx.translate(-localWorld.players[myId].x + ctx.canvas.width / 2, -localWorld.players[myId].y + ctx.canvas.height / 2);
+    ctx.restore();
+
+    drawPlayers(localWorld);
+
     drawTrashcan(true);
     drawLists(localWorld);
     drawElements(localWorld);
-    drawPlayers(localWorld);
+    
     drawPickUpToolTip(localWorld);
+    
 }
 
 function resetCanvas() {
+
+    
+// ...your drawing code...
+
+    
     //set canvas size to window size.
     ctx.canvas.width = window.innerWidth - 350;
     ctx.canvas.height = window.innerHeight;
