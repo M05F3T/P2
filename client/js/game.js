@@ -42,9 +42,15 @@ popUpListeners();
 deleteListeners();
 timerFunctions();
 detectIdeaTabFocus();
+sendTokenInformationForVerify();
 
 let mouseX;
 let mouseY;
+
+function sendTokenInformationForVerify()
+{
+    socket.emit("denial", window.location.href);
+}
 
 function sendClientData() {
 
@@ -70,6 +76,12 @@ function sendClientData() {
             });
         });
     }
+    socket.on("denial",(bool) => {
+        if(bool === true)
+        {
+            window.location.href = "/";
+        }
+    });
 
     socket.on('join', (doesWorldExist) => {
         if (!doesWorldExist) {
