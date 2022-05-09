@@ -198,12 +198,12 @@ function getServerData() {
         listsContent.style.display = "none";
         ideasContent.style.display = "block";
         timerContent.style.display = "none";
-    
+
         let ideaTitle = document.getElementById("current-idea-title")
         let ideaDescription = document.getElementById("current-idea-description")
         let saveBtn = document.getElementById("save-current-idea")
 
-        
+
 
         currentIdea = idea;
 
@@ -212,7 +212,7 @@ function getServerData() {
         saveBtn.style.display = "block";
 
         ideaTitle.value = idea.title;
-        if(idea.description !== null) {
+        if (idea.description !== null) {
             ideaDescription.value = idea.description;
         }
 
@@ -229,7 +229,7 @@ function getServerData() {
         listsContent.style.display = "none";
         ideasContent.style.display = "none";
         timerContent.style.display = "none";
-    
+
         let ideaTitle = document.getElementById("current-idea-title")
         let ideaDescription = document.getElementById("current-idea-description")
         let saveBtn = document.getElementById("save-current-idea")
@@ -258,7 +258,7 @@ function getServerData() {
         ctx.font = "20px Arial";
         w = ctx.measureText(dataObj.ideaTitle).width + 10;
 
-        socket.emit("updateIdeaWidth", dataObj,w);
+        socket.emit("updateIdeaWidth", dataObj, w);
     });
 
     socket.on("newPlayerJoined", () => {
@@ -416,13 +416,19 @@ function listPopupMenu(listId) {
     const takeIdeaCancelButton = document.getElementById("list-popup-menu-cancel-button");
     const ideaSelector = document.getElementById("idea-selector");
     const ideaName = document.getElementById("idea-name");
-    const ideaDescription = document.getElementById("idea-description");
+    const ideaDescription = document.getElementById("list-idea-description");
     const takeIdeaButton = document.getElementById("take-idea-button");
     const listPopupMenuContent = document.getElementById("list-popup-menu");
 
     updateIdeaSelector(ideaSelector, listId);
 
     listPopupMenuContent.style.display = "flex";
+    if (ideaDescription !== null) {
+        ideaDescription.value = localWorld.lists[listId].containedIdeas[ideaSelector.value].description;
+
+    }
+
+
 
     takeIdeaCancelButton.addEventListener("click", () => {
         listPopupMenuContent.style.display = "none";
@@ -445,6 +451,13 @@ function listPopupMenu(listId) {
         },
         { once: true }
     );
+
+    ideaSelector.addEventListener("change", () => {
+        if (ideaDescription !== null) {
+            ideaDescription.value = localWorld.lists[listId].containedIdeas[ideaSelector.value].description;
+
+        }
+    });
 }
 
 function detectIdeaTabFocus() {
@@ -536,7 +549,7 @@ function timerFunctions() {
         let ideaTitle = document.getElementById("current-idea-title")
         let ideaDescription = document.getElementById("current-idea-description")
 
-        socket.emit("updateIdea",currentIdea.id,ideaTitle.value,ideaDescription.value,localWorld.worldId,myId)
+        socket.emit("updateIdea", currentIdea.id, ideaTitle.value, ideaDescription.value, localWorld.worldId, myId)
 
         // currentIdea.title = ideaTitle.value
         // currentIdea.ideaDescription = ideaDescription.value;
@@ -613,7 +626,7 @@ function navigationListeners() {
 
         listsContent.style.display = "block";
         listsButton.style.textDecoration = "underline";
-        
+
         ideasContent.style.display = "none";
 
         timerContent.style.display = "none";
