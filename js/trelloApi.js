@@ -64,10 +64,7 @@ async function trelloLoginCallback(href, socket) {
                         accessTokenSecret: accessTokenSecret,
                     });
                 } else {
-                    dataLogger.writeLog(
-                        "couldn't authenticate tokens. ",
-                        error
-                    );
+                    dataLogger.writeError("couldn't authenticate tokens: " + error.data + error.statusCode);
                     reject();
                 }
             }
@@ -91,7 +88,7 @@ async function createBoard(accToken, accTokenSecret) {
                 boardId = JSON.parse(data);
                 resolve(boardId.id);
             } else {
-                dataLogger.writeLog("couldn't authenticate tokens. ", error);
+                dataLogger.writeError("couldn't create board: " + error.data + error.statusCode);
                 reject();
             }
         });
@@ -121,7 +118,7 @@ async function createBoardFromTemplate(accToken, accTokenSecret, templateType) {
                 boardId = JSON.parse(data);
                 resolve(boardId.id);
             } else {
-                dataLogger.writeLog("An error occured at template creation: ", error);
+                dataLogger.writeError("An error occured at template creation: " + error.data + error.statusCode);
                 reject();
             }
         });
@@ -141,7 +138,7 @@ async function GetListsFromBoard(accToken, accTokenSecret, boardId) {
                 let listArray = JSON.parse(data);
                 resolve(listArray);
             } else {
-                dataLogger.writeLog("An error occured while getting lists from board: ", error);
+                dataLogger.writeError("An error occured while getting lists from board: " + error.data + error.statusCode);
                 reject();
             }
         });
@@ -160,7 +157,7 @@ async function createCard(accToken, accTokenSecret, idList, name, desc) {
                 cardId = JSON.parse(data);
                 resolve(cardId.id);
             } else {
-                dataLogger.writeLog("couldn't authenticate tokens. ", error);
+                dataLogger.writeError("an error occured while creating a card: " + error.data + error.statusCode);
                 reject();
             }
         });
@@ -181,7 +178,7 @@ async function createList(accToken, accTokenSecret, boardId, name) {
                 listId = JSON.parse(data);
                 resolve(listId.id);
             } else {
-                dataLogger.writeLog("couldn't authenticate tokens. ", error);
+                dataLogger.writeError("an error occured while creating a list: " + error.data + error.statusCode);
                 reject();
             }
 
@@ -197,7 +194,7 @@ function deleteCard(accToken, accTokenSecret, cardId) {
         if (!error) {
             dataLogger.writeLog("TRELLO API: card deleted succsesfully");
         } else {
-            console.error(error);
+            dataLogger.writeError("An error occured while deleting card: " + error.data + error.statusCode);
         }
     });
 }
@@ -207,7 +204,7 @@ function archiveList(accToken, accTokenSecret, listId) {
         if (!error) {
             dataLogger.writeLog("TRELLO API: list deleted succsesfully");
         } else {
-            dataLogger.writeLog(error);
+            dataLogger.writeError("An error occured while archiving list: " + error.data + error.statusCode);
         }
     });
 }
@@ -217,7 +214,7 @@ function deleteBoard(accToken, accTokenSecret, boardId) {
         if (!error) {
             dataLogger.writeLog("TRELLO API: world/board deleted succsesfully");
         } else {
-            dataLogger.writeLog(error);
+            dataLogger.writeError("An error occured while deleting board: " + error.data + error.statusCode);
         }
     });
 }
