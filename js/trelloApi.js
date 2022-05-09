@@ -222,4 +222,4 @@ function deleteBoard(accToken, accTokenSecret, boardId) {
     });
 }
 
-module.exports = { login, trelloLoginCallback, createBoard, createCard, createList, deleteCard, archiveList, deleteBoard, createBoardFromTemplate, GetListsFromBoard };
+module.exports = { login, trelloLoginCallback, createBoard, createCard, createList, deleteCard, archiveList, deleteBoard, createBoardFromTemplate, GetListsFromBoard, url};

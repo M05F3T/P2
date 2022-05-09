@@ -87,6 +87,18 @@ function RedirectPlayerToFrontpage(err, socket)
     socket.emit("redirect", destination);
 }
 
+function checkPlayerDenial(href, socket)
+{
+    const query = trelloApi.url.parse(href, true).query;
+    const token = query.oauth_token;
+    const verifier = query.oauth_verifier;
+    if(!token && !verifier)
+    {
+        socket.emit("denial", true);
+    }
+
+}
+
 async function spawnList(dataObj, socket) {
     let trelloListId = await trelloApi.createList(worldHandler.worlds[dataObj.worldId].accToken, worldHandler.worlds[dataObj.worldId].accTokenSecret, worldHandler.worlds[dataObj.worldId].trelloBoardId, dataObj.listName);
     worldHandler.spawnList(dataObj.worldId, socket, dataObj.listName, await trelloListId);
@@ -112,6 +124,9 @@ function startClientUpdates() {
         socket.on('spawnElement', (dataObj) => {
             worldHandler.spawnElement(dataObj.worldId, socket, dataObj.ideaName, dataObj.ideaDescription, dataObj.width, dataObj.playerId);
             
+        });
+        socket.on("denial", (data) => {
+            checkPlayerDenial(data, socket)
         });
 
         socket.on("spawnList", (dataObj) => {
