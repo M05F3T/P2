@@ -51,20 +51,22 @@ async function joinAndHostServer(data, socket, player, template) {
             let trelloBoardId = await trelloApi.createBoard(tokenObj.accessToken, trelloApi.accessTokenSecret)
             worldHandler.hostServer(data, player, socket, await tokenObj, await trelloBoardId);
         } catch(err) {
-            dataLogger.writeError("Error while hosting server: " + err);
-            let destination = "/";
-            console.log("Caught error");
-            socket.emit("redirect", destination);
+            RedirectPlayerToFrontpage(err, socket);
             return;
         }
     }
     else if (data.host === true && template !== "none") {
+        try{
         let worldTemplateId;
         let tokenObj = await trelloApi.trelloLoginCallback(data.href);
         let trelloBoardId = await trelloApi.createBoardFromTemplate(tokenObj.accessToken, trelloApi.accessTokenSecret, template);
         worldTemplateId = worldHandler.hostServer(data, player, socket, await tokenObj, await trelloBoardId);
         let trelloObject = await trelloApi.GetListsFromBoard(tokenObj.accessToken, tokenObj.accTokenSecret, await trelloBoardId);
         worldHandler.SpawnListFromTemplate(worldTemplateId, await trelloObject);
+        } catch(err) {
+            RedirectPlayerToFrontpage(err, socket);
+            return;
+        }
     }
     else if (!worldHandler.worlds[data.sessionId] && data.host === false) {
         doesWorldExist = false;
@@ -75,6 +77,14 @@ async function joinAndHostServer(data, socket, player, template) {
         socket.emit('join', doesWorldExist);
         worldHandler.joinServer(data, player, socket);
     }
+}
+
+function RedirectPlayerToFrontpage(err, socket)
+{  
+    dataLogger.writeError("Error while hosting server: " + err);
+    let destination = "/";
+    console.log("Caught error");
+    socket.emit("redirect", destination);
 }
 
 async function spawnList(dataObj, socket) {
