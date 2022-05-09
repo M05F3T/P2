@@ -42,7 +42,6 @@ popUpListeners();
 deleteListeners();
 timerFunctions();
 detectIdeaTabFocus();
-sendTokenInformationForVerify();
 
 let mouseX;
 let mouseY;
@@ -116,7 +115,9 @@ function sendClientData() {
                 template: template
             });
         });
+        sendTokenInformationForVerify();
     }
+    
 
 
 
