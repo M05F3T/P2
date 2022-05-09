@@ -297,6 +297,11 @@ function getServerData() {
     socket.on("error", (message) => {
         alert(message);
     });
+
+    socket.on("redirect", (destination) => {
+        window.location.href = destination;
+        reload();
+    })
 }
 
 function insertWorldsInSelect(data) {

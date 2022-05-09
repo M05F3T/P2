@@ -46,9 +46,17 @@ async function joinAndHostServer(data, socket, player, template) {
     console.log(data.sessionId);
     console.log(worldHandler.worlds[data.sessionId]);
     if (data.host === true && template === "none") {
-        let tokenObj = await trelloApi.trelloLoginCallback(data.href);
-        let trelloBoardId = await trelloApi.createBoard(tokenObj.accessToken, trelloApi.accessTokenSecret);
-        worldHandler.hostServer(data, player, socket, await tokenObj, await trelloBoardId);
+        try {
+            let tokenObj = await trelloApi.trelloLoginCallback(data.href, socket);
+            let trelloBoardId = await trelloApi.createBoard(tokenObj.accessToken, trelloApi.accessTokenSecret)
+            worldHandler.hostServer(data, player, socket, await tokenObj, await trelloBoardId);
+        } catch(err) {
+            dataLogger.writeError("Error while hosting server: " + err);
+            let destination = "/";
+            console.log("Caught error");
+            socket.emit("redirect", destination);
+            return;
+        }
     }
     else if (data.host === true && template !== "none") {
         let worldTemplateId;

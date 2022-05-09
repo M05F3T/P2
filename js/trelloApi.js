@@ -45,7 +45,7 @@ const login = function (request, response) {
 };
 
 // Callback gets the access token and the access tokensecret
-async function trelloLoginCallback(href) {
+async function trelloLoginCallback(href, socket) {
     //Gets information, from the returned URL
     const query = url.parse(href, true).query;
     const token = query.oauth_token;
@@ -53,21 +53,28 @@ async function trelloLoginCallback(href) {
     const verifier = query.oauth_verifier;
 
     let oauthPromise = new Promise(function (resolve, reject) {
-        oauth.getOAuthAccessToken(token, tokenSecret, verifier, function (error, accessToken, accessTokenSecret, results) {
-            if (!error) {
-                resolve({
-                    'accessToken': accessToken,
-                    'accessTokenSecret': accessTokenSecret
-                });
-            } else {
-                dataLogger.writeLog("couldn't authenticate tokens. ", error);
-                reject();
+        oauth.getOAuthAccessToken(
+            token,
+            tokenSecret,
+            verifier,
+            function (error, accessToken, accessTokenSecret, results) {
+                if (!error) {
+                    resolve({
+                        accessToken: accessToken,
+                        accessTokenSecret: accessTokenSecret,
+                    });
+                } else {
+                    dataLogger.writeLog(
+                        "couldn't authenticate tokens. ",
+                        error
+                    );
+                    reject();
+                }
             }
-        });
+        );
     });
 
     return await oauthPromise;
-
 };
 
 // Function used for creating a new board in Trello
