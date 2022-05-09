@@ -668,7 +668,7 @@ function navigationListeners() {
     });
 
     backButton.addEventListener("click", (e) => {
-        alert("u went back in time!!!!");
+        window.location.href = "/";
     });
 
     listSelector.addEventListener("change", () => {
