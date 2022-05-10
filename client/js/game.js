@@ -209,7 +209,7 @@ function getServerData() {
 
         homeContent.style.display = "none";
         listsContent.style.display = "none";
-        ideasContent.style.display = "block";
+        ideasContent.style.display = "flex";
         timerContent.style.display = "none";
 
         let ideaTitle = document.getElementById("current-idea-title")
@@ -658,7 +658,7 @@ function navigationListeners() {
     ideasButton.addEventListener("click", (e) => {
         homeContent.style.display = "none";
         listsContent.style.display = "none";
-        ideasContent.style.display = "block";
+        ideasContent.style.display = "flex";
         timerContent.style.display = "none";
     });
 
