@@ -263,7 +263,7 @@ function getServerData() {
     });
 
     socket.on("timesUp", (string) => {
-        alert(string);
+        timer.innerText = string;
         playAlarm();
     });
 

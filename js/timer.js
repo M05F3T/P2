@@ -28,6 +28,7 @@ timeInterval = setInterval(() => {
             } else if (
                 worldHandler.worlds[worldId].timerObj.seconds === 0
             ) {
+                worldHandler.worlds[worldId].timerObj.seconds = "times up";
                 worldHandler.sendWorldUpdate(
                     "timesUp",
                     "Time's up",
