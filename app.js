@@ -37,21 +37,19 @@ function startExpress(filePath, directoryPath) {
     });
 
     server.listen(settings.PORT);
-    dataLogger.writeLog("server started on Port: " + settings.PORT);
+    dataLogger.writeLog("SERVER: server started on Port: " + settings.PORT);
 
 }
 
 async function joinAndHostServer(data, socket, player, template) {
     let doesWorldExist = false;
-    console.log(data.sessionId);
-    console.log(worldHandler.worlds[data.sessionId]);
     if (data.host === true && template === "none") {
         try {
             let tokenObj = await trelloApi.trelloLoginCallback(data.href, socket);
             let trelloBoardId = await trelloApi.createBoard(tokenObj.accessToken, trelloApi.accessTokenSecret)
             worldHandler.hostServer(data, player, socket, await tokenObj, await trelloBoardId);
         } catch(err) {
-            RedirectPlayerToFrontpage(err, socket);
+            hostingErrorRedirect(err, socket);
             return;
         }
     }
@@ -64,7 +62,7 @@ async function joinAndHostServer(data, socket, player, template) {
         let trelloObject = await trelloApi.GetListsFromBoard(tokenObj.accessToken, tokenObj.accTokenSecret, await trelloBoardId);
         worldHandler.SpawnListFromTemplate(worldTemplateId, await trelloObject);
         } catch(err) {
-            RedirectPlayerToFrontpage(err, socket);
+            hostingErrorRedirect(err, socket);
             return;
         }
     }
@@ -79,9 +77,9 @@ async function joinAndHostServer(data, socket, player, template) {
     }
 }
 
-function RedirectPlayerToFrontpage(err, socket)
+function hostingErrorRedirect(err, socket)
 {  
-    dataLogger.writeError("Error while hosting server: " + err);
+    dataLogger.writeError("SERVER: Error while hosting server: " + err);
     let destination = "/";
     console.log("Caught error");
     socket.emit("redirect", destination);
@@ -111,7 +109,7 @@ function startClientUpdates() {
 
         let player = worldHandler.initializeConnection(socket);
 
-        dataLogger.writeLog(`Player connected to server with id: ${socket.id}`);
+        dataLogger.writeLog(`WORLD: Player connected to server with id: ${socket.id}`);
 
         socket.on('join', (data) => {
             joinAndHostServer(data, socket, player, data.template);
@@ -140,12 +138,12 @@ function startClientUpdates() {
         });
 
         socket.on("removeSelectedList", (id, listId) => {
-            dataLogger.writeLog("trying to remove list with id:" + listId);
+            dataLogger.writeLog("WORLD: trying to remove list with id:" + listId);
 
             let tempListCount = 0;
             trelloApi.archiveList(worldHandler.worlds[id].accToken, worldHandler.worlds[id].accTokenSecret, worldHandler.worlds[id].lists[listId].trelloListId);
             delete worldHandler.worlds[id].lists[listId];
-            dataLogger.writeLog("Removed list with id: " + listId);
+            dataLogger.writeLog("WORLD: Removed list with id: " + listId);
 
             for (const key in worldHandler.worlds[id].lists) {
                 worldHandler.worlds[id].lists[key].x = 50 + tempListCount * 300;
@@ -211,7 +209,7 @@ function startClientUpdates() {
             worldHandler.deleteEmptyWorlds();
 
 
-            dataLogger.writeLog("Player disconnected " + socket.id);
+            dataLogger.writeLog("WORLD: Player disconnected " + socket.id);
         });
 
         socket.on("startTimer", (worldId) => {

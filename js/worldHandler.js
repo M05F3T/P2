@@ -206,7 +206,7 @@ function hostServer(data, player, socket, tokenObj, trelloBoardId) {
     //Send world id to client
     socket.emit("worldId", world.worldId);
 
-    dataLogger.writeLog(`player: ${player.name} => created world: ${world.worldId}`);
+    dataLogger.writeLog(`SERVER: player: ${player.name} => created world: ${world.worldId}`);
 
     return world.worldId;
 }
@@ -232,7 +232,7 @@ function joinServer(data, player, socket) {
         //Send world id to client
         socket.emit("worldId", data.sessionId);
 
-        dataLogger.writeLog(`player: ${player.name} => joined world: ${data.sessionId}`);
+        dataLogger.writeLog(`SERVER: player: ${player.name} => joined world: ${data.sessionId}`);
     } else {
         socket.emit("error", "This world is closed please refresh and select a new world");
     }
@@ -268,7 +268,7 @@ function spawnElement(id, socket, title, description, w, playerId) {
 
         worlds[id].entities[element.id] = element;
 
-        dataLogger.writeLog("an element was spawned with id of " + element.id);
+        dataLogger.writeLog("WORLD: An element was spawned with id of " + element.id);
     } else {
         socket.emit("error", "This world is closed please refresh and select a new world");
     }
@@ -280,7 +280,7 @@ function spawnList(id, socket, title, trelloListId) {
             let list = objConstructor.List(50 + worlds[id].listCount * 300, 70, title, id);
             worlds[id].lists[list.id] = list;
             worlds[id].lists[list.id].trelloListId = trelloListId;
-            dataLogger.writeLog("Spawned list with title: " + list.title);
+            dataLogger.writeLog("WORLD: Spawned list with title: " + list.title);
             worlds[id].listCount++;
 
         } else {
@@ -304,7 +304,7 @@ async function SpawnListFromTemplate(id, trelloObject) {
         let list = objConstructor.List(50 + worlds[id].listCount * 300, 70, name, id);
         worlds[id].lists[list.id] = list;
         worlds[id].lists[list.id].trelloListId = listId;
-        dataLogger.writeLog("Spawned list with title: " + list.title);
+        dataLogger.writeLog("WORLD: Spawned list with title: " + list.title);
         worlds[id].listCount++;
     });
 }
@@ -334,7 +334,7 @@ function startGameLoop() {
                 }
             }
         } catch (err) {
-            dataLogger.writeError("Error while executing startGameLoop: " + err);
+            dataLogger.writeError("WORLD: Error while executing startGameLoop: " + err);
         }
     }, 1000 / 60);
 }
@@ -464,14 +464,14 @@ function detect_player_colision(playerObj) {
 function connectToWorld(playerObj,socket) {
     worlds[playerObj.myWorldId].entities[playerObj.connectedEntity.id] = playerObj.connectedEntity;
     socket.emit("clearCurrentIdeaTab",{});
-    dataLogger.writeLog(`player: ${playerObj.id} placed an entity: ${playerObj.connectedEntity.id}`);
+    dataLogger.writeLog(`WORLD: player: ${playerObj.id} placed an entity: ${playerObj.connectedEntity.id}`);
     playerObj.connectedEntity = {};
 }
 
 function connectToPlayer(playerObj, entity,socket) {
     playerObj.connectedEntity = entity;
     socket.emit("updateCurrentIdeaTab",entity);
-    dataLogger.writeLog(`player: ${playerObj.id} connected an entity: ${playerObj.connectedEntity.id}`);
+    dataLogger.writeLog(`WORLD: player: ${playerObj.id} connected an entity: ${playerObj.connectedEntity.id}`);
     delete worlds[playerObj.myWorldId].entities[entity.id];
 }
 
@@ -485,7 +485,7 @@ function findSocketFromPlayerObj(playerId) {
            return SOCKET_LIST[currentSocket]
         }
         else {
-            dataLogger.writeError("couldn't find socket from playobj");
+            dataLogger.writeError("WORLD: couldn't find socket from playobj");
         }
     }
 
@@ -496,7 +496,7 @@ function findSocketFromPlayerObj(playerId) {
 function connectFromListToPlayer(idea, worldId, playerId, listId) {
     worlds[worldId].players[playerId].connectedEntity = idea;
     dataLogger.writeLog(
-        `player: ${playerId} connected an entity: ${worlds[worldId].players[playerId].connectedEntity}`
+        `WORLD: player: ${playerId} connected an entity: ${worlds[worldId].players[playerId].connectedEntity}`
     );
     deleteCard(idea, worldId, listId);
     setTimeout(() => {
@@ -510,7 +510,7 @@ function deleteCard(idea, worldId, listId) {
             trelloApi.deleteCard(worlds[worldId].accToken, worlds[worldId].accTokenSecret, idea.trelloCardId)
             delete worlds[worldId].lists[listId].containedIdeas[idea.id];
         } else {
-            dataLogger.writeLog("cant find element in list");
+            dataLogger.writeLog("WORLD: cant find element in list");
         }
     }
 }
@@ -525,7 +525,7 @@ async function insertTrelloCardId(listObj, idea) {
 function connectToList(listObj, idea) {
     listObj.containedIdeas[idea.id] = idea;
     dataLogger.writeLog(
-        `list: ${listObj.id} connected an idea: ${listObj.containedIdeas[idea.id].title}`
+        `WORLD: list: ${listObj.id} connected an idea: ${listObj.containedIdeas[idea.id].title}`
     );
 
     insertTrelloCardId(listObj, listObj.containedIdeas[idea.id]);

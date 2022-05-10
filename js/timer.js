@@ -36,7 +36,7 @@ timeInterval = setInterval(() => {
             }
         } catch (err) {
             dataLogger.writeLog(
-                "Removed world" + worldId + " from timeWorlds"
+                "WORLD: Removed world" + worldId + " from timeWorlds"
             );
             timeWorlds = timeWorlds.filter((world) => world !== worldId);
         }
