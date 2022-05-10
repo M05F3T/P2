@@ -373,6 +373,17 @@ form select {
     
 }
 
+#timer-content-box {
+    display: flex;
+    padding-top: 150px;
+    gap: 40px;
+
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
+
 /* COLOR PICKER */
 #color {
     
