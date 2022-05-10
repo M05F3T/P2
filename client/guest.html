@@ -21,8 +21,8 @@
             <input type="text" id="name" placeholder="John Doe" value="test" maxlength="20" required>
 
             <label for="id">World</label>
-            
-            <input type="text" id="worldSelect" placeholder="#3464eb"  maxlength="20" required>
+
+            <input type="text" id="worldSelect" placeholder="#3464eb" maxlength="20" required>
 
             <label for="color">COLOR</label>
             <input type="color" id="color" value="#3464eb">
@@ -37,27 +37,37 @@
 
 
     <div class="gameWindow">
-        <timer id="timer"></timer>
+        <timer id="timer" style="position: absolute;"></timer>
         <canvas id="ctx"></canvas>
 
         <div id="popup-forms">
             <div id="create-idea" style="display: none;">
 
                 <div class="cancel-button-container">
-                    <div id="create-idea-cancel-button" class="cancel-button"><svg class="cancel-button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg></div>
+                    <div id="create-idea-cancel-button" class="cancel-button"><svg class="cancel-button"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                            <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                            <path
+                                d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z" />
+                        </svg></div>
                 </div>
 
                 <div class="input-container">
                     <input type="text" id="idea-name" placeholder="Idea name" maxlength="20" required>
-                    <textarea id="idea-description"  rows="15" cols="70" placeholder="Idea description"></textarea>
+                    <textarea id="idea-description" rows="15" cols="70" placeholder="No idea description" readonly></textarea>
                     <button id="create-idea-button" class="button">CREATE IDEA</button>
                 </div>
-                
-                
+
+
             </div>
             <div id="create-list" style="display: none;">
                 <div class="cancel-button-container">
-                    <div id="create-list-cancel-button" class="cancel-button"><svg class="cancel-button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg></div>
+                    <div id="create-list-cancel-button" class="cancel-button"><svg class="cancel-button"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                            <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                            <path
+                                d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z" />
+                        </svg></div>
                 </div>
 
                 <div class="input-container">
@@ -79,16 +89,21 @@
                 <p>Idea description</p>
                 <textarea id="list-idea-description" rows="15" cols="70" placeholder="Idea description"></textarea>
                 <button id="take-idea-button" class="button">TAKE IDEA</button>
-                </div>
+            </div>
         </div>
 
         <div class="ui">
             <nav class="nav">
                 <button id="home-button" class="nav-element">HOME</button>
                 <button id="lists-button" class="nav-element">LISTS</button>
-                <button id="ideas-button" class="nav-element" style="display: none;">IDEAS</button> 
+                <button id="ideas-button" class="nav-element" style="display: none;">IDEAS</button>
                 <Button id="timer-button" class="nav-element">TIMER</Button>
-                <div id="back-button" class="nav-element back-icon"><i class="fa fa-arrow-left" aria-hidden="true"></i></div>
+                <div id="back-button" class="nav-element back-icon"><svg xmlns="http://www.w3.org/2000/svg"
+                        id="back-svg" viewBox="0 0 512 512">
+                        <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                        <path
+                            d="M160 416H96c-17.67 0-32-14.33-32-32V128c0-17.67 14.33-32 32-32h64c17.67 0 32-14.33 32-32S177.7 32 160 32H96C42.98 32 0 74.98 0 128v256c0 53.02 42.98 96 96 96h64c17.67 0 32-14.33 32-32S177.7 416 160 416zM502.6 233.4l-128-128c-12.51-12.51-32.76-12.49-45.25 0c-12.5 12.5-12.5 32.75 0 45.25L402.8 224H192C174.3 224 160 238.3 160 256s14.31 32 32 32h210.8l-73.38 73.38c-12.5 12.5-12.5 32.75 0 45.25s32.75 12.5 45.25 0l128-128C515.1 266.1 515.1 245.9 502.6 233.4z" />
+                    </svg></div>
             </nav>
             <div id="content">
                 <div id="home-content" style="display: block;">
@@ -96,7 +111,8 @@
                     <h1 id="worldId" class="title"></h1>
                     <hr>
                     <h1 class="title">PLAYERS</h1>
-                    <div id="playerScrollBox" class="scroll-box" style="overflow: scroll ; height: 250px;  overflow-x:hidden;">
+                    <div id="playerScrollBox" class="scroll-box"
+                        style="overflow: scroll ; height: 250px;  overflow-x:hidden;">
 
                         <div class="player-element">
                             <p>Daniel Sejersen</p>
@@ -106,7 +122,7 @@
                     </div>
 
                     <button id="spawn-card" class="button create-idea">CREATE IDEA</button>
-                    <button id="delete" class="button">Clear</button> 
+                    <button id="delete" class="button">Clear</button>
 
 
                 </div>
@@ -118,7 +134,8 @@
                     <h1 id="worldId" class="title">SELECTED LIST</h1>
                     <hr>
                     <h1 class="title">IDEAS</h1>
-                    <div id="listScrollBox" class="scroll-box" style="overflow: scroll ; height: 250px;  overflow-x:hidden;">
+                    <div id="listScrollBox" class="scroll-box"
+                        style="overflow: scroll ; height: 250px;  overflow-x:hidden;">
 
                     </div>
 
@@ -130,24 +147,29 @@
                 </div>
                 <div id="ideas-content" style="display: none;">
                     <h1 class="title">IDEAS</h1>
-                    
-                    <input type="text" id="current-idea-title" placeholder="Idea name" maxlength="20" style="display: none;" required>
-                    <textarea id="current-idea-description"  rows="15" cols="70" placeholder="Idea description" style="display: none;"></textarea>
 
-                    <button id="save-current-idea" class="button" style="display: none;">save</button> 
+                    <input type="text" id="current-idea-title" placeholder="Idea name" maxlength="20"
+                        style="display: none;" required>
+                    <textarea id="current-idea-description" rows="15" cols="70" placeholder="Idea description"
+                        style="display: none;"></textarea>
+
+                    <button id="save-current-idea" class="button" style="display: none;">save</button>
                 </div>
                 <!-- Timer div -->
                 <div id="timer-content" style="display: none;">
-                    <button id="starttimer" class="button">START TIMER</button>
-                    <button id="pausetimer" class="button">PAUSE TIMER</button>
-                    <button id="resettimer" class="button">RESET TIMER</button>
-                    <select id="timeselector">
-                        <option value="10">10 MIN</option>
-                        <option value="15">15 MIN</option>
-                        <option value="20">20 MIN</option>
-                        <option value="30">30 MIN</option>
-                    </select>
-                    <button id="settimer" class="button">SET TIMER</button>
+                    <div id="timer-content-box">
+                        <button id="starttimer" class="button">START TIMER</button>
+                        <button id="pausetimer" class="button">PAUSE TIMER</button>
+                        <button id="resettimer" class="button">RESET TIMER</button>
+                        <select id="timeselector">
+                            <option value="1">1 MIN</option>
+                            <option value="10">10 MIN</option>
+                            <option value="15">15 MIN</option>
+                            <option value="20">20 MIN</option>
+                            <option value="30">30 MIN</option>
+                        </select>
+                        <button id="settimer" class="button">SET TIMER</button>
+                    </div>
                 </div>
 
             </div>

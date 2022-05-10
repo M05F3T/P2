@@ -209,7 +209,7 @@ function getServerData() {
 
         homeContent.style.display = "none";
         listsContent.style.display = "none";
-        ideasContent.style.display = "block";
+        ideasContent.style.display = "flex";
         timerContent.style.display = "none";
 
         let ideaTitle = document.getElementById("current-idea-title")
@@ -281,10 +281,10 @@ function getServerData() {
 
     socket.on("worldUpdate", (data) => {
 
-
+        
         //update local world storage
         localWorld = data;
-        timer.innerText = data.timerObj.seconds;
+        timer.innerText = `${parseInt(data.timerObj.seconds / 60)}:${data.timerObj.seconds % 60}`;
         //render new update
         renderCanvas();
     });
@@ -304,7 +304,7 @@ function getServerData() {
     });
 
     socket.on("updateTimer", (timerSeconds) => {
-        timer.innerText = timerSeconds;
+        timer.innerText = `${parseInt(data.timerObj.seconds / 60)}:${data.timerObj.seconds % 60}`;
     })
 
     socket.on("error", (message) => {
@@ -435,18 +435,21 @@ function listPopupMenu(listId) {
 
     updateIdeaSelector(ideaSelector, listId);
 
-    listPopupMenuContent.style.display = "flex";
-    if (ideaDescription !== null) {
-        ideaDescription.value = localWorld.lists[listId].containedIdeas[ideaSelector.value].description;
-
-    }
-
-
-
     takeIdeaCancelButton.addEventListener("click", () => {
         listPopupMenuContent.style.display = "none";
         canUseKeyboard = true;
     }, { once: true });
+
+
+    listPopupMenuContent.style.display = "flex";
+    if (ideaDescription.value !== null) {
+        ideaDescription.value = localWorld.lists[listId].containedIdeas[ideaSelector.value].description;
+
+    }
+
+    if(ideaSelector.value === "" || ideaSelector.value === null) {
+        takeIdeaButton.disabled = true
+    }
 
     takeIdeaButton.addEventListener(
         "click",
@@ -466,6 +469,11 @@ function listPopupMenu(listId) {
     );
 
     ideaSelector.addEventListener("change", () => {
+
+        if(ideaSelector.value !== "" || ideaSelector.value !== null) {
+            takeIdeaButton.disabled = false
+        }
+
         if (ideaDescription !== null) {
             ideaDescription.value = localWorld.lists[listId].containedIdeas[ideaSelector.value].description;
 
@@ -570,7 +578,8 @@ function timerFunctions() {
     });
 
     startTimer.addEventListener("click", () => {
-        socket.emit("startTimer", localWorld.worldId);
+        if (timer.innerText != "0:0")
+            socket.emit("startTimer", localWorld.worldId);
     })
 
     setTimer.addEventListener("click", () => {
@@ -650,7 +659,7 @@ function navigationListeners() {
     ideasButton.addEventListener("click", (e) => {
         homeContent.style.display = "none";
         listsContent.style.display = "none";
-        ideasContent.style.display = "block";
+        ideasContent.style.display = "flex";
         timerContent.style.display = "none";
     });
 
