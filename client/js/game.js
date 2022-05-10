@@ -330,7 +330,7 @@ function insertWorldsInSelect(data) {
 }
 
 function playAlarm() {
-    let audio = new Audio('./js/timer2.mp3');
+    let audio = new Audio('./js/timer.wav');
     audio.play();
   }
 
