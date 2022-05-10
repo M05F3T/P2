@@ -435,18 +435,24 @@ function listPopupMenu(listId) {
 
     updateIdeaSelector(ideaSelector, listId);
 
-    listPopupMenuContent.style.display = "flex";
-    if (ideaDescription !== null) {
-        ideaDescription.value = localWorld.lists[listId].containedIdeas[ideaSelector.value].description;
-
-    }
-
-
-
     takeIdeaCancelButton.addEventListener("click", () => {
         listPopupMenuContent.style.display = "none";
         canUseKeyboard = true;
     }, { once: true });
+
+
+    listPopupMenuContent.style.display = "flex";
+    if (ideaDescription.value !== null) {
+        ideaDescription.value = localWorld.lists[listId].containedIdeas[ideaSelector.value].description;
+
+    }
+
+    if(ideaSelector.value === "" || ideaSelector.value === null) {
+        takeIdeaButton.disabled = true
+    }
+
+
+    
 
     takeIdeaButton.addEventListener(
         "click",
@@ -466,6 +472,11 @@ function listPopupMenu(listId) {
     );
 
     ideaSelector.addEventListener("change", () => {
+
+        if(ideaSelector.value !== "" || ideaSelector.value !== null) {
+            takeIdeaButton.disabled = false
+        }
+
         if (ideaDescription !== null) {
             ideaDescription.value = localWorld.lists[listId].containedIdeas[ideaSelector.value].description;
 
