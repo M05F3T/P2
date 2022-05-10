@@ -373,6 +373,15 @@ form select {
     
 }
 
+#timer {
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    font-size:xx-large;
+}
+
 #timer-content-box {
     display: flex;
     padding-top: 150px;

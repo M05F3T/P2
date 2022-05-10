@@ -451,9 +451,6 @@ function listPopupMenu(listId) {
         takeIdeaButton.disabled = true
     }
 
-
-    
-
     takeIdeaButton.addEventListener(
         "click",
         () => {
