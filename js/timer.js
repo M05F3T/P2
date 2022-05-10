@@ -48,6 +48,11 @@ function startTimer(worldId) {
     worldHandler.worlds[worldId].timerObj.timerOn = true;
     if (!timeWorlds.includes(worldId))
         timeWorlds.push(worldId);
+    worldHandler.sendWorldUpdate(
+        "updateTimer",
+        worldHandler.worlds[worldId].timerObj.seconds,
+        worldId
+    );
 }
 
 function setTimer(worldId, selectedTimer) {
@@ -58,6 +63,11 @@ function setTimer(worldId, selectedTimer) {
 
 function pauseTimer(worldId) {
     worldHandler.worlds[worldId].timerObj.timerOn = false;
+    worldHandler.sendWorldUpdate(
+        "updateTimer",
+        worldHandler.worlds[worldId].timerObj.seconds,
+        worldId
+    );
 }
 
 function resetTimer(worldId, selectedTimer) {

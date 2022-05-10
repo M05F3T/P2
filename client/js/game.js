@@ -285,7 +285,7 @@ function getServerData() {
         
         //update local world storage
         localWorld = data;
-        timer.innerText = `${parseInt(data.timerObj.seconds / 60)}:${data.timerObj.seconds % 60}`;
+        //timer.innerText = `${parseInt(data.timerObj.seconds / 60)}:${data.timerObj.seconds % 60}`;
         //render new update
         renderCanvas();
     });
@@ -305,7 +305,7 @@ function getServerData() {
     });
 
     socket.on("updateTimer", (timerSeconds) => {
-        timer.innerText = `${parseInt(data.timerObj.seconds / 60)}:${data.timerObj.seconds % 60}`;
+        timer.innerText = `${parseInt(timerSeconds / 60)}:${timerSeconds % 60}`;
     })
 
     socket.on("error", (message) => {
