@@ -22,10 +22,6 @@ const nameInput = document.getElementById("name");
 const listSelector = document.getElementById("listSelector");
 const timer = document.getElementById("timer");
 
-// function play() {
-//     var audio = new Audio('./js/beat.mp3');
-//     audio.play();
-//   }
 
 let myId;
 let localWorld;
@@ -266,6 +262,11 @@ function getServerData() {
         idText.innerHTML = worldId;
     });
 
+    socket.on("timesUp", (string) => {
+        alert(string);
+        playAlarm();
+    });
+
 
     socket.on("updateIdeaWidth", (dataObj) => {
         ctx.font = "20px Arial";
@@ -327,6 +328,12 @@ function insertWorldsInSelect(data) {
     }
 
 }
+
+function playAlarm() {
+    let audio = new Audio('./js/timer2.mp3');
+    audio.play();
+  }
+
 
 function createIdea() {
     const spawnBtn = document.getElementById("spawn-card");

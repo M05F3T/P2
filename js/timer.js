@@ -29,7 +29,7 @@ timeInterval = setInterval(() => {
                 worldHandler.worlds[worldId].timerObj.seconds === 0
             ) {
                 worldHandler.sendWorldUpdate(
-                    "error",
+                    "timesUp",
                     "Time's up",
                     worldId
                 );
