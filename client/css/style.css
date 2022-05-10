@@ -67,9 +67,11 @@ canvas {
 }
 
 #list-popup-menu {
-    padding: 10px;
+
+    padding: 50px;
     position: absolute;
     display: flex;
+
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
@@ -80,9 +82,35 @@ canvas {
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
+#take-idea-button {
+    margin-top: 20px;
+}
+
+#list-idea-description,
+#take-idea-button,
+#idea-selector {
+    width: 450px;
+}
+
+#list-idea-description {
+    cursor: default;
+   -webkit-user-select: none;
+   -webkit-touch-callout: none;
+   -khtml-user-select: none;
+   -moz-user-select: none;
+   -ms-user-select: none;
+   -o-user-select: none;
+}
+
+#list-idea-description:focus {
+    outline: none;
+}
+
+
 #create-idea-button {
     width: 50%;
 }
+
 textarea {
     resize: none;
 }
@@ -94,7 +122,9 @@ textarea {
     gap: 25px;
 }
 
-#current-idea-title, #current-idea-description, #save-current-idea {
+#current-idea-title,
+#current-idea-description,
+#save-current-idea {
     padding: 12px 20px;
 
     box-sizing: border-box;
