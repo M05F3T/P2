@@ -129,9 +129,9 @@ function drawMyLineLength(x1, y1, x2, y2, maxLen, color) {
     ctx.stroke();
 }
 
-function drawLineLength(x1, y1, x2, y2, maxLen, color) {
-    let vx = x2 - x1 - ctx.canvas.width / 2 + x1; // get dist between start and end of line
-    let vy = y2 - y1 - ctx.canvas.height / 2 +y1; // for x and y
+function drawLineLength(x1, y1, x2, y2, maxLen, color, player) {
+    let vx = x2 - player.playerCanvasWidth / 2 ; // get dist between start and end of line
+    let vy = y2 - player.playerCanvasHeight / 2 ; // for x and y
     // use pythagoras to get line total length
     let mag = Math.sqrt(vx * vx + vy * vy);
     // calculate how much to scale the line to get the correct distance
@@ -192,7 +192,7 @@ function drawPlayers(data) {
 
 
 function renderCanvas() {
-    
+
     ctx.save();
 
     resetCanvas();
@@ -218,7 +218,8 @@ function renderCanvas() {
                 localWorld.players[key].mousePos.x,
                 localWorld.players[key].mousePos.y,
                 localWorld.players[key].h / 2,
-                localWorld.players[key].viewIndicatorColor
+                localWorld.players[key].viewIndicatorColor,
+                localWorld.players[key]
             )
         }
     }

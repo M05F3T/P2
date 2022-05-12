@@ -42,11 +42,14 @@ popUpListeners();
 deleteListeners();
 timerFunctions();
 detectIdeaTabFocus();
+sendCanvasData();
 
 let mouseX;
 let mouseY;
 
 function sendClientData() {
+
+
 
 
     clearBtn.addEventListener("click", (e) => {
@@ -198,12 +201,12 @@ function getServerData() {
         listsContent.style.display = "none";
         ideasContent.style.display = "block";
         timerContent.style.display = "none";
-    
+
         let ideaTitle = document.getElementById("current-idea-title")
         let ideaDescription = document.getElementById("current-idea-description")
         let saveBtn = document.getElementById("save-current-idea")
 
-        
+
 
         currentIdea = idea;
 
@@ -212,7 +215,7 @@ function getServerData() {
         saveBtn.style.display = "block";
 
         ideaTitle.value = idea.title;
-        if(idea.description !== null) {
+        if (idea.description !== null) {
             ideaDescription.value = idea.description;
         }
 
@@ -229,7 +232,7 @@ function getServerData() {
         listsContent.style.display = "none";
         ideasContent.style.display = "none";
         timerContent.style.display = "none";
-    
+
         let ideaTitle = document.getElementById("current-idea-title")
         let ideaDescription = document.getElementById("current-idea-description")
         let saveBtn = document.getElementById("save-current-idea")
@@ -251,6 +254,13 @@ function getServerData() {
 
     socket.on("worldId", (worldId) => {
         idText.innerHTML = worldId;
+        console.log("window size on load was send..")
+        socket.emit("windowResized", {
+            canvasHeight: ctx.canvas.height,
+            canvasWidth: ctx.canvas.width,
+            playerId: myId,
+            worldId: localWorld.worldId
+        });
     });
 
 
@@ -258,7 +268,7 @@ function getServerData() {
         ctx.font = "20px Arial";
         w = ctx.measureText(dataObj.ideaTitle).width + 10;
 
-        socket.emit("updateIdeaWidth", dataObj,w);
+        socket.emit("updateIdeaWidth", dataObj, w);
     });
 
     socket.on("newPlayerJoined", () => {
@@ -403,6 +413,18 @@ function createList() {
     }, { once: true });
 }
 
+function sendCanvasData() {
+    window.addEventListener("resize", (e) => {
+        console.log("window was resized");
+        socket.emit("windowResized", {
+            canvasHeight: ctx.canvas.height,
+            canvasWidth: ctx.canvas.width,
+            playerId: myId,
+            worldId: localWorld.worldId
+        });
+    });
+}
+
 //List popup menu
 function listPopupMenu(listId) {
     canUseKeyboard = false;
@@ -531,7 +553,7 @@ function timerFunctions() {
         let ideaTitle = document.getElementById("current-idea-title")
         let ideaDescription = document.getElementById("current-idea-description")
 
-        socket.emit("updateIdea",currentIdea.id,ideaTitle.value,ideaDescription.value,localWorld.worldId,myId)
+        socket.emit("updateIdea", currentIdea.id, ideaTitle.value, ideaDescription.value, localWorld.worldId, myId)
 
         // currentIdea.title = ideaTitle.value
         // currentIdea.ideaDescription = ideaDescription.value;
@@ -608,7 +630,7 @@ function navigationListeners() {
 
         listsContent.style.display = "block";
         listsButton.style.textDecoration = "underline";
-        
+
         ideasContent.style.display = "none";
 
         timerContent.style.display = "none";
