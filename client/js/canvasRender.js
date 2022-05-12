@@ -4,6 +4,8 @@ trashcan_open.src = `./img/trashcan_open.svg`
 const trashcan_closed = new Image();
 trashcan_closed.src = `./img/trashcan_closed.svg`
 
+const floor = new Image();
+floor.src = `./img/floor.svg`
 
 function drawTrashcan() {
     let open;
@@ -196,9 +198,10 @@ function renderCanvas() {
     ctx.save();
 
     resetCanvas();
+    
 
     ctx.translate(-localWorld.players[myId].x + ctx.canvas.width / 2, -localWorld.players[myId].y + ctx.canvas.height / 2);
-
+    ctx.drawImage(floor, -5000, -5000, 10000, 10000);
     drawTrashcan(true);
     drawLists(localWorld);
     drawElements(localWorld);
