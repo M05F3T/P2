@@ -155,6 +155,11 @@ function startClientUpdates() {
             //socket.emit("updateLists", worldHandler.worlds[id]);
         });
 
+        socket.on("windowResized", (canvasData) => {
+            worldHandler.worlds[canvasData.worldId].players[canvasData.playerId].playerCanvasWidth = canvasData.canvasWidth;
+            worldHandler.worlds[canvasData.worldId].players[canvasData.playerId].playerCanvasHeight = canvasData.canvasHeight;
+        });
+
         socket.on("playerMousePos", (data) => {
             worldHandler.updateMousePos(data, socket);
         });

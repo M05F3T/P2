@@ -38,6 +38,7 @@ popUpListeners();
 deleteListeners();
 timerFunctions();
 detectIdeaTabFocus();
+sendCanvasData();
 
 let mouseX;
 let mouseY;
@@ -48,6 +49,8 @@ function sendTokenInformationForVerify()
 }
 
 function sendClientData() {
+
+
 
 
     clearBtn.addEventListener("click", (e) => {
@@ -260,6 +263,13 @@ function getServerData() {
 
     socket.on("worldId", (worldId) => {
         idText.innerHTML = worldId;
+        console.log("window size on load was send..")
+        socket.emit("windowResized", {
+            canvasHeight: ctx.canvas.height,
+            canvasWidth: ctx.canvas.width,
+            playerId: myId,
+            worldId: localWorld.worldId
+        });
     });
 
     socket.on("timesUp", (string) => {
@@ -426,6 +436,18 @@ function createList() {
             spawnList.disabled = false;
         }
     }, { once: true });
+}
+
+function sendCanvasData() {
+    window.addEventListener("resize", (e) => {
+        console.log("window was resized");
+        socket.emit("windowResized", {
+            canvasHeight: ctx.canvas.height,
+            canvasWidth: ctx.canvas.width,
+            playerId: myId,
+            worldId: localWorld.worldId
+        });
+    });
 }
 
 //List popup menu

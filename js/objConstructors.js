@@ -10,6 +10,8 @@ let Player = (id, color, name) => {
         h: 50,
         id: id,
         mousePos: { x: 0, y: 0 },
+        playerCanvasWidth: 0,
+        playerCanvasHeight: 0,
         color: color,
         viewIndicatorColor: "#000000", //black by default
         name: name,
