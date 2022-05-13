@@ -4,8 +4,7 @@ trashcan_open.src = `./img/trashcan_open.svg`
 const trashcan_closed = new Image();
 trashcan_closed.src = `./img/trashcan_closed.svg`
 
-const floor = new Image();
-floor.src = `./img/floor.svg`
+
 
 function drawTrashcan() {
     let open;
@@ -132,8 +131,8 @@ function drawMyLineLength(x1, y1, x2, y2, maxLen, color) {
 }
 
 function drawLineLength(x1, y1, x2, y2, maxLen, color, player) {
-    let vx = x2 - player.playerCanvasWidth / 2 ; // get dist between start and end of line
-    let vy = y2 - player.playerCanvasHeight / 2 ; // for x and y
+    let vx = x2 - player.playerCanvasWidth / 2; // get dist between start and end of line
+    let vy = y2 - player.playerCanvasHeight / 2; // for x and y
     // use pythagoras to get line total length
     let mag = Math.sqrt(vx * vx + vy * vy);
     // calculate how much to scale the line to get the correct distance
@@ -198,10 +197,11 @@ function renderCanvas() {
     ctx.save();
 
     resetCanvas();
-    
+
 
     ctx.translate(-localWorld.players[myId].x + ctx.canvas.width / 2, -localWorld.players[myId].y + ctx.canvas.height / 2);
-    ctx.drawImage(floor, -5000, -5000, 10000, 10000);
+    
+    
     drawTrashcan(true);
     drawLists(localWorld);
     drawElements(localWorld);
@@ -235,6 +235,8 @@ function renderCanvas() {
         localWorld.players[myId].h / 2,
         localWorld.players[myId].viewIndicatorColor
     );
+
+    window.requestAnimationFrame(renderCanvas);
 
 }
 
@@ -288,6 +290,9 @@ function resetCanvas() {
     //set canvas size to window size.
     ctx.canvas.width = window.innerWidth - 350;
     ctx.canvas.height = window.innerHeight;
+
+    offscreenCanvas.width = ctx.canvas.width;
+    offscreenCanvas.height = ctx.canvas.height;
 
     //clear canvas berfore new frame
     ctx.clearRect(0, 0, window.innerWidth - 350, window.innerHeight);
