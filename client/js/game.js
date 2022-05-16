@@ -67,7 +67,7 @@ document.addEventListener("keydown",  function(event) {
         // 61 Plus key  +/= key
     });
     
-    window.addEventListener('mousewheel DOMMouseScroll', function (event) {
+    window.addEventListener('DOMMouseScroll', function (event) {
            if (event.ctrlKey == true) {
            event.preventDefault();
            }
