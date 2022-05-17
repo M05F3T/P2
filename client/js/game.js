@@ -23,7 +23,7 @@ const nameInput = document.getElementById("name");
 const listSelector = document.getElementById("listSelector");
 const timer = document.getElementById("timer");
 
-
+//local variables
 let myId;
 let localWorld;
 let hover = false;
@@ -73,6 +73,7 @@ function sendClientData() {
             });
         });
     }
+
     socket.on("denial",(bool) => {
         if(bool === true)
         {
