@@ -9,6 +9,7 @@ var tinycolor = require("tinycolor2");
 let worlds = {} //holds data on all current worlds
 let SOCKET_LIST = {}; //keeps tracks of connected clients
 
+//creates defualt world if setting is set to true
 function createDefaultWorlds() {
     if (settings.defaultWorldsActive) {
         let defaultWorld = objConstructor.World();
@@ -18,6 +19,7 @@ function createDefaultWorlds() {
     }
 }
 
+//returns list of all current active worlds
 function listCurrentWorld() {
     let list = {};
 
@@ -27,6 +29,7 @@ function listCurrentWorld() {
     return list;
 }
 
+//deletes world if setting is set to true and if no players is active in world
 function deleteEmptyWorlds() {
     for (const world in worlds) {
         if (isEmpty(worlds[world].players) && worlds[world].name !== "Default World") {
@@ -38,6 +41,7 @@ function deleteEmptyWorlds() {
     }
 }
 
+//deletes all ideas/entities in world. not included ideas picked up or in list 
 function deleteAllEntities(id, socket) {
     if (doesWorldExist(id, socket)) {
         for (const key in worlds[id].entities) {
@@ -46,10 +50,10 @@ function deleteAllEntities(id, socket) {
     } else {
         socket.emit("error", "This world is closed please refresh and select a new world");
     }
-
 }
 
-function doesWorldExist(worldId, socket) {
+//returns true if world with specified id exists
+function doesWorldExist(worldId) {
     for (const world in worlds) {
         if (worldId === worlds[world].worldId) {
             return true;
@@ -73,6 +77,7 @@ function doesWorldExist(worldId, socket) {
 
 }
 
+//send specified emit and object to all clients connected to server.
 function sendServerData(emit, obj) {
 
     for (const world in worlds) {
@@ -85,7 +90,6 @@ function sendServerData(emit, obj) {
 
                     socket.emit(emit, obj);
 
-
                 }
             }
 
@@ -94,6 +98,7 @@ function sendServerData(emit, obj) {
 
 }
 
+//send specified emit to all clients connected to specified with specified object.
 function sendWorldUpdate(emit, obj, worldId) {
     for (const key in worlds[worldId].players) {
         for (let i in SOCKET_LIST) {
@@ -105,10 +110,10 @@ function sendWorldUpdate(emit, obj, worldId) {
     }
 }
 
+//find and delete player/client with the correct socket attached.
 function removePlayer(socket) {
     //remove disconnected person
     delete SOCKET_LIST[socket.id];
-    //delete PLAYER_LIST[socket.id];
 
     //delete player from world
     for (const world in worlds) {
@@ -120,6 +125,7 @@ function removePlayer(socket) {
     }
 }
 
+//update key state to being pressed or not for specific player
 function updateKeyState(data, socket, player) {
     if (doesWorldExist(data.worldId)) {
         if (data.inputId === "left") {
@@ -138,6 +144,7 @@ function updateKeyState(data, socket, player) {
     }
 }
 
+//stores and updates players mouseposistion
 function updateMousePos(data, socket) {
     if (doesWorldExist(data.worldID, socket)) {
         try {
@@ -151,10 +158,12 @@ function updateMousePos(data, socket) {
     }
 }
 
+//returns true if object is empty
 function isEmpty(obj) {
     return Object.keys(obj).length === 0;
 }
 
+//return correct indicator color determined by player color 
 function determineIndicatorColor(colorHex) {
     var color1 = tinycolor(colorHex);
     if (color1.getBrightness() > 128) { //get brightness returns value between 0 - 255 with 0 being darkest
@@ -165,6 +174,7 @@ function determineIndicatorColor(colorHex) {
     }
 }
 
+//return and create player obj after storing and sending necessary data to client
 function initializeConnection(socket) {
 
     //add connection to socket list
@@ -179,6 +189,7 @@ function initializeConnection(socket) {
     return objConstructor.Player(socket.id);
 }
 
+//creates new world and adds hosting player to that world
 function hostServer(data, player, socket, tokenObj, trelloBoardId) {
     let world = objConstructor.World();
 
@@ -211,6 +222,7 @@ function hostServer(data, player, socket, tokenObj, trelloBoardId) {
     return world.worldId;
 }
 
+//add player/client to specified world
 function joinServer(data, player, socket) {
     if (doesWorldExist(data.sessionId)) {
         player.color = data.color;
@@ -236,10 +248,9 @@ function joinServer(data, player, socket) {
     } else {
         socket.emit("error", "This world is closed please refresh and select a new world");
     }
-
-
 }
 
+//removes sensitive trello Api data from world object before sending it to client
 function parseSensitiveWorldData(world) {
         //make clone of object so its not parsed by reference. 
         let parsedWorld = Object.assign({},world)
@@ -251,6 +262,7 @@ function parseSensitiveWorldData(world) {
         return parsedWorld;
 }
 
+//creates and spawns new entitie to specified world
 function spawnElement(id, socket, title, description, w, playerId) {
     if (doesWorldExist(id, socket)) {
         let element = objConstructor.Entity(worlds[id].players[playerId].x, worlds[id].players[playerId].y);
@@ -274,6 +286,7 @@ function spawnElement(id, socket, title, description, w, playerId) {
     }
 }
 
+//creates and spawns new list to specified world
 function spawnList(id, socket, title, trelloListId) {
     if (worlds[id].listCount <= worlds[id].maxListCount) {
         if (doesWorldExist(id, socket)) {
@@ -297,6 +310,7 @@ function spawnList(id, socket, title, trelloListId) {
     }
 }
 
+//asynchronously waits for trello data and spawns all lists in a template
 async function SpawnListFromTemplate(id, trelloObject) {
     trelloObject.forEach(trelloList => {
         let listId = trelloList.id;
@@ -309,6 +323,7 @@ async function SpawnListFromTemplate(id, trelloObject) {
     });
 }
 
+//updates world and object properties and send updated world to correct clients 60 times a second
 function startGameLoop() {
     setInterval(() => {
         try {
@@ -341,6 +356,7 @@ function startGameLoop() {
 
 /*PLAYER LOGIC */
 
+//updates player posistion determined by key state properties
 function updatePosistion(playerObj) {
     //move oneway
 
@@ -376,6 +392,7 @@ function updatePosistion(playerObj) {
         playerObj.y -= playerObj.maxSpd * 0.75; //up
     }
 
+    //places idea/entitie on the ground if expression is met.
     if (playerObj.isCollidingWithTrashcan === false && isEmpty(playerObj.connectedEntity) === false && playerObj.pickUpKeyPressed === true && playerObj.canPickUp === false) {
         connectToWorld(playerObj,findSocketFromPlayerObj(playerObj.id));
 
@@ -387,6 +404,7 @@ function updatePosistion(playerObj) {
         }, 500)
     }
 
+    //if player has entitie update its posistion in relation to players posistion
     if (!(isEmpty(playerObj.connectedEntity))) {
         playerObj.connectedEntity.x = (playerObj.x - playerObj.connectedEntity.w / 2);
         playerObj.connectedEntity.y = (playerObj.y - playerObj.connectedEntity.h / 2) - 110;
@@ -394,6 +412,7 @@ function updatePosistion(playerObj) {
 
 }
 
+//checks if player is colliding with an entitie/idea present in the world
 function detect_player_colision(playerObj) {
 
     //Player detection for entities
@@ -405,7 +424,7 @@ function detect_player_colision(playerObj) {
 
             playerObj.isColliding = true;
 
-            //pick up element
+            //pick up/attach idea/entitie to player if expression is met
             if (playerObj.pickUpKeyPressed === true && playerObj.canPickUp === true && isEmpty(playerObj.connectedEntity)) {
 
                 connectToPlayer(playerObj, object, findSocketFromPlayerObj(playerObj.id));
@@ -461,6 +480,7 @@ function detect_player_colision(playerObj) {
 
 }
 
+//connects a connected entity to world object (places idea/entity on the ground)
 function connectToWorld(playerObj,socket) {
     worlds[playerObj.myWorldId].entities[playerObj.connectedEntity.id] = playerObj.connectedEntity;
     socket.emit("clearCurrentIdeaTab",{});
@@ -468,6 +488,7 @@ function connectToWorld(playerObj,socket) {
     playerObj.connectedEntity = {};
 }
 
+//connects a world entity/idea to the player (pick up idea)
 function connectToPlayer(playerObj, entity,socket) {
     playerObj.connectedEntity = entity;
     socket.emit("updateCurrentIdeaTab",entity);
@@ -477,6 +498,7 @@ function connectToPlayer(playerObj, entity,socket) {
 
 /*LIST LOGIC*/
 
+//find correct socket object from a playerId
 function findSocketFromPlayerObj(playerId) {
     let socket;
 
@@ -488,11 +510,9 @@ function findSocketFromPlayerObj(playerId) {
             dataLogger.writeError("WORLD: couldn't find socket from playobj");
         }
     }
-
-
-
 }
 
+//connects idea/entite from a list to a player (pick up idea)
 function connectFromListToPlayer(idea, worldId, playerId, listId) {
     worlds[worldId].players[playerId].connectedEntity = idea;
     dataLogger.writeLog(
@@ -504,6 +524,7 @@ function connectFromListToPlayer(idea, worldId, playerId, listId) {
     }, 500);
 }
 
+//deletes list from world
 function deleteCard(idea, worldId, listId) {
     for (const key in worlds[worldId].lists[listId].containedIdeas) {
         if (worlds[worldId].lists[listId].containedIdeas[key].id === idea.id) {
@@ -515,13 +536,14 @@ function deleteCard(idea, worldId, listId) {
     }
 }
 
-async function insertTrelloCardId(listObj, idea) {
 
+//asynchronously waits for trello card data and stores them in variables.
+async function insertTrelloCardId(listObj, idea) {
     let trelloCardId = await trelloApi.createCard(worlds[listObj.myWorldId].accToken, worlds[listObj.myWorldId].accTokenSecret, listObj.trelloListId, idea.title, idea.description)
     idea.trelloCardId = await trelloCardId;
 }
 
-
+//connects an idea/entitie to a list
 function connectToList(listObj, idea) {
     listObj.containedIdeas[idea.id] = idea;
     dataLogger.writeLog(
@@ -534,6 +556,7 @@ function connectToList(listObj, idea) {
     sendWorldUpdate("updateIdeasInListSelector", parseSensitiveWorldData(worlds[listObj.myWorldId]), listObj.myWorldId);
 };
 
+//detect collision between square and circle.
 function detect_colision(x1, y1, w1, h1, x2, y2, w2, h2) {
     if (
         x1 - w1 / 2 < x2 + w2 &&
@@ -547,6 +570,7 @@ function detect_colision(x1, y1, w1, h1, x2, y2, w2, h2) {
     }
 }
 
+//connect idea/entitie to list when idea/entitie collided with list
 function detect_list_colision(listObj) {
     for (const key in worlds[listObj.myWorldId].entities) {
         let object = worlds[listObj.myWorldId].entities[key];
@@ -556,6 +580,7 @@ function detect_list_colision(listObj) {
     }
 };
 
+//detect collision between two rectangles.
 function detect_rec_and_rec_collision(x1, y1, w1, h1, x2, y2, w2, h2) {
     return (
         x1 < x2 + w2 &&
@@ -565,6 +590,7 @@ function detect_rec_and_rec_collision(x1, y1, w1, h1, x2, y2, w2, h2) {
     );
 }
 
+//if idea/entitie collides with trash can delete it from world
 function detect_trashcan_colision(player) {
     const trashcan_x = 800;
     const trashcan_y = 800;

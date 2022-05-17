@@ -4,6 +4,9 @@ trashcan_open.src = `./img/trashcan_open.svg`
 const trashcan_closed = new Image();
 trashcan_closed.src = `./img/trashcan_closed.svg`
 
+const floor = new Image();
+floor.src = `./img/floor.jpg`
+
 
 
 function drawTrashcan() {
@@ -201,7 +204,7 @@ function renderCanvas() {
 
     ctx.translate(-localWorld.players[myId].x + ctx.canvas.width / 2, -localWorld.players[myId].y + ctx.canvas.height / 2);
     
-    
+
     drawTrashcan(true);
     drawLists(localWorld);
     drawElements(localWorld);
@@ -286,13 +289,9 @@ function drawMyPlayer(player) {
 function resetCanvas() {
     // ...your drawing code...
 
-
     //set canvas size to window size.
     ctx.canvas.width = window.innerWidth - 350;
     ctx.canvas.height = window.innerHeight;
-
-    offscreenCanvas.width = ctx.canvas.width;
-    offscreenCanvas.height = ctx.canvas.height;
 
     //clear canvas berfore new frame
     ctx.clearRect(0, 0, window.innerWidth - 350, window.innerHeight);

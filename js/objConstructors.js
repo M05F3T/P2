@@ -1,7 +1,7 @@
 const { v4: idGenerator } = require("uuid");
 var { nanoid } = require("nanoid");
 
-
+//specifies player object with its many properties
 let Player = (id, color, name) => {
     let self = {
         x: 250,
@@ -31,6 +31,7 @@ let Player = (id, color, name) => {
     return self;
 }
 
+//specifies idea/entity objects with its properties
 let Entity = (posX, posY, id) => {
     let self = {
         x: posX,
@@ -45,6 +46,7 @@ let Entity = (posX, posY, id) => {
     return self;
 }
 
+//specifies list object with is properties and nested ideas/entities
 let List = (posX, posY, title, myWorldId) => {
     let self = {
         x: posX,
@@ -61,6 +63,7 @@ let List = (posX, posY, title, myWorldId) => {
     return self;
 };
 
+//specifies world objects and its nested objects.
 let World = () => {
     let self = {
         worldId: '#' + nanoid(6),

@@ -5,14 +5,6 @@ const socket = io();
 const canvas = document.getElementById("ctx");
 const ctx = document.getElementById("ctx").getContext("2d");
 
-const offscreenCanvas = document.createElement('canvas').getContext("2d");
-const floor = new Image();
-floor.src = `./img/grass.svg`
-
-offscreenCanvas.drawImage(floor, 0, 0,3000,3000);
-
-
-
 
 const idText = document.getElementById("worldId");
 const clearBtn = document.getElementById("delete");
@@ -59,9 +51,6 @@ function sendTokenInformationForVerify()
 
 
 function sendClientData() {
-
-
-
 
     clearBtn.addEventListener("click", (e) => {
         socket.emit("clear", localWorld.worldId);
