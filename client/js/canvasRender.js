@@ -7,8 +7,6 @@ trashcan_closed.src = `./img/trashcan_closed.svg`
 const floor = new Image();
 floor.src = `./img/floor.jpg`
 
-
-
 function drawTrashcan() {
     let open;
     for (const key in localWorld.players) {
@@ -27,7 +25,6 @@ function drawTrashcan() {
 
 }
 
-
 function drawElements(data) {
     for (const key in data.entities) {
         ctx.beginPath();
@@ -40,7 +37,6 @@ function drawElements(data) {
         drawCardText(data.entities[key].title, data.entities[key].x + (data.entities[key].w / 2), data.entities[key].y + (data.entities[key].h / 2));
     }
 }
-
 
 function drawCardText(title, x, y) {
     ctx.font = "20px Arial";
@@ -193,8 +189,6 @@ function drawPlayers(data) {
     }
 }
 
-
-
 function renderCanvas() {
 
     ctx.save();
@@ -245,8 +239,6 @@ function renderCanvas() {
 
 function drawMyPlayer(player) {
 
-
-
     ctx.save();
     //draw player circle
     ctx.beginPath();
@@ -287,9 +279,7 @@ function drawMyPlayer(player) {
 }
 
 function resetCanvas() {
-    // ...your drawing code...
 
-    //set canvas size to window size.
     ctx.canvas.width = window.innerWidth - 350;
     ctx.canvas.height = window.innerHeight;
 

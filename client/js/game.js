@@ -31,6 +31,8 @@ let targetEntityId;
 let canUseKeyboard = true;
 let timerValue = 0;
 let currentIdea;
+let mouseX;
+let mouseY;
 
 getServerData();
 sendClientData();
@@ -40,16 +42,15 @@ deleteListeners();
 timerFunctions();
 detectIdeaTabFocus();
 sendCanvasData();
+saveIdea();
 
-let mouseX;
-let mouseY;
-
+//this function runs when client want to autenticate with trello
 function sendTokenInformationForVerify()
 {
     socket.emit("denial", window.location.href);
 }
 
-
+//sends general game data with emits to server
 function sendClientData() {
 
     clearBtn.addEventListener("click", (e) => {
@@ -117,9 +118,6 @@ function sendClientData() {
         sendTokenInformationForVerify();
     }
     
-
-
-
     document.onkeydown = (event) => {
         if (canUseKeyboard === true) {
             if (event.key === 'd' || event.key === 'D') {
@@ -193,13 +191,12 @@ function sendClientData() {
         }
     }
 
-    //}
-
 }
 
+//keeps track of server send emits
 function getServerData() {
 
-
+    //updates all current ideas in world
     socket.on("updateCurrentIdeaTab", (idea) => {
         const homeContent = document.getElementById("home-content");
         const listsContent = document.getElementById("lists-content");
@@ -215,8 +212,6 @@ function getServerData() {
         let ideaDescription = document.getElementById("current-idea-description")
         let saveBtn = document.getElementById("save-current-idea")
 
-
-
         currentIdea = idea;
 
         ideaTitle.style.display = "block";
@@ -231,6 +226,7 @@ function getServerData() {
         console.log("current tab updated with the idea " + idea)
     });
 
+    //when clear button emit recieved remove all idea/entities in world
     socket.on("clearCurrentIdeaTab", () => {
         const homeContent = document.getElementById("home-content");
         const listsContent = document.getElementById("lists-content");
@@ -261,6 +257,7 @@ function getServerData() {
         myId = data;
     });
 
+    
     socket.on("worldId", (worldId) => {
         idText.innerHTML = worldId;
         console.log("window size on load was send..")
@@ -278,7 +275,6 @@ function getServerData() {
         playAlarm();
     });
 
-
     socket.on("updateIdeaWidth", (dataObj) => {
         ctx.font = "20px Arial";
         w = ctx.measureText(dataObj.ideaTitle).width + 10;
@@ -292,13 +288,7 @@ function getServerData() {
     });
 
     socket.on("worldUpdate", (data) => {
-
-        
-        //update local world storage
         localWorld = data;
-        //timer.innerText = `${parseInt(data.timerObj.seconds / 60)}:${data.timerObj.seconds % 60}`;
-        //render new update
-        //renderCanvas();
     });
 
     socket.on("updateLists", (data) => {
@@ -329,23 +319,25 @@ function getServerData() {
     })
 }
 
-function insertWorldsInSelect(data) {
-    for (const world in data) {
-        let option = document.createElement('option');
-        option.value = data[world];
-        option.innerHTML = "World: " + data[world];
 
-        worldSelect.appendChild(option);
-    }
+// function insertWorldsInSelect(data) {
+//     for (const world in data) {
+//         let option = document.createElement('option');
+//         option.value = data[world];
+//         option.innerHTML = "World: " + data[world];
 
-}
+//         worldSelect.appendChild(option);
+//     }
 
+// }
+
+//plays alarm sound 
 function playAlarm() {
     let audio = new Audio('./js/timer.wav');
     audio.play();
   }
 
-
+//shows create idea popup and handles its functionality
 function createIdea() {
     const spawnBtn = document.getElementById("spawn-card");
 
@@ -394,6 +386,7 @@ function createIdea() {
     }, { once: true });
 }
 
+//shows create list popup and handles its functionality
 function createList() {
     const spawnList = document.getElementById("spawn-list");
 
@@ -439,6 +432,7 @@ function createList() {
     }, { once: true });
 }
 
+//Sends clients canvas size to server when resized
 function sendCanvasData() {
     window.addEventListener("resize", (e) => {
         console.log("window was resized");
@@ -511,6 +505,7 @@ function listPopupMenu(listId) {
     });
 }
 
+//disables keyboard when editing idea.
 function detectIdeaTabFocus() {
     let ideaTitle = document.getElementById("current-idea-title")
     let ideaDescription = document.getElementById("current-idea-description")
@@ -532,7 +527,7 @@ function detectIdeaTabFocus() {
     });
 }
 
-
+//inserts current from world in select form
 function updateListSelector(data) {
     let child = listSelector.lastElementChild;
     while (child) {
@@ -545,6 +540,7 @@ function updateListSelector(data) {
     }
 }
 
+//inserts current selectable ideas from list in select form
 function updateIdeaSelector(ideaSelector, listId) {
     let child = ideaSelector.lastElementChild;
     while (child) {
@@ -560,6 +556,7 @@ function updateIdeaSelector(ideaSelector, listId) {
     }
 }
 
+//calls deleteList() when button clicked
 function deleteListeners() {
     const deleteListButton = document.getElementById("delete-list");
 
@@ -568,6 +565,7 @@ function deleteListeners() {
     });
 }
 
+//deletes the list currenlty selected from list selector on button click
 function deleteList() {
     if (localWorld.listCount > 0) {
         socket.emit(
@@ -580,20 +578,9 @@ function deleteList() {
     }
 }
 
-function timerFunctions() {
-    const startTimer = document.getElementById("starttimer");
-    const pauseTimer = document.getElementById("pausetimer");
-    const resetTimer = document.getElementById("resettimer");
-    const timeSelector = document.getElementById("timeselector");
-    const setTimer = document.getElementById("settimer");
+//this function saves current idea on button click
+function saveIdea() {
     const saveBtn = document.getElementById("save-current-idea")
-
-    let selectedTimer = timeSelector.value;
-
-    timeSelector.addEventListener("change", () => {
-        selectedTimer = timeSelector.value;
-        console.log(selectedTimer);
-    });
 
     saveBtn.addEventListener("click", () => {
         console.log("i clicked with idea: " + currentIdea.id);
@@ -602,9 +589,22 @@ function timerFunctions() {
 
         socket.emit("updateIdea", currentIdea.id, ideaTitle.value, ideaDescription.value, localWorld.worldId, myId)
 
-        // currentIdea.title = ideaTitle.value
-        // currentIdea.ideaDescription = ideaDescription.value;
+    });
+}
 
+//this functions listens for timer buttons
+function timerFunctions() {
+    const startTimer = document.getElementById("starttimer");
+    const pauseTimer = document.getElementById("pausetimer");
+    const resetTimer = document.getElementById("resettimer");
+    const timeSelector = document.getElementById("timeselector");
+    const setTimer = document.getElementById("settimer");
+
+    let selectedTimer = timeSelector.value;
+
+    timeSelector.addEventListener("change", () => {
+        selectedTimer = timeSelector.value;
+        console.log(selectedTimer);
     });
 
     startTimer.addEventListener("click", () => {
@@ -626,8 +626,7 @@ function timerFunctions() {
 
 }
 
-
-
+//this function shows "create"-popups on button click
 function popUpListeners() {
     const spawnBtn = document.getElementById("spawn-card");
     const spawnList = document.getElementById("spawn-list");
@@ -641,6 +640,7 @@ function popUpListeners() {
     });
 }
 
+//this function controles the game menu
 function navigationListeners() {
     const homeContent = document.getElementById("home-content");
     const listsContent = document.getElementById("lists-content");
@@ -649,6 +649,7 @@ function navigationListeners() {
 
     const homeButton = document.getElementById("home-button")
     homeButton.style.textDecoration = "underline";
+
     const listsButton = document.getElementById("lists-button")
     const ideasButton = document.getElementById("ideas-button")
     const timerButton = document.getElementById("timer-button")
@@ -665,11 +666,6 @@ function navigationListeners() {
 
         timerContent.style.display = "none";
         timerButton.style.textDecoration = "none"
-
-
-        //text-decoration: underline; 
-
-
     });
 
     listsButton.addEventListener("click", (e) => {
@@ -711,7 +707,6 @@ function navigationListeners() {
     });
 
     listSelector.addEventListener("change", () => {
-        console.log("I changed");
         insertIdeasToListsTab();
     })
 
@@ -722,6 +717,7 @@ function isEmpty(obj) {
     return Object.keys(obj).length === 0;
 }
 
+//inserts current connected players in player list
 function insertPlayersHtmlElement() {
     const scrollBox = document.getElementById("playerScrollBox");
 
@@ -788,7 +784,7 @@ function insertIdeasToListsTab() {
     }
 }
 
-
+//tracks and saves mouse posistion
 canvas.onmousemove = function (e) {
     // Get the current mouse position
     let r = canvas.getBoundingClientRect(),
