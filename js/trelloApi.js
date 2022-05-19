@@ -37,14 +37,12 @@ const oauth = new OAuth(requestURL, accessURL, devKey, devSecret, "1.0A", settin
 
 const login = function (request, response) {
     oauth.getOAuthRequestToken(function (error, token, tokenSecret, results) {
-        if(!error)
-        {
+        if (!error) {
             oauth_secrets[token] = tokenSecret;
             dataLogger.writeLog("TRELLO: Retrieved Request token from Trello");
             response.redirect(`${authorizeURL}?oauth_token=${token}&name=${appName}&scope=${scope}&expiration=${expiration}`);
         }
-        else
-        {
+        else {
             dataLogger.writeError("TRELLO: Could not retrieve OAuthRequestToken: " + error.data + " " + error.statusCode);
             response.send(`<h1>Error connecting to Trello, please try again later</h1><a>${error.data} Statuscode: ${error.statusCode}</a>`);
         }
@@ -235,4 +233,4 @@ function deleteBoard(accToken, accTokenSecret, boardId) {
     });
 }
 
-module.exports = { login, trelloLoginCallback, createBoard, createCard, createList, deleteCard, archiveList, deleteBoard, createBoardFromTemplate, GetListsFromBoard, url};
+module.exports = { login, trelloLoginCallback, createBoard, createCard, createList, deleteCard, archiveList, deleteBoard, createBoardFromTemplate, GetListsFromBoard, url };

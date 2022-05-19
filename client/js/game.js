@@ -45,8 +45,7 @@ sendCanvasData();
 saveIdea();
 
 //this function runs when client want to autenticate with trello
-function sendTokenInformationForVerify()
-{
+function sendTokenInformationForVerify() {
     socket.emit("denial", window.location.href);
 }
 
@@ -75,9 +74,8 @@ function sendClientData() {
         });
     }
 
-    socket.on("denial",(bool) => {
-        if(bool === true)
-        {
+    socket.on("denial", (bool) => {
+        if (bool === true) {
             window.location.href = "/";
         }
     });
@@ -117,7 +115,7 @@ function sendClientData() {
         });
         sendTokenInformationForVerify();
     }
-    
+
     document.onkeydown = (event) => {
         if (canUseKeyboard === true) {
             if (event.key === 'd' || event.key === 'D') {
@@ -257,7 +255,7 @@ function getServerData() {
         myId = data;
     });
 
-    
+
     socket.on("worldId", (worldId) => {
         idText.innerHTML = worldId;
         console.log("window size on load was send..")
@@ -319,23 +317,11 @@ function getServerData() {
     })
 }
 
-
-function insertWorldsInSelect(data) {
-    for (const world in data) {
-        let option = document.createElement('option');
-        option.value = data[world];
-        option.innerHTML = "World: " + data[world];
-
-        worldSelect.appendChild(option);
-    }
-
-}
-
 //plays alarm sound 
 function playAlarm() {
     let audio = new Audio('./js/timer.wav');
     audio.play();
-  }
+}
 
 //shows create idea popup and handles its functionality
 function createIdea() {
@@ -471,7 +457,7 @@ function listPopupMenu(listId) {
 
     }
 
-    if(ideaSelector.value === "" || ideaSelector.value === null) {
+    if (ideaSelector.value === "" || ideaSelector.value === null) {
         takeIdeaButton.disabled = true
     }
 
@@ -494,7 +480,7 @@ function listPopupMenu(listId) {
 
     ideaSelector.addEventListener("change", () => {
 
-        if(ideaSelector.value !== "" || ideaSelector.value !== null) {
+        if (ideaSelector.value !== "" || ideaSelector.value !== null) {
             takeIdeaButton.disabled = false
         }
 

@@ -151,10 +151,10 @@ function updateMousePos(data, socket) {
             worlds[data.worldID].players[data.playerId].mousePos.x = data.x;
             worlds[data.worldID].players[data.playerId].mousePos.y = data.y;
         }
-        catch(err) {
+        catch (err) {
             console.log("Tried to update non-existing players' mouseposition: " + err);
         }
-        
+
     }
 }
 
@@ -236,7 +236,7 @@ function joinServer(data, player, socket) {
         worlds[data.sessionId].players[socket.id] = player;
 
         //update world before updateing playerjoined
-        sendWorldUpdate("worldUpdate",parseSensitiveWorldData(worlds[data.sessionId]), data.sessionId);
+        sendWorldUpdate("worldUpdate", parseSensitiveWorldData(worlds[data.sessionId]), data.sessionId);
 
         sendWorldUpdate("newPlayerJoined", {}, data.sessionId);
 
@@ -252,14 +252,14 @@ function joinServer(data, player, socket) {
 
 //removes sensitive trello Api data from world object before sending it to client
 function parseSensitiveWorldData(world) {
-        //make clone of object so its not parsed by reference. 
-        let parsedWorld = Object.assign({},world)
+    //make clone of object so its not parsed by reference. 
+    let parsedWorld = Object.assign({}, world)
 
-        parsedWorld.accTokenSecret = {};
-        parsedWorld.accToken = {};
-        parsedWorld.trelloBoardId = {};
+    parsedWorld.accTokenSecret = {};
+    parsedWorld.accToken = {};
+    parsedWorld.trelloBoardId = {};
 
-        return parsedWorld;
+    return parsedWorld;
 }
 
 //creates and spawns new entitie to specified world
@@ -394,7 +394,7 @@ function updatePosistion(playerObj) {
 
     //places idea/entitie on the ground if expression is met.
     if (playerObj.isCollidingWithTrashcan === false && isEmpty(playerObj.connectedEntity) === false && playerObj.pickUpKeyPressed === true && playerObj.canPickUp === false) {
-        connectToWorld(playerObj,findSocketFromPlayerObj(playerObj.id));
+        connectToWorld(playerObj, findSocketFromPlayerObj(playerObj.id));
 
         //clear current idea field
 
@@ -420,7 +420,7 @@ function detect_player_colision(playerObj) {
         let object = worlds[playerObj.myWorldId].entities[key];
 
         if (detect_colision(playerObj.x, playerObj.y, playerObj.w, playerObj.h, object.x, object.y, object.w, object.h)) {
-            
+
 
             playerObj.isColliding = true;
 
@@ -481,17 +481,17 @@ function detect_player_colision(playerObj) {
 }
 
 //connects a connected entity to world object (places idea/entity on the ground)
-function connectToWorld(playerObj,socket) {
+function connectToWorld(playerObj, socket) {
     worlds[playerObj.myWorldId].entities[playerObj.connectedEntity.id] = playerObj.connectedEntity;
-    socket.emit("clearCurrentIdeaTab",{});
+    socket.emit("clearCurrentIdeaTab", {});
     dataLogger.writeLog(`WORLD: player: ${playerObj.id} placed an entity: ${playerObj.connectedEntity.id}`);
     playerObj.connectedEntity = {};
 }
 
 //connects a world entity/idea to the player (pick up idea)
-function connectToPlayer(playerObj, entity,socket) {
+function connectToPlayer(playerObj, entity, socket) {
     playerObj.connectedEntity = entity;
-    socket.emit("updateCurrentIdeaTab",entity);
+    socket.emit("updateCurrentIdeaTab", entity);
     dataLogger.writeLog(`WORLD: player: ${playerObj.id} connected an entity: ${playerObj.connectedEntity.id}`);
     delete worlds[playerObj.myWorldId].entities[entity.id];
 }
@@ -502,9 +502,9 @@ function connectToPlayer(playerObj, entity,socket) {
 function findSocketFromPlayerObj(playerId) {
     let socket;
 
-    for(const currentSocket in SOCKET_LIST) {
-        if(SOCKET_LIST[currentSocket].id === playerId) {
-           return SOCKET_LIST[currentSocket]
+    for (const currentSocket in SOCKET_LIST) {
+        if (SOCKET_LIST[currentSocket].id === playerId) {
+            return SOCKET_LIST[currentSocket]
         }
         else {
             dataLogger.writeError("WORLD: couldn't find socket from playobj");
@@ -604,7 +604,7 @@ function detect_trashcan_colision(player) {
             player.canPickUp = true;
             player.isColliding = false;
 
-            let socket =findSocketFromPlayerObj(player.id);
+            let socket = findSocketFromPlayerObj(player.id);
 
             socket.emit("clearCurrentIdeaTab");
 

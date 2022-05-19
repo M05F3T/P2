@@ -1,5 +1,5 @@
 
-const PORT = 3000; 
+const PORT = 3000;
 const defaultWorldsActive = true; //default worlds with no active players wont be deleted.   
 const deleteTrelloBoardWhenEmpty = true;
 

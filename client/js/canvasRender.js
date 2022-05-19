@@ -7,6 +7,63 @@ trashcan_closed.src = `./img/trashcan_closed.svg`
 const floor = new Image();
 floor.src = `./img/floor.jpg`
 
+function renderCanvas() {
+
+    ctx.save();
+
+    resetCanvas();
+
+    ctx.translate(-localWorld.players[myId].x + ctx.canvas.width / 2, -localWorld.players[myId].y + ctx.canvas.height / 2);
+    
+    ctx.drawImage(floor, -1000, -1000, 5000, 5000);
+    
+    drawTrashcan(true);
+    drawLists(localWorld);
+    drawElements(localWorld);
+
+    drawPickUpToolTip(localWorld);
+
+    drawMyPlayer(localWorld.players[myId]);
+    drawPlayers(localWorld);
+
+    ctx.restore();
+
+    for (const key in localWorld.players) {
+        if ((localWorld.players[myId].id !== localWorld.players[key].id)) {
+            drawLineLength(
+                localWorld.players[key].x,
+                localWorld.players[key].y,
+                localWorld.players[key].mousePos.x,
+                localWorld.players[key].mousePos.y,
+                localWorld.players[key].h / 2,
+                localWorld.players[key].viewIndicatorColor,
+                localWorld.players[key]
+            )
+        }
+    }
+
+    drawMyLineLength(
+        localWorld.players[myId].x,
+        localWorld.players[myId].y,
+        localWorld.players[myId].mousePos.x,
+        localWorld.players[myId].mousePos.y,
+        localWorld.players[myId].h / 2,
+        localWorld.players[myId].viewIndicatorColor
+    );
+
+    window.requestAnimationFrame(renderCanvas);
+
+}
+
+function resetCanvas() {
+
+    ctx.canvas.width = window.innerWidth - 350;
+    ctx.canvas.height = window.innerHeight;
+
+    //clear canvas berfore new frame
+    ctx.clearRect(0, 0, window.innerWidth - 350, window.innerHeight);
+}
+
 function drawTrashcan() {
     let open;
     for (const key in localWorld.players) {
@@ -189,57 +246,6 @@ function drawPlayers(data) {
     }
 }
 
-function renderCanvas() {
-
-    ctx.save();
-
-    resetCanvas();
-
-
-
-    ctx.translate(-localWorld.players[myId].x + ctx.canvas.width / 2, -localWorld.players[myId].y + ctx.canvas.height / 2);
-    
-    ctx.drawImage(floor, -1000, -1000, 5000, 5000);
-    
-    
-    drawTrashcan(true);
-    drawLists(localWorld);
-    drawElements(localWorld);
-
-    drawPickUpToolTip(localWorld);
-
-    drawMyPlayer(localWorld.players[myId]);
-    drawPlayers(localWorld);
-
-    ctx.restore();
-
-    for (const key in localWorld.players) {
-        if ((localWorld.players[myId].id !== localWorld.players[key].id)) {
-            drawLineLength(
-                localWorld.players[key].x,
-                localWorld.players[key].y,
-                localWorld.players[key].mousePos.x,
-                localWorld.players[key].mousePos.y,
-                localWorld.players[key].h / 2,
-                localWorld.players[key].viewIndicatorColor,
-                localWorld.players[key]
-            )
-        }
-    }
-
-    drawMyLineLength(
-        localWorld.players[myId].x,
-        localWorld.players[myId].y,
-        localWorld.players[myId].mousePos.x,
-        localWorld.players[myId].mousePos.y,
-        localWorld.players[myId].h / 2,
-        localWorld.players[myId].viewIndicatorColor
-    );
-
-    window.requestAnimationFrame(renderCanvas);
-
-}
-
 function drawMyPlayer(player) {
 
     ctx.save();
@@ -279,13 +285,4 @@ function drawMyPlayer(player) {
 
 
 
-}
-
-function resetCanvas() {
-
-    ctx.canvas.width = window.innerWidth - 350;
-    ctx.canvas.height = window.innerHeight;
-
-    //clear canvas berfore new frame
-    ctx.clearRect(0, 0, window.innerWidth - 350, window.innerHeight);
 }

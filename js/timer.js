@@ -41,7 +41,7 @@ timeInterval = setInterval(() => {
             );
             timeWorlds = timeWorlds.filter((world) => world !== worldId);
         }
-    }); 
+    });
 }, 1000);
 
 function startTimer(worldId) {
