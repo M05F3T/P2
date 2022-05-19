@@ -320,16 +320,16 @@ function getServerData() {
 }
 
 
-// function insertWorldsInSelect(data) {
-//     for (const world in data) {
-//         let option = document.createElement('option');
-//         option.value = data[world];
-//         option.innerHTML = "World: " + data[world];
+function insertWorldsInSelect(data) {
+    for (const world in data) {
+        let option = document.createElement('option');
+        option.value = data[world];
+        option.innerHTML = "World: " + data[world];
 
-//         worldSelect.appendChild(option);
-//     }
+        worldSelect.appendChild(option);
+    }
 
-// }
+}
 
 //plays alarm sound 
 function playAlarm() {

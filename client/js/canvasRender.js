@@ -196,9 +196,12 @@ function renderCanvas() {
     resetCanvas();
 
 
+
     ctx.translate(-localWorld.players[myId].x + ctx.canvas.width / 2, -localWorld.players[myId].y + ctx.canvas.height / 2);
     
-
+    ctx.drawImage(floor, -1000, -1000, 5000, 5000);
+    
+    
     drawTrashcan(true);
     drawLists(localWorld);
     drawElements(localWorld);
