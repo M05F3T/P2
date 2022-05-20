@@ -465,16 +465,19 @@ function listPopupMenu(listId) {
     takeIdeaButton.addEventListener(
         "click",
         () => {
-            canUseKeyboard = true;
-            socket.emit(
-                "takeIdeaFromList",
-                localWorld.lists[listId].containedIdeas[ideaSelector.value],
-                localWorld.worldId,
-                myId,
-                listId
-            );
-            console.log("Took idea");
-            listPopupMenuContent.style.display = "none";
+            if (localWorld.lists[listId].containedIdeas[ideaSelector.value] !== undefined && localWorld.lists[listId].containedIdeas[ideaSelector.value] !== null) {
+                canUseKeyboard = true;
+                socket.emit(
+                    "takeIdeaFromList",
+                    localWorld.lists[listId].containedIdeas[ideaSelector.value],
+                    localWorld.worldId,
+                    myId,
+                    listId
+                );
+                console.log("Took idea");
+                listPopupMenuContent.style.display = "none";
+            }
+
         },
         { once: true }
     );
