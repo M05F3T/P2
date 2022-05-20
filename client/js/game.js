@@ -476,6 +476,10 @@ function listPopupMenu(listId) {
                 );
                 console.log("Took idea");
                 listPopupMenuContent.style.display = "none";
+            }else {
+                listPopupMenuContent.style.display = "none";
+                canUseKeyboard = true;
+                alert("this idea has already been taken");
             }
 
         },

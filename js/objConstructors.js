@@ -69,7 +69,7 @@ let World = () => {
         worldId: '#' + nanoid(6),
         name: "This is the world name",
         listCount: 0,
-        maxListCount: 5 - 1,
+        maxListCount: 100 - 1,
         accToken: "",
         accTokenSecret: "",
         trelloBoardId: "",
