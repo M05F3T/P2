@@ -51,7 +51,7 @@ function renderCanvas() {
         localWorld.players[myId].viewIndicatorColor
     );
 
-    window.requestAnimationFrame(renderCanvas);
+    //window.requestAnimationFrame(renderCanvas);
 
 }
 

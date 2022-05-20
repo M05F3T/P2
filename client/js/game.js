@@ -287,6 +287,7 @@ function getServerData() {
 
     socket.on("worldUpdate", (data) => {
         localWorld = data;
+        renderCanvas();
     });
 
     socket.on("updateLists", (data) => {
