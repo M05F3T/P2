@@ -479,7 +479,7 @@ function listPopupMenu(listId) {
             }else {
                 listPopupMenuContent.style.display = "none";
                 canUseKeyboard = true;
-                alert("this idea has already been taken");
+                //alert("this idea has already been taken");
             }
 
         },
