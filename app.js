@@ -101,8 +101,13 @@ function startClientUpdates() {
 
         //store the new window size when resized
         socket.on("windowResized", (canvasData) => {
-            worldHandler.worlds[canvasData.worldId].players[canvasData.playerId].playerCanvasWidth = canvasData.canvasWidth;
-            worldHandler.worlds[canvasData.worldId].players[canvasData.playerId].playerCanvasHeight = canvasData.canvasHeight;
+            try {
+                worldHandler.worlds[canvasData.worldId].players[canvasData.playerId].playerCanvasWidth = canvasData.canvasWidth;
+                worldHandler.worlds[canvasData.worldId].players[canvasData.playerId].playerCanvasHeight = canvasData.canvasHeight;
+            } catch {
+                dataLogger.writeError("couldn't update canvas data on player");
+            }
+            
         });
 
         //stores new mouse position
