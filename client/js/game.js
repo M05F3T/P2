@@ -388,40 +388,48 @@ function createList() {
     canUseKeyboard = false
 
     const createListCancelButton = document.getElementById("create-list-cancel-button");
-    const listName = document.getElementById("list-name");
+    
     const createListButton = document.getElementById("create-list-button")
 
     const ListContent = document.getElementById("create-list");
 
     ListContent.style.display = "flex";
 
+    createListButton.addEventListener("click", createListHandler, { once: true });
+
     createListCancelButton.addEventListener("click", () => {
         ListContent.style.display = "none";
         canUseKeyboard = true;
         spawnList.disabled = false;
+        createListButton.removeEventListener("click", createListHandler)
     });
 
-    createListButton.addEventListener("click", () => {
-        if (listName.value === "") {
-            alert("You have to specify a title");
-            //createList();
-        } else {
-            //alert("you've created a list!");
-            dataObj = {
-                listName: listName.value,
-                worldId: localWorld.worldId,
-            };
+}
 
-            //socket.emit create list here
-            socket.emit("spawnList", dataObj);
+function createListHandler() {
+    const listName = document.getElementById("list-name");
+    const ListContent = document.getElementById("create-list");
+    const spawnList = document.getElementById("spawn-list");
 
-            //close form
-            ListContent.style.display = "none";
-            canUseKeyboard = true;
+    if (listName.value === "") {
+        alert("You have to specify a title");
+        //createList();
+    } else {
+        //alert("you've created a list!");
+        dataObj = {
+            listName: listName.value,
+            worldId: localWorld.worldId,
+        };
 
-            spawnList.disabled = false;
-        }
-    }, { once: true });
+        //socket.emit create list here
+        socket.emit("spawnList", dataObj);
+
+        //close form
+        ListContent.style.display = "none";
+        canUseKeyboard = true;
+
+        spawnList.disabled = false;
+    }
 }
 
 //Sends clients canvas size to server when resized
