@@ -8,7 +8,7 @@ This is an online brainstorming application that tries to emulate a physical bra
 
 ## Releases
 
-Latest: [Version 1.0](https://github.com/M05F3T/P2/releases/tag/firstRelease "Version 1.0")
+Latest: [Version 1.0](https://github.com/M05F3T/P2/releases/tag/v1.0 "Version 1.0")
 
 
 
