@@ -6,6 +6,12 @@ A visual brainstorm application 🤯
 
 This is an online brainstorming application that tries to emulate a physical brainstorm known from group work. The brainstorming is performed in the browser through building blocks which are visual elements in form of boxes with text embedded, as an abstraction over ideas. These virtual ideas will be shown as cards in Trello, the ideas can be placed in categorizing areas in the canvas which represent different Trello lists. The names of these lists are the topics / sub-topics for the brainstorm. Every time a cards are placed in a categorized area, the host's Trello is updated so that the lists and cards in Trello correspond to ideas and lists in our application. The purpose of the Trello integration is to make it easy for the user to save the results of their brainstorm while having their data collected on a platform that they already making use of. The host of the brainstorming session login with Trello, and they other participants then work under this host.
 
+## Releases
+
+Latest: [Version 1.0](https://github.com/M05F3T/P2/releases/tag/firstRelease "Version 1.0")
+
+
+
 ## Getting Started
 
 Before installing be sure you have the newest version of git, node.js and npm (node package manager) installed on your hosting machine.
