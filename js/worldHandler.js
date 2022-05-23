@@ -290,7 +290,7 @@ function spawnElement(id, socket, title, description, w, playerId) {
 function spawnList(id, socket, title, trelloListId) {
     if (worlds[id].listCount <= worlds[id].maxListCount) {
         if (doesWorldExist(id, socket)) {
-            let list = objConstructor.List(50 + worlds[id].listCount * 300, 70, title, id);
+            let list = objConstructor.List(worlds[id].listCount * 450, 70, title, id);
             worlds[id].lists[list.id] = list;
             worlds[id].lists[list.id].trelloListId = trelloListId;
             dataLogger.writeLog("WORLD: Spawned list with title: " + list.title);
@@ -315,12 +315,14 @@ async function SpawnListFromTemplate(id, trelloObject) {
     trelloObject.forEach(trelloList => {
         let listId = trelloList.id;
         let name = trelloList.name;
-        let list = objConstructor.List(50 + worlds[id].listCount * 300, 70, name, id);
+        let list = objConstructor.List(worlds[id].listCount * 450, 70, name, id);
         worlds[id].lists[list.id] = list;
         worlds[id].lists[list.id].trelloListId = listId;
         dataLogger.writeLog("WORLD: Spawned list with title: " + list.title);
         worlds[id].listCount++;
     });
+
+    
 }
 
 //updates world and object properties and send updated world to correct clients 60 times a second
@@ -592,8 +594,8 @@ function detect_rec_and_rec_collision(x1, y1, w1, h1, x2, y2, w2, h2) {
 
 //if idea/entitie collides with trash can delete it from world
 function detect_trashcan_colision(player) {
-    const trashcan_x = 800;
-    const trashcan_y = 800;
+    const trashcan_x = 1300;
+    const trashcan_y = 1000;
     const trashcan_h = 100;
     const trashcan_w = 100;
 

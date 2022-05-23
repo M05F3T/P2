@@ -5,7 +5,7 @@ const trashcan_closed = new Image();
 trashcan_closed.src = `./img/trashcan_closed.svg`
 
 const floor = new Image();
-floor.src = `./img/floor.jpg`
+floor.src = `./img/floor.svg`
 
 function renderCanvas() {
 
@@ -15,7 +15,7 @@ function renderCanvas() {
 
     ctx.translate(-localWorld.players[myId].x + ctx.canvas.width / 2, -localWorld.players[myId].y + ctx.canvas.height / 2);
 
-    ctx.drawImage(floor, -1000, -1000, 5000, 5000);
+    ctx.drawImage(floor, -1000, -1000, 10000,5000);
 
     drawTrashcan(true);
     drawLists(localWorld);
@@ -75,9 +75,9 @@ function drawTrashcan() {
     }
 
     if (open) {
-        ctx.drawImage(trashcan_open, 800, 800, 100, 100);
+        ctx.drawImage(trashcan_open, 1300, 1000, 100, 100);
     } else {
-        ctx.drawImage(trashcan_closed, 800, 800, 100, 100);
+        ctx.drawImage(trashcan_closed, 1300, 1000, 100, 100);
     }
 
 }
@@ -125,7 +125,7 @@ function drawLists(data) {
         ctx.fillStyle = "black";
         ctx.fillText(
             data.lists[key].title,
-            data.lists[key].x + 100,
+            data.lists[key].x + 150,
             data.lists[key].y + 25
         );
 
@@ -137,7 +137,7 @@ function drawLists(data) {
             ctx.fillStyle = "black";
             ctx.fillText(
                 data.lists[key].containedIdeas[object].title,
-                data.lists[key].x + 100,
+                data.lists[key].x + 150,
                 data.lists[key].y + 45 + containedIdeasCount * 20
             );
             ++containedIdeasCount;

@@ -91,7 +91,7 @@ function startClientUpdates() {
             dataLogger.writeLog("WORLD: Removed list with id: " + listId);
 
             for (const key in worldHandler.worlds[id].lists) {
-                worldHandler.worlds[id].lists[key].x = 50 + tempListCount * 300;
+                worldHandler.worlds[id].lists[key].x = tempListCount * 450;
                 tempListCount++;
             }
 
@@ -119,12 +119,17 @@ function startClientUpdates() {
         });
 
         socket.on("updateIdeaWidth", (ideaObj, w) => {
-
-            if (ideaObj.isConnected === true) {
-                worldHandler.worlds[ideaObj.worldId].players[ideaObj.playerId].connectedEntity.w = w;
-            } else {
-                worldHandler.worlds[ideaObj.worldId].entities[ideaObj.entityId].w = w;
+            try {
+                if (ideaObj.isConnected === true) {
+                    worldHandler.worlds[ideaObj.worldId].players[ideaObj.playerId].connectedEntity.w = w;
+                } else {
+                    worldHandler.worlds[ideaObj.worldId].entities[ideaObj.entityId].w = w;
+                }
+            }catch {
+                dataLogger.writeError("ERROR: Couldn't update width of entity");
             }
+
+           
 
         })
 
