@@ -41,7 +41,7 @@ let Entity = (posX, posY, id) => {
         id: idGenerator(),
         title: "",
         description: "",
-        color: "gray"
+        color: "white"
     }
     return self;
 }
@@ -51,11 +51,11 @@ let List = (posX, posY, title, myWorldId) => {
     let self = {
         x: posX,
         y: posY,
-        w: 200,
-        h: 300,
+        w: 300,
+        h: 600,
         id: idGenerator(),
         myWorldId: myWorldId,
-        color: "gray",
+        color: "white",
         trelloListId: "",
         title: title,
         containedIdeas: {}
