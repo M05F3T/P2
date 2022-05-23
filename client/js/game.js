@@ -332,23 +332,29 @@ function createIdea() {
     canUseKeyboard = false
 
     const createIdeaCancelButton = document.getElementById("create-idea-cancel-button");
-    const ideaName = document.getElementById("idea-name");
-    const ideaDescription = document.getElementById("idea-description");
     const createIdeaButton = document.getElementById("create-idea-button")
 
     const createIdeaContent = document.getElementById("create-idea");
 
     createIdeaContent.style.display = "flex";
 
+    createIdeaButton.addEventListener("click", spawnIdeaHandler, { once: true });
+
     createIdeaCancelButton.addEventListener("click", () => {
         createIdeaContent.style.display = "none";
         canUseKeyboard = true;
         spawnBtn.disabled = false;
+        createIdeaButton.removeEventListener("click",spawnIdeaHandler)
+    },{ once: true });
 
-    });
+}
 
-    createIdeaButton.addEventListener("click", () => {
-        let w = ctx.measureText(ideaName.value).width + 10;
+function spawnIdeaHandler() {
+    const spawnBtn = document.getElementById("spawn-card");
+    const createIdeaContent = document.getElementById("create-idea");
+    const ideaName = document.getElementById("idea-name");
+    const ideaDescription = document.getElementById("idea-description");
+    let w = ctx.measureText(ideaName.value).width + 10;
 
         if (ideaName.value === "") {
             alert("You have to specify a title");
@@ -370,7 +376,6 @@ function createIdea() {
             spawnBtn.disabled = false;
 
         }
-    }, { once: true });
 }
 
 //shows create list popup and handles its functionality
