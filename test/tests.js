@@ -34,7 +34,7 @@ describe("Connecting ideas to players from worlds and from worlds to players", f
                 id: "testEntity Id",
                 title: "hello",
             }
-            worldHandler.connectToWorld(playerObj);
+            worldHandler.connectToWorld(playerObj, {}, true);
             assert.equal(Object.keys(playerObj.connectedEntity).length, 0);
         });
     });
@@ -47,7 +47,7 @@ describe("Connecting ideas to players from worlds and from worlds to players", f
             playerObj.myWorldId = worldObject.worldId;
             worldHandler.worlds[worldObject.worldId] = worldObject;
             worldHandler.worlds[worldObject.worldId].entities[idea.id] = idea;
-            worldHandler.connectToPlayer(playerObj, idea);
+            worldHandler.connectToPlayer(playerObj, idea, {}, true);
             assert.equal(playerObj.connectedEntity, idea);
         });
     });

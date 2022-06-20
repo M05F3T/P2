@@ -483,17 +483,17 @@ function detect_player_colision(playerObj) {
 }
 
 //connects a connected entity to world object (places idea/entity on the ground)
-function connectToWorld(playerObj, socket) {
+function connectToWorld(playerObj, socket, test) {
     worlds[playerObj.myWorldId].entities[playerObj.connectedEntity.id] = playerObj.connectedEntity;
-    socket.emit("clearCurrentIdeaTab", {});
+    if (test != true) socket.emit("clearCurrentIdeaTab", {});
     dataLogger.writeLog(`WORLD: player: ${playerObj.id} placed an entity: ${playerObj.connectedEntity.id}`);
     playerObj.connectedEntity = {};
 }
 
 //connects a world entity/idea to the player (pick up idea)
-function connectToPlayer(playerObj, entity, socket) {
+function connectToPlayer(playerObj, entity, socket, test) {
     playerObj.connectedEntity = entity;
-    socket.emit("updateCurrentIdeaTab", entity);
+    if (test != true) socket.emit("updateCurrentIdeaTab", entity);
     dataLogger.writeLog(`WORLD: player: ${playerObj.id} connected an entity: ${playerObj.connectedEntity.id}`);
     delete worlds[playerObj.myWorldId].entities[entity.id];
 }
